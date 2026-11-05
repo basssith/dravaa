@@ -10,13 +10,16 @@ export function AppGrid({ apps }: { apps: Application[] }) {
       {apps.map((app, i) => (
         <article key={app.id} data-reveal className={i % 2 === 1 ? 'md:mt-block-lg' : undefined}>
           <TransitionLink href={`/applications/${slugOf(app)}`} data-cursor="view" aria-label={`Open ${app.name}`} className="group block no-underline">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-card bg-bg-2">
+            {/* 16:9 matches the screenshots, so almost nothing is cropped or zoomed */}
+            <div className="relative aspect-video overflow-hidden rounded-card bg-bg-2">
               <Image
                 src={app.image}
                 alt=""
                 fill
+                quality={90}
+                placeholder="blur"
                 sizes="(min-width: 760px) 50vw, 100vw"
-                className="object-cover transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.06]"
+                className="object-cover transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.04]"
               />
             </div>
             <div className="mt-6 flex items-center gap-3">

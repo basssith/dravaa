@@ -68,9 +68,11 @@ export function Reel() {
               src={app.image}
               alt={app.name}
               fill
+              quality={90}
               sizes="100vw"
+              // contain, not cover: the screenshots are smaller than a full screen, so cropping would blow them up
               className={cn(
-                'object-cover [transition:opacity_1s,transform_3.5s_linear]',
+                'object-contain p-gutter pb-28 [transition:opacity_1s,transform_3.5s_linear]',
                 i === slide ? 'scale-100 opacity-100' : 'scale-[1.08] opacity-0'
               )}
             />

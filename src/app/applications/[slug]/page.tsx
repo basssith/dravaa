@@ -44,7 +44,8 @@ export default async function ApplicationPage({ params }: Props) {
         </div>
       </header>
 
-      <figure data-reveal className="overflow-hidden rounded-card border border-line bg-surface">
+      {/* Capped at the image's own pixel width so it is never stretched; the cap lifts automatically with larger files. */}
+      <figure data-reveal className="mx-auto overflow-hidden rounded-card border border-line bg-surface" style={{ maxWidth: app.image.width }}>
         <figcaption className="flex items-center gap-4 border-b border-line px-4 py-3 text-small text-muted">
           <span className="flex gap-1.5" aria-hidden="true">
             <i className="size-2.5 rounded-full bg-bg-2" />
@@ -53,9 +54,15 @@ export default async function ApplicationPage({ params }: Props) {
           </span>
           drava.os/applications/{slugOf(app)}
         </figcaption>
-        <div className="relative aspect-[16/10]">
-          <Image src={app.image} alt={`${app.name} interface preview`} fill priority sizes="(min-width: 1680px) 1600px, 100vw" className="object-cover" />
-        </div>
+        <Image
+          src={app.image}
+          alt={`${app.name} interface preview`}
+          priority
+          quality={90}
+          placeholder="blur"
+          sizes={`(min-width: ${app.image.width}px) ${app.image.width}px, 100vw`}
+          className="block h-auto w-full"
+        />
       </figure>
 
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

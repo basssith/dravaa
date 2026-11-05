@@ -1,3 +1,10 @@
+import type { StaticImageData } from 'next/image';
+// Static imports: Next reads each file's real width/height and makes a blur placeholder at build time.
+import canvasImage from '../../public/assets/app_canvas.jpg';
+import conceptRunnerImage from '../../public/assets/app_concept_runner.png';
+import dataArtImage from '../../public/assets/app_data_art.png';
+import whiteTuskerImage from '../../public/assets/app_white_tusker.png';
+
 export type Metric = { label: string; value: string };
 export type Review = { stars: string; source: string; quote: string };
 
@@ -9,7 +16,7 @@ export type Application = {
   year: string;
   director?: string;
   description: string;
-  image: string;
+  image: StaticImageData;
   accentColor?: string;
   metrics: Metric[];
   highlights: string[];
@@ -26,7 +33,7 @@ export const applications: Application[] = [
     year: '2026',
     director: 'Drava Hardware Lab',
     description: 'Centralized environment and facility intelligence OS. Manage tactile rotary dial audio master volume, adaptive climate regulation (22% Dry), lighting brightness (100%), and unified system security.',
-    image: '/assets/app_white_tusker.png',
+    image: whiteTuskerImage,
     accentColor: '#8eff43',
     metrics: [
       { label: 'Master Volume', value: '12 / 100' },
@@ -61,7 +68,7 @@ export const applications: Application[] = [
     year: '2026',
     director: 'Spatial Systems Group',
     description: 'Infinite multi-screen visual workspace allowing teams to assign physical screens, organize media libraries, configure interactive room templates, and stream camera feeds.',
-    image: '/assets/app_canvas.jpg',
+    image: canvasImage,
     accentColor: '#62ffea',
     metrics: [
       { label: 'Sync Latency', value: '< 8ms' },
@@ -96,7 +103,7 @@ export const applications: Application[] = [
     year: '2026',
     director: 'Neural Perception Division',
     description: 'Neural 3D computer vision and volumetric spatial recognition system. Analyzes tonal knit upper textures, aerodynamic responsive foam contours, and physical component geometry in real time.',
-    image: '/assets/app_concept_runner.png',
+    image: conceptRunnerImage,
     accentColor: '#ff4d4d',
     metrics: [
       { label: 'Upper Analysis', value: 'Tonal Knit' },
@@ -131,7 +138,7 @@ export const applications: Application[] = [
     year: '2026',
     director: 'Drava Generative Lab',
     description: 'Generative visual computing and dynamic spatial data tapestry. Synthesizes high-density data vectors into fluid digital mosaics, real-time procedural geometry, and responsive architectural ambient art.',
-    image: '/assets/app_data_art.png',
+    image: dataArtImage,
     accentColor: '#b6ff66',
     metrics: [
       { label: 'Render FPS', value: '120 FPS' },
