@@ -1,0 +1,272 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   DRAVA — design system (Tailwind v4)
+
+   1. Theme tokens   → generate utilities: bg-ink, text-h2, py-section,
+                       px-gutter, rounded-card, ease-expo, animate-marquee …
+   2. Base           → element defaults, Lenis, scroll lock, focus
+   3. Components     → layout primitives (wrap, section, section-head)
+   4. Utilities      → type hierarchy (t-mega … t-lead), labels, masked lines
+   5. Motion         → pre-hydration hero state, reduced motion
+
+   Component-specific styling lives in the component as Tailwind classes.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. THEME TOKENS
+   ========================================================================== */
+@theme {
+  /* colour */
+  --color-bg: #f2f2ee;
+  --color-bg-2: #e6e6df;
+  --color-surface: #ffffff;
+  --color-ink: #0d0d0d;
+  --color-ink-2: #2a2a2a;
+  --color-muted: #646464;
+  --color-paper: #f2f2ee;
+  --color-paper-2: rgb(242 242 238 / 0.78);
+  --color-paper-muted: rgb(242 242 238 / 0.55);
+  --color-line: rgb(13 13 13 / 0.12);
+  --color-line-inv: rgb(242 242 238 / 0.14);
+  --color-accent: #b6ff66;
+
+  /* type scale — fluid between ~375px and ~1680px.
+     h1/h2 minimums fit a 12-letter word in Syne (a wide face) on a 375px screen. */
+  --text-micro: 0.75rem;                                       /* 12  labels, tags */
+  --text-micro--line-height: 1.2;
+  --text-small: 0.875rem;                                      /* 14  buttons, meta */
+  --text-small--line-height: 1.4;
+  --text-body: 1rem;                                           /* 16  body copy */
+  --text-body--line-height: 1.55;
+  --text-lead: clamp(1.0625rem, 0.95rem + 0.45vw, 1.375rem);   /* 17→22  intro paragraphs */
+  --text-lead--line-height: 1.5;
+  --text-h4: clamp(1.25rem, 1rem + 1vw, 2rem);                 /* 20→32  rows, names */
+  --text-h4--line-height: 1.1;
+  --text-h3: clamp(1.75rem, 1.3rem + 1.8vw, 3rem);             /* 28→48  card titles */
+  --text-h3--line-height: 1;
+  --text-statement: clamp(1.875rem, 1.1rem + 3.4vw, 4.5rem);   /* 30→72  editorial statement */
+  --text-statement--line-height: 1.06;
+  --text-h2: clamp(2.25rem, 0.7rem + 6.6vw, 7rem);             /* 36→112 section titles */
+  --text-h2--line-height: 0.9;
+  --text-h1: clamp(2.5rem, 0.7rem + 8.25vw, 9.25rem);          /* 42→148 page hero */
+  --text-h1--line-height: 0.9;
+  --text-mega: clamp(4rem, 1.5rem + 11vw, 13.5rem);            /* 64→216 footer CTA, stats, app title */
+  --text-mega--line-height: 0.85;
+
+  --tracking-display: -0.03em;
+  --tracking-label: 0.08em;
+
+  /* spacing — Tailwind's 4px scale (p-4 = 16px) plus fluid named steps */
+  --spacing-gutter: clamp(1rem, 0.5rem + 2.4vw, 2.5rem);       /* 16→40  page side padding */
+  --spacing-block: clamp(3.5rem, 2.5rem + 4vw, 6rem);          /* 56→96  between blocks */
+  --spacing-block-lg: clamp(5rem, 3rem + 7vw, 9rem);           /* 80→144 large offsets */
+  --spacing-section: clamp(6rem, 3.5rem + 10vw, 12.5rem);      /* 96→200 between sections */
+  --spacing-header: 4.75rem;                                   /* 76     header height */
+
+  /* breakpoints — match the layout's natural break points */
+  --breakpoint-sm: 35rem;    /* 560 */
+  --breakpoint-md: 47.5rem;  /* 760 */
+  --breakpoint-lg: 56.25rem; /* 900 */
+  --breakpoint-xl: 80rem;    /* 1280 */
+
+  /* shape */
+  --radius-card: 1.5rem;     /* 24 */
+  --radius-panel: 2rem;      /* 32 */
+
+  /* motion */
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-marquee: marquee 40s linear infinite;
+  --animate-eq: eq 1s ease-in-out infinite;
+  --animate-cue: cue 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes eq {
+    50% { height: 14px; }
+  }
+  @keyframes cue {
+    0%   { transform: scaleY(0); transform-origin: top; }
+    50%  { transform: scaleY(1); transform-origin: top; }
+    51%  { transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+}
+
+/* next/font sets --font-syne / --font-inter on <html> */
+@theme inline {
+  --font-display: var(--font-syne), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+}
+
+
+/* ==========================================================================
+   2. BASE
+   ========================================================================== */
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    overflow-x: hidden;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection { background: var(--color-accent); color: var(--color-ink); }
+  :focus-visible { outline: 2px solid currentColor; outline-offset: 3px; border-radius: 4px; }
+
+  /* Lenis smooth scroll + scroll lock while overlays are open */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+  .lenis.lenis-stopped, html.is-locked { overflow: hidden; }
+}
+
+
+/* ==========================================================================
+   3. COMPONENTS — layout primitives
+   ========================================================================== */
+@layer components {
+  .wrap {
+    width: 100%;
+    max-width: 105rem;
+    margin-inline: auto;
+    padding-inline: var(--spacing-gutter);
+  }
+
+  .section { padding-block: var(--spacing-section); }
+  /* Adjacent sections share one gap instead of stacking two paddings */
+  .section + .section { padding-top: 0; }
+
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: calc(var(--spacing) * 6);
+    margin-bottom: var(--spacing-block);
+  }
+}
+
+
+/* ==========================================================================
+   4. UTILITIES — type hierarchy, largest to smallest
+   ========================================================================== */
+@utility t-mega {
+  font-family: var(--font-display);
+  font-size: var(--text-mega);
+  font-weight: 700;
+  line-height: var(--text-mega--line-height);
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+}
+@utility t-h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  font-weight: 700;
+  line-height: var(--text-h1--line-height);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+@utility t-h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 700;
+  line-height: var(--text-h2--line-height);
+  letter-spacing: var(--tracking-display);
+  text-transform: uppercase;
+}
+@utility t-statement {
+  font-family: var(--font-display);
+  font-size: var(--text-statement);
+  font-weight: 600;
+  line-height: var(--text-statement--line-height);
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+@utility t-h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 700;
+  line-height: var(--text-h3--line-height);
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+@utility t-h4 {
+  font-family: var(--font-display);
+  font-size: var(--text-h4);
+  font-weight: 600;
+  line-height: var(--text-h4--line-height);
+  letter-spacing: -0.01em;
+}
+@utility t-lead {
+  max-width: 48ch;
+  font-size: var(--text-lead);
+  line-height: var(--text-lead--line-height);
+  color: var(--color-ink-2);
+}
+
+/* small uppercase labels: .tag is muted, .label inherits colour */
+@utility tag {
+  font-family: var(--font-body);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+@utility label {
+  font-family: var(--font-body);
+  font-size: var(--text-micro);
+  font-weight: 500;
+  line-height: var(--text-micro--line-height);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+/* masked line reveal: <span class="line"><span>Text</span></span> */
+@utility line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+  & > span { display: inline-block; }
+}
+
+/* lime highlight block behind a word */
+@utility highlight {
+  padding: 0 0.1em;
+  border-radius: 0.1em;
+  background: var(--color-accent);
+}
+
+/* outlined display text (stroke can't use currentColor — the fill is transparent) */
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--outline-color, var(--color-ink));
+}
+
+
+/* ==========================================================================
+   5. MOTION
+   ========================================================================== */
+/* Hero lines start hidden (before hydration) so they can rise in; .js is set by an inline script. */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-hero] .line > span { transform: translateY(110%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
