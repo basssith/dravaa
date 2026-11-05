@@ -9,14 +9,14 @@ import { Preloader } from '@/components/Preloader';
 import { Reel } from '@/components/Reel';
 import { ScrollEffects } from '@/components/ScrollEffects';
 import { UIProvider } from '@/components/UIProvider';
+import { SITE_URL } from '@/lib/site';
 import './globals.css';
 
 const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'], variable: '--font-syne', display: 'swap' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-inter', display: 'swap' });
 
 export const metadata: Metadata = {
-  // Netlify exposes the site URL as process.env.URL at build time.
-  metadataBase: new URL(process.env.URL ?? 'http://localhost:3000'),
+  metadataBase: new URL(SITE_URL),
   title: { default: 'Drava — Technology should make life feel easier', template: '%s — Drava' },
   description: 'Drava builds a connected ecosystem of applications for spatial work, autonomous intelligence and effortless everyday workflows.',
   icons: { icon: '/assets/drava_logo_smile.png' },

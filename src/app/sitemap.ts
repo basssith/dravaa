@@ -1,7 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { applications, slugOf } from '@/lib/applications';
-
-const BASE = process.env.URL ?? 'http://localhost:3000';
+import { SITE_URL as BASE } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const pages = ['', '/applications', '/about', ...applications.map((a) => `/applications/${slugOf(a)}`)];
