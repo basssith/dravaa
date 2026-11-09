@@ -39,7 +39,7 @@ export function Header() {
       )}
     >
       <TransitionLink href="/" aria-label="Drava home" className="flex items-center gap-2 font-display text-[1.375rem] font-bold leading-none tracking-tight no-underline">
-        <Smile className={cn('w-7 transition-colors duration-500', onDark && 'fill-accent')} />
+        <Smile className="w-7 fill-accent transition-colors duration-500" />
         <span>drava</span>
       </TransitionLink>
 

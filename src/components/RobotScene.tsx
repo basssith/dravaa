@@ -11,8 +11,18 @@ const smooth = (a: number, b: number, x: number) => {
   return t * t * (3 - 2 * t);
 };
 
-/** Scroll + pointer state shared with the render loop without re-rendering React. */
-type Track = { heroP: number; ap: number; px: number; py: number };
+/** Scroll + pointer + drag state shared with the render loop without re-rendering React. */
+type Track = {
+  heroP: number;
+  ap: number;
+  px: number;
+  py: number;
+  dragRotX: number;
+  dragRotY: number;
+  targetDragRotX: number;
+  targetDragRotY: number;
+  isDragging: boolean;
+};
 
 function radialTexture(inner: string, outer: string) {
   const c = document.createElement('canvas');
@@ -69,6 +79,75 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
     robotTex.needsUpdate = true;
   }, [robotTex, gl]);
 
+  // Create high-detail volumetric 3D rounded extrusion geometry for the robot slab
+  const robot3DGeom = useMemo(() => {
+    const width = 2.4;
+    const height = 3.088;
+    const radius = 0.28;
+    const shape = new THREE.Shape();
+    const x = -width / 2;
+    const y = -height / 2;
+    const w = width;
+    const h = height;
+    const r = radius;
+
+    shape.moveTo(x + r, y);
+    shape.lineTo(x + w - r, y);
+    shape.quadraticCurveTo(x + w, y, x + w, y + r);
+    shape.lineTo(x + w, y + h - r);
+    shape.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    shape.lineTo(x + r, y + h);
+    shape.quadraticCurveTo(x, y + h, x, y + h - r);
+    shape.lineTo(x, y + r);
+    shape.quadraticCurveTo(x, y, x + r, y);
+
+    const geom = new THREE.ExtrudeGeometry(shape, {
+      depth: 0.18,
+      bevelEnabled: true,
+      bevelSegments: 4,
+      steps: 1,
+      bevelSize: 0.05,
+      bevelThickness: 0.05
+    });
+
+    // Remap front cap UVs so robot.png wraps correctly
+    const pos = geom.attributes.position;
+    const uvs = geom.attributes.uv;
+    for (let i = 0; i < pos.count; i++) {
+      const px = pos.getX(i);
+      const py = pos.getY(i);
+      const pz = pos.getZ(i);
+      if (pz > 0.08) {
+        uvs.setXY(i, (px - x) / w, (py - y) / h);
+      }
+    }
+    uvs.needsUpdate = true;
+    return geom;
+  }, []);
+
+  const robotMaterials = useMemo(() => {
+    const frontMat = new THREE.MeshStandardMaterial({
+      map: robotTex,
+      transparent: true,
+      alphaTest: 0.02,
+      roughness: 0.25,
+      metalness: 0.15
+    });
+    const edgeMat = new THREE.MeshPhysicalMaterial({
+      color: 0x141820,
+      metalness: 0.85,
+      roughness: 0.2,
+      clearcoat: 0.9,
+      clearcoatRoughness: 0.1
+    });
+    const backMat = new THREE.MeshStandardMaterial({
+      color: 0x141820,
+      metalness: 0.6,
+      roughness: 0.3
+    });
+    return [frontMat, edgeMat, backMat];
+  }, [robotTex]);
+
   const rig = useRef<THREE.Group>(null);
   const robot = useRef<THREE.Mesh>(null);
   const glow = useRef<THREE.Mesh>(null);
@@ -80,7 +159,8 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
     const r = rig.current, rb = robot.current;
     if (!r || !rb || !glow.current || !shadow.current) return;
     const s = state.current;
-    const { heroP, ap, px, py } = track.current;
+    const tr = track.current;
+    const { heroP, ap, px, py } = tr;
     const t = clock.elapsedTime;
     const m = reduced ? 0 : 1;
 
@@ -94,11 +174,12 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
     // Approach: left column on desktop, top spacer on mobile.
     const approach = wide ? { x: -halfW * 0.5, y: 0, s: 1 } : { x: 0, y: halfH * 0.2, s: 0.8 };
 
-    const heroVis = 1 - smooth(0.25, 0.8, heroP);
+    // Robot only appears in Approach section (#approach / Companion), never in Landing/Hero page
+    const heroVis = 0;
     const [r0, r1, f0, f1] = wide ? [0.1, 0.3, 0.7, 0.9] : [0.05, 0.2, 0.45, 0.6];
     const apVis = ap < 0 ? 0 : smooth(r0, r1, ap) * (1 - smooth(f0, f1, ap));
-    const inApproach = apVis > heroVis;
-    s.opacity += (Math.max(heroVis, apVis) - s.opacity) * 0.1;
+    const inApproach = true;
+    s.opacity += (apVis - s.opacity) * 0.1;
 
     const a = inApproach ? approach : hero;
     const ty = a.y + (inApproach ? (0.5 - ap) * 1.4 : heroP * 1.6);
@@ -107,11 +188,22 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
     r.position.y += (ty - r.position.y) * k;
     r.scale.setScalar(r.scale.x + (a.s - r.scale.x) * k);
 
+    // Inertial drag decay
+    if (!tr.isDragging) {
+      tr.targetDragRotX *= 0.94;
+      tr.targetDragRotY *= 0.94;
+    }
+    tr.dragRotX += (tr.targetDragRotX - tr.dragRotX) * 0.12;
+    tr.dragRotY += (tr.targetDragRotY - tr.dragRotY) * 0.12;
+
     s.tiltX += (py * 0.18 - s.tiltX) * 0.06;
     s.tiltY += (px * 0.35 - s.tiltY) * 0.06;
-    rb.rotation.y = s.tiltY + Math.sin(t * 0.6) * 0.08 * m + (inApproach ? (ap - 0.5) * 0.6 : heroP * 0.8);
-    rb.rotation.x = -s.tiltX;
+
+    // Full 3D rotation combining drag interaction, mouse tracking, and subtle idle drift
+    rb.rotation.y = tr.dragRotY + s.tiltY + Math.sin(t * 0.6) * 0.08 * m + (inApproach ? (ap - 0.5) * 0.6 : heroP * 0.8);
+    rb.rotation.x = tr.dragRotX - s.tiltX;
     rb.position.y = Math.sin(t * 1.1) * 0.08 * m;
+
     shadow.current.scale.x = 1 - rb.position.y * 0.8;
     glow.current.position.set(px * 0.3, py * 0.2, -0.8);
 
@@ -123,7 +215,9 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
       g.position.set(x * side + px * 0.25 * depth, y + py * 0.15 * depth, z);
     });
 
-    (rb.material as THREE.MeshBasicMaterial).opacity = s.opacity;
+    robotMaterials.forEach((mat) => {
+      mat.opacity = s.opacity;
+    });
     (glow.current.material as THREE.MeshBasicMaterial).opacity = s.opacity * 0.9;
     (shadow.current.material as THREE.MeshBasicMaterial).opacity = s.opacity;
     smileMat.opacity = s.opacity;
@@ -140,11 +234,9 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
         <planeGeometry args={[2.6, 2.6]} />
         <meshBasicMaterial map={shadowTex} transparent depthWrite={false} />
       </mesh>
-      {/* robot.png is 796 x 1024 */}
-      <mesh ref={robot}>
-        <planeGeometry args={[2.4, 3.088]} />
-        <meshBasicMaterial map={robotTex} transparent alphaTest={0.02} side={THREE.DoubleSide} />
-      </mesh>
+
+      {/* 3D Extruded Beveled Character Slab with Drag Rotation */}
+      <mesh ref={robot} geometry={robot3DGeom} material={robotMaterials} castShadow receiveShadow />
 
       {SMILES.map(([, , , scale], i) => (
         <group key={i} ref={(g) => { smiles.current[i] = g; }}>
@@ -164,8 +256,19 @@ function Rig({ track, reduced }: { track: React.RefObject<Track>; reduced: boole
 }
 
 export default function RobotScene() {
-  const track = useRef<Track>({ heroP: 0, ap: -1, px: 0, py: 0 });
-  const reduced = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
+  const track = useRef<Track>({
+    heroP: 0,
+    ap: -1,
+    px: 0,
+    py: 0,
+    dragRotX: 0,
+    dragRotY: 0,
+    targetDragRotX: 0,
+    targetDragRotY: 0,
+    isDragging: false
+  });
+  const reduced = useMemo(() => typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
+  const dragStart = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const onScroll = () => {
@@ -180,32 +283,60 @@ export default function RobotScene() {
         track.current.ap = (window.innerHeight - r.top) / (window.innerHeight + r.height);
       }
     };
-    const onPointer = (e: PointerEvent) => {
+
+    const onPointerMove = (e: PointerEvent) => {
       track.current.px = (e.clientX / window.innerWidth) * 2 - 1;
       track.current.py = -((e.clientY / window.innerHeight) * 2 - 1);
+
+      if (track.current.isDragging) {
+        const dx = e.clientX - dragStart.current.x;
+        const dy = e.clientY - dragStart.current.y;
+        dragStart.current = { x: e.clientX, y: e.clientY };
+
+        track.current.targetDragRotY += dx * 0.008;
+        track.current.targetDragRotX += dy * 0.008;
+        // Limit pitch tilt
+        track.current.targetDragRotX = Math.max(-0.6, Math.min(0.6, track.current.targetDragRotX));
+      }
     };
+
+    const onPointerDown = (e: PointerEvent) => {
+      // Don't capture on links or buttons
+      if ((e.target as HTMLElement).closest('a, button, input')) return;
+      track.current.isDragging = true;
+      dragStart.current = { x: e.clientX, y: e.clientY };
+    };
+
+    const onPointerUp = () => {
+      track.current.isDragging = false;
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('pointermove', onPointer, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerdown', onPointerDown, { passive: true });
+    window.addEventListener('pointerup', onPointerUp, { passive: true });
     onScroll();
+
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('pointermove', onPointer);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointerup', onPointerUp);
     };
   }, []);
 
   return (
     <Canvas
-      flat
       dpr={[1, 2]}
       camera={{ fov: 35, position: [0, 0, 8], near: 0.1, far: 100 }}
       gl={{ antialias: true, alpha: true }}
       style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}
       aria-hidden="true"
     >
-      <ambientLight intensity={1.3} />
-      <directionalLight position={[3, 4, 5]} intensity={2.2} />
-      <directionalLight position={[-4, 1, -2]} intensity={2.5} color={LIME} />
-      {/* Studio reflections generated locally — no HDR download */}
+      <ambientLight intensity={1.4} />
+      <directionalLight position={[3, 4, 5]} intensity={2.4} />
+      <directionalLight position={[-4, 1, -2]} intensity={2.6} color={LIME} />
+      {/* Studio reflections for realistic bevel highlights */}
       <Environment resolution={256}>
         <Lightformer intensity={3} position={[0, 4, 2]} scale={[8, 2, 1]} />
         <Lightformer intensity={2} position={[-5, 0, 3]} scale={[2, 6, 1]} />

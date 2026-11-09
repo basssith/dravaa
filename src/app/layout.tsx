@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Syne } from 'next/font/google';
 import type { ReactNode } from 'react';
+import { CleanMinimalBackground } from '@/components/CleanMinimalBackground';
 import { Cursor } from '@/components/Cursor';
 import { Footer } from '@/components/Footer';
+import { GlassFluidCanvas } from '@/components/GlassFluidCanvas';
 import { Header } from '@/components/Header';
 import { Menu } from '@/components/Menu';
 import { Preloader } from '@/components/Preloader';
@@ -42,7 +44,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <UIProvider>
           <Preloader />
+          <CleanMinimalBackground />
           <Cursor />
+          <GlassFluidCanvas />
           <Header />
           <Menu />
           <main id="main" className="relative z-1">

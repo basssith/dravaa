@@ -24,9 +24,9 @@ export function Arrow({ className }: { className?: string }) {
 }
 
 /** Lime circle with an arrow, used inside pill buttons. */
-export function ArrowDot() {
+export function ArrowDot({ className }: { className?: string }) {
   return (
-    <span className="-mr-3 grid size-7 place-items-center rounded-full bg-accent text-ink">
+    <span className={cn('-mr-3 grid size-7 place-items-center rounded-full bg-accent text-ink transition-colors duration-300', className)}>
       <Arrow />
     </span>
   );

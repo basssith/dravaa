@@ -61,10 +61,16 @@ export function Footer() {
 
         <div
           aria-hidden="true"
-          className="mt-6 flex translate-y-[0.1em] items-end gap-[2.5vw] font-display text-[clamp(5.5rem,24vw,26rem)] leading-[0.76] font-extrabold tracking-[-0.06em]"
+          className="pt-10 pb-8 flex items-baseline gap-[2.5vw] font-display text-[clamp(4.2rem,17.5vw,20rem)] leading-[0.8] font-extrabold tracking-[-0.04em] overflow-hidden w-full pr-4"
         >
-          <Smile className="w-[0.6em] flex-none fill-accent" />
-          <span>drava</span>
+          <Smile className="w-[0.56em] flex-none fill-accent self-center" />
+          <span className="flex-1 flex justify-between tracking-[-0.02em] select-none">
+            <span>d</span>
+            <span>r</span>
+            <span>a</span>
+            <span>v</span>
+            <span className="mr-2">a</span>
+          </span>
         </div>
       </div>
     </footer>

@@ -33,14 +33,50 @@ export function ScrollEffects() {
       });
 
       gsap.utils.toArray<HTMLElement>('[data-reveal]').forEach((el) => {
-        gsap.from(el, { y: 60, opacity: 0, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 92%', once: true } });
+        gsap.from(el, {
+          y: 70,
+          opacity: 0,
+          duration: 1.2,
+          ease: 'expo.out',
+          scrollTrigger: { trigger: el, start: 'top 92%', once: true }
+        });
+      });
+
+      // Staggered smooth parallax scrolling on application cards
+      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el, index) => {
+        const offset = index % 2 === 1 ? -40 : 40;
+        gsap.fromTo(
+          el,
+          { y: offset },
+          {
+            y: -offset,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.2
+            }
+          }
+        );
       });
 
       gsap.utils.toArray<HTMLElement>('[data-words]').forEach((el) => {
-        gsap.fromTo(el.querySelectorAll('.w'), { opacity: 0.12 }, {
-          opacity: 1, stagger: 0.1, ease: 'none',
-          scrollTrigger: { trigger: el, start: 'top 80%', end: 'bottom 55%', scrub: true }
-        });
+        gsap.fromTo(
+          el.querySelectorAll('.w'),
+          { opacity: 0.12 },
+          {
+            opacity: 1,
+            stagger: 0.1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: el,
+              start: 'top 70%',
+              end: 'bottom 45%',
+              scrub: 1
+            }
+          }
+        );
       });
 
       gsap.utils.toArray<HTMLElement>('[data-count]').forEach((el) => {

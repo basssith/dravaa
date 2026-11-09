@@ -50,8 +50,8 @@
   --text-statement--line-height: 1.06;
   --text-h2: clamp(2.25rem, 0.7rem + 6.6vw, 7rem);             /* 36→112 section titles */
   --text-h2--line-height: 0.9;
-  --text-h1: clamp(2.5rem, 0.7rem + 8.25vw, 9.25rem);          /* 42→148 page hero */
-  --text-h1--line-height: 0.9;
+  --text-h1: clamp(2.5rem, 0.8rem + 7.5vw, 9rem);
+  --text-h1--line-height: 0.92;
   --text-mega: clamp(4rem, 1.5rem + 11vw, 13.5rem);            /* 64→216 footer CTA, stats, app title */
   --text-mega--line-height: 0.85;
 
@@ -245,6 +245,52 @@
   padding: 0 0.1em;
   border-radius: 0.1em;
   background: var(--color-accent);
+}
+
+@keyframes shockTremor {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3px, 2px); }
+  50% { transform: translate(3px, -2px); }
+  75% { transform: translate(-2px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes card-3d-float {
+  0% {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1.03, 1.03, 1.03);
+    filter: blur(2.5px);
+  }
+  25% {
+    transform: perspective(1000px) rotateX(4deg) rotateY(-5deg) translate3d(-3px, -2px, 12px) scale3d(1.04, 1.04, 1.04);
+    filter: blur(1.5px);
+  }
+  50% {
+    transform: perspective(1000px) rotateX(-4deg) rotateY(5deg) translate3d(3px, 2px, 16px) scale3d(1.045, 1.045, 1.045);
+    filter: blur(0px);
+  }
+  75% {
+    transform: perspective(1000px) rotateX(2deg) rotateY(3deg) translate3d(1px, -1px, 14px) scale3d(1.04, 1.04, 1.04);
+    filter: blur(0px);
+  }
+  100% {
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg) translate3d(0, 0, 10px) scale3d(1.035, 1.035, 1.035);
+    filter: blur(0px);
+  }
+}
+
+.app-card-img {
+  image-rendering: -webkit-optimize-contrast;
+  filter: contrast(1.05) saturate(1.06) brightness(1.02);
+}
+
+.hover-blur-shake {
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-style: preserve-3d;
+  will-change: transform, filter;
+}
+
+.group:hover .hover-blur-shake {
+  animation: card-3d-float 1.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
 /* outlined display text (stroke can't use currentColor — the fill is transparent) */

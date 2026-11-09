@@ -24,7 +24,7 @@ export function Lines({ as: Tag = 'h2', className, lines, highlight, hero }: Lin
   );
 }
 
-/** Paragraph whose words light up while scrolling. Prefix a word with * to underline it in lime. */
+/** Paragraph whose words light up while scrolling. Prefix a word with * to highlight it in a lime rectangle box. */
 export function WordScrub({ text, className }: { text: string; className?: string }) {
   return (
     <p className={className} data-words>
@@ -34,7 +34,9 @@ export function WordScrub({ text, className }: { text: string; className?: strin
         return (
           <Fragment key={i}>
             {em ? (
-              <em className="w not-italic underline decoration-accent decoration-[0.14em] underline-offset-[0.08em] [text-decoration-skip-ink:none]">{w}</em>
+              <span className="w highlight text-ink font-semibold not-italic [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+                {w}
+              </span>
             ) : (
               <span className="w">{w}</span>
             )}{' '}

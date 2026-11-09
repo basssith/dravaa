@@ -1,11 +1,14 @@
 import { AppGrid } from '@/components/Apps';
+import { HandsTouchingHero } from '@/components/HandsTouchingHero';
 import { HeroCanvas } from '@/components/HeroCanvas';
+import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
 import { Marquee } from '@/components/Marquee';
 import { PageHero } from '@/components/PageHero';
 import { ReelButton } from '@/components/Reel';
 import { TransitionLink } from '@/components/TransitionLink';
 import { Lines, SectionHead, WordScrub } from '@/components/type';
+import { SeeAllButton } from '@/components/SeeAllButton';
 import { applications } from '@/lib/applications';
 import { pill } from '@/lib/ui';
 
@@ -23,58 +26,57 @@ export default function Home() {
       <PageHero
         id="hero"
         full
-        kicker="[ Drava ecosystem — 2026 ]"
-        lines={['Connecting', 'everything', 'into one', 'space.']}
-        highlight={3}
+        centered
+        lines={['Connecting everything', 'into one space.']}
+        highlight={1}
         sub="Drava unifies high-velocity workspaces, autonomous intelligence and spatial computing — built for teams where work flows effortlessly."
+        action={
+          <SeeAllButton href="/applications" text="Explore all applications" />
+        }
         cue="Scroll to explore"
+        background={<HandsTouchingHero />}
       />
 
-      <section id="intro" className="section">
-        <div className="wrap">
-          <p className="tag">[01] What we do</p>
+      <section id="intro" className="relative flex min-h-screen flex-col justify-center py-section overflow-hidden">
+        <SnakeLine variant="intro" />
+        <div className="wrap relative z-10 flex flex-col items-center text-center">
+          <p className="tag mb-4">[01] What we do</p>
           <WordScrub
-            className="t-statement mt-4 max-w-[22ch]"
-            text="*Connecting everything, designing for *clarity, bringing it all into *one *unified *space. The new era of *Drava — where work flows *effortlessly."
+            className="t-statement max-w-[24ch] mx-auto text-center"
+            text="*Connecting everything, designing for *clarity, bringing it all into *one unified *space. The new era of *Drava — where work flows *effortlessly."
           />
-          <div className="mt-block flex flex-wrap gap-3">
-            <TransitionLink href="#applications" className={pill('dark')}>
-              Explore applications
-              <ArrowDot />
-            </TransitionLink>
-            <ReelButton />
-            <TransitionLink href="#approach" className={pill()}>
-              Meet the Companion
-            </TransitionLink>
+          <div className="mt-12 flex flex-col items-center gap-3">
+            <i aria-hidden="true" className="h-10 w-0.5 animate-cue bg-accent rounded-full shadow-[0_0_8px_rgba(182,255,102,0.8)]" />
+            <span className="tag text-ink-2 font-medium tracking-widest text-[11px]">SCROLL</span>
           </div>
         </div>
       </section>
 
-      <section id="applications" className="section">
+      <section id="applications" className="section pt-block-lg">
         <div className="wrap">
-          <SectionHead
-            tag="[02] Featured applications"
-            title={['The', 'ecosystem']}
-            note="Each application solves one problem well — and shares context with the rest."
-          />
+          <header className="mb-block flex flex-col items-start gap-4">
+            <h2 className="font-display text-[clamp(2.5rem,1.8rem+2.8vw,5rem)] leading-[1.08] font-medium tracking-tight uppercase">
+              THE <span className="highlight text-ink px-3 py-0.5 rounded-[4px]">ECOSYSTEM</span>
+            </h2>
+            <p className="max-w-[58ch] text-[clamp(1rem,0.9rem+0.35vw,1.2rem)] leading-relaxed text-ink-2">
+              Each application solves one problem well — and shares context with the rest.
+            </p>
+          </header>
           <AppGrid apps={applications.slice(0, 4)} />
           <div className="mt-block-lg flex justify-center">
-            <TransitionLink href="/applications" className={pill('dark')}>
-              See all applications
-              <ArrowDot />
-            </TransitionLink>
+            <SeeAllButton href="/applications" text="SEE ALL APPLICATIONS" />
           </div>
         </div>
       </section>
 
-      <section id="approach" className="section">
+      <section id="approach" className="section relative overflow-hidden">
+        <SnakeLine variant="approach" />
         {/* 1fr (not minmax(0,1fr)) so the text column can grow to fit "COMPANION." instead of clipping it */}
-        <div className="wrap grid gap-gutter lg:grid-cols-[1fr_1fr]">
+        <div className="wrap relative z-10 grid gap-gutter lg:grid-cols-[1fr_1fr]">
           {/* the 3D robot moves into this empty column */}
           <div aria-hidden="true" className="min-h-[62vh] lg:min-h-[80vh]" />
           <div>
-            <p className="tag">[03] Approach</p>
-            <Lines className="t-h2 mt-4" lines={['Meet the', 'Drava', 'Companion.']} highlight={2} />
+            <Lines className="t-h2" lines={['Meet the', 'Drava', 'Companion.']} highlight={2} />
             <p className="t-lead mt-8">
               Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges
               applications and guides zero-friction workflows in real time.
