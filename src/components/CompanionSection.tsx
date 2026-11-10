@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SnakeLine } from '@/components/SnakeLine';
 
 const COMPANION_ITEMS = [
@@ -9,108 +9,25 @@ const COMPANION_ITEMS = [
   'Cross-application context continuity'
 ];
 
-interface Particle {
+interface Sticker {
+  id: number;
   x: number;
   y: number;
-  alpha: number;
+  rotation: number;
   scale: number;
-  rot: number;
 }
 
-/**
- * CompanionSection (4th Screen):
- * Requirements:
- * 1. Background: Solid dark/black (#0a0c0e) with precision white architectural grid overlay.
- * 2. Layout (Swapped sides):
- *    - LEFT SIDE: Main content
- *      Line 1: "MEET THE DRAVA" (white font)
- *      Line 2: "COMPANION." (WHITE font inside a full green rectangle highlight box)
- *      Subheading: Refined, compact typography underneath.
- *    - RIGHT SIDE: 3 Numbered points
- *      Numbered with normal grey font (no box around numbers).
- * 3. Interactive Cursor Smile Logo Trail:
- *    - No black enclosing box around the sticker — raw, pure green Drava Smile logo mark.
- *    - Normal prominent size (approx 36px - 44px).
- *    - Cursor trail: Whenever the cursor moves across this section (especially when moved fast),
- *      it spawns glowing green smile logos that linger smoothly and fade out organically everywhere the cursor moves!
- */
 export function CompanionSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [stickers, setStickers] = useState<Sticker[]>([]);
+  const lastPosRef = useRef<{ x: number; y: number } | null>(null);
+  const nextIdRef = useRef(0);
 
   useEffect(() => {
     const sec = sectionRef.current;
-    const canvas = canvasRef.current;
-    if (!sec || !canvas) return;
+    if (!sec) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    let width = (canvas.width = sec.offsetWidth);
-    let height = (canvas.height = sec.offsetHeight);
-
-    const onResize = () => {
-      if (!sec || !canvas) return;
-      width = canvas.width = sec.offsetWidth;
-      height = canvas.height = sec.offsetHeight;
-    };
-    window.addEventListener('resize', onResize);
-
-    const particles: Particle[] = [];
-    let lastX = -1000;
-    let lastY = -1000;
-    let animId: number;
-
-    // Draw the Drava Smile logo mark directly onto 2D canvas with high performance
-    // Smile shape coordinates normalized to 40x40
-    const drawSmile = (
-      context: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      scale: number,
-      alpha: number,
-      rotation: number
-    ) => {
-      context.save();
-      context.translate(x, y);
-      context.rotate(rotation);
-      context.scale(scale, scale);
-      context.globalAlpha = alpha;
-
-      // Radiant green glow
-      context.shadowColor = '#b6ff66';
-      context.shadowBlur = 14;
-      context.fillStyle = '#b6ff66';
-
-      // Draw Drava Smile Logo Geometry:
-      // Two square eyes + a quarter-circle curve smile
-      const s = 0.22; // scale factor
-      context.translate(-18, -18);
-
-      // Eye 1
-      context.beginPath();
-      context.roundRect(14 * s, 10 * s, 40 * s, 40 * s, 4 * s);
-      context.fill();
-
-      // Eye 2
-      context.beginPath();
-      context.roundRect(77 * s, 10 * s, 40 * s, 40 * s, 4 * s);
-      context.fill();
-
-      // Quarter-circle mouth: M118 50h40A104 104 0 0 1 54 154v-40a64 64 0 0 0 64-64z
-      context.beginPath();
-      context.moveTo(118 * s, 50 * s);
-      context.lineTo(158 * s, 50 * s);
-      context.arc(54 * s, 50 * s, 104 * s, 0, Math.PI / 2, false);
-      context.lineTo(54 * s, 114 * s);
-      context.arc(54 * s, 50 * s, 64 * s, Math.PI / 2, 0, true);
-      context.closePath();
-      context.fill();
-
-      context.restore();
-    };
-
-    const onPointerMove = (e: PointerEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       const rect = sec.getBoundingClientRect();
       if (
         e.clientX < rect.left ||
@@ -124,48 +41,36 @@ export function CompanionSection() {
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      const dist = Math.hypot(x - lastX, y - lastY);
+      const last = lastPosRef.current;
+      if (!last) {
+        lastPosRef.current = { x, y };
+        return;
+      }
 
-      // When moving (especially moving fast), spawn particles along the path
-      if (dist > 18) {
-        particles.push({
-          x,
-          y,
-          alpha: 1.0,
-          scale: 0.95 + Math.random() * 0.25,
-          rot: (Math.random() - 0.5) * 0.3
+      const dist = Math.hypot(x - last.x, y - last.y);
+
+      // Drops a sticker stamp whenever the cursor moves ~65px distance
+      if (dist >= 65) {
+        const id = ++nextIdRef.current;
+        // Random tilt between -18deg and +18deg
+        const rotation = (Math.random() - 0.5) * 36;
+        // Random subtle scale between 0.95 and 1.15
+        const scale = 0.95 + Math.random() * 0.2;
+
+        setStickers((prev) => {
+          // Keep up to 28 stickers in DOM, older ones drop off
+          const next = [...prev.slice(-27), { id, x, y, rotation, scale }];
+          return next;
         });
-        lastX = x;
-        lastY = y;
+
+        lastPosRef.current = { x, y };
       }
     };
 
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
-
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i];
-        p.alpha -= 0.016; // smooth organic fade out
-        p.scale += 0.003; // subtle expanding breath
-
-        if (p.alpha <= 0) {
-          particles.splice(i, 1);
-        } else {
-          drawSmile(ctx, p.x, p.y, p.scale, p.alpha, p.rot);
-        }
-      }
-
-      animId = requestAnimationFrame(render);
-    };
-
-    animId = requestAnimationFrame(render);
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
 
     return () => {
-      cancelAnimationFrame(animId);
-      window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('pointermove', handlePointerMove);
     };
   }, []);
 
@@ -173,7 +78,7 @@ export function CompanionSection() {
     <section
       ref={sectionRef}
       id="approach"
-      className="relative z-10 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden transition-colors duration-700"
+      className="relative z-20 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-25px_60px_rgba(0,0,0,0.45)] -mt-10 sm:-mt-14"
     >
       {/* 1. Precision WHITE architectural grid on black background */}
       <div
@@ -207,30 +112,57 @@ export function CompanionSection() {
       {/* 4. Animated Green Snake Line */}
       <SnakeLine variant="approach" />
 
-      {/* 5. Interactive Green Smile Cursor Canvas (Particles trail on fast movement without any black shape) */}
-      <canvas
-        ref={canvasRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-20 h-full w-full select-none"
-      />
+      {/* 5. Cursor Interactive Smile Stickers stamped along cursor path (as in reference video) */}
+      <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden select-none">
+        {stickers.map((s) => (
+          <div
+            key={s.id}
+            className="absolute transition-transform duration-200 ease-out animate-in fade-in zoom-in-75 fill-mode-forwards"
+            style={{
+              left: `${s.x}px`,
+              top: `${s.y}px`,
+              transform: `translate(-50%, -50%) rotate(${s.rotation}deg) scale(${s.scale})`
+            }}
+          >
+            <svg
+              width="54"
+              height="54"
+              viewBox="0 0 200 200"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
+            >
+              {/* Eye 1 */}
+              <rect x="25" y="16" width="46" height="46" rx="6" fill="#b6ff66" />
+              {/* Eye 2 */}
+              <rect x="129" y="16" width="46" height="46" rx="6" fill="#b6ff66" />
+              {/* Smile Mouth: quarter-circle arc curve */}
+              <path
+                d="M118 50h40A104 104 0 0 1 54 154v-40a64 64 0 0 0 64-64z"
+                fill="#b6ff66"
+              />
+            </svg>
+          </div>
+        ))}
+      </div>
 
       {/* --- MAIN CONTENT GRID (SWAPPED SIDES) --- */}
-      <div className="wrap relative z-10 flex min-h-[75vh] flex-col justify-center">
+      <div className="wrap relative z-20 flex min-h-[75vh] flex-col justify-center">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           
           {/* --- LEFT SIDE: TWO-LINE HEADLINE & REDUCED SUBHEADING ---
               Line 1: MEET THE DRAVA (white)
-              Line 2: COMPANION. (WHITE font inside a FULL RECTANGLE green box)
+              Line 2: COMPANION. (WHITE font inside a clean, solid, full green rectangle with NO shadow)
           */}
           <div className="lg:col-span-7 flex flex-col justify-center">
             <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold uppercase tracking-tight leading-[1.08] text-white">
               <span className="block text-white">MEET THE DRAVA</span>
-              <span className="inline-block mt-3 bg-[#b6ff66] text-white px-5 sm:px-6 py-2 rounded-[6px] shadow-[0_6px_30px_rgba(182,255,102,0.45)]">
+              <span className="inline-block mt-3 bg-[#b6ff66] text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-[6px]">
                 COMPANION.
               </span>
             </h2>
 
-            {/* Slightly reduced, refined subheading */}
+            {/* Refined subheading */}
             <p className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#a0a5b0]">
               Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges
               applications and guides zero-friction workflows in real time.
@@ -238,7 +170,7 @@ export function CompanionSection() {
           </div>
 
           {/* --- RIGHT SIDE: 3 NUMBERED POINTS ---
-              Normal grey font numbers (no box around numbers), high-contrast text
+              Normal grey font numbers (no box around numbers)
           */}
           <div className="lg:col-span-5 flex flex-col justify-center">
             <ol className="divide-y divide-white/10 border-t border-b border-white/10">
