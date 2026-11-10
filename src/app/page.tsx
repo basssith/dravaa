@@ -22,8 +22,6 @@ const COMPANION = [
 export default function Home() {
   return (
     <>
-      <HeroCanvas />
-
       <PageHero
         id="hero"
         full
