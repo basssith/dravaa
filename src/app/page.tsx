@@ -1,4 +1,5 @@
 import { AppGrid } from '@/components/Apps';
+import { CompanionSection } from '@/components/CompanionSection';
 import { HandsTouchingHero } from '@/components/HandsTouchingHero';
 import { HeroCanvas } from '@/components/HeroCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
@@ -65,29 +66,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="approach" className="section relative overflow-hidden">
-        <SnakeLine variant="approach" />
-        {/* 1fr (not minmax(0,1fr)) so the text column can grow to fit "COMPANION." instead of clipping it */}
-        <div className="wrap relative z-10 grid gap-gutter lg:grid-cols-[1fr_1fr]">
-          {/* the 3D robot moves into this empty column */}
-          <div aria-hidden="true" className="min-h-[62vh] lg:min-h-[80vh]" />
-          <div>
-            <Lines className="t-h2" lines={['Meet the', 'Drava', 'Companion.']} highlight={2} />
-            <p className="t-lead mt-8">
-              Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges
-              applications and guides zero-friction workflows in real time.
-            </p>
-            <ol className="mt-block border-t border-line">
-              {COMPANION.map((item, i) => (
-                <li key={item} data-reveal className="t-h4 grid grid-cols-[4.5rem_1fr] gap-4 border-b border-line py-6">
-                  <span className="tag pt-[0.6em]">0{i + 1}</span>
-                  {item}
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
+      <CompanionSection />
 
       <Marquee
         bordered
