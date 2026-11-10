@@ -12,7 +12,8 @@ export function CompanionSection() {
   return (
     <section
       id="approach"
-      className="relative z-20 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-25px_60px_rgba(0,0,0,0.45)] -mt-10 sm:-mt-14"
+      data-companion-card
+      className="relative z-30 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-30px_70px_rgba(0,0,0,0.6)]"
     >
       {/* 1. Precision WHITE architectural grid on black background */}
       <div
@@ -52,12 +53,12 @@ export function CompanionSection() {
           
           {/* --- LEFT SIDE: TWO-LINE HEADLINE & REDUCED SUBHEADING ---
               Line 1: MEET THE DRAVA (white)
-              Line 2: COMPANION. (WHITE font inside a clean, solid, full green rectangle with NO shadow)
+              Line 2: COMPANION. (BLACK font inside full solid green rectangle covering entire word)
           */}
           <div className="lg:col-span-7 flex flex-col justify-center">
             <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold uppercase tracking-tight leading-[1.08] text-white">
               <span className="block text-white">MEET THE DRAVA</span>
-              <span className="inline-block mt-3 bg-[#b6ff66] text-white px-4 sm:px-6 py-1.5 sm:py-2 rounded-[6px]">
+              <span className="inline-block mt-3 bg-[#b6ff66] text-[#0d0d0d] font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-[6px] tracking-tight">
                 COMPANION.
               </span>
             </h2>

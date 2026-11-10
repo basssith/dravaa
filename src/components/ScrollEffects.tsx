@@ -12,6 +12,7 @@ import { useUI } from './UIProvider';
  *   [data-reveal]              fades up when scrolled into view
  *   [data-words] .w            words light up as you scroll through
  *   [data-count]               counts up from 00 when scrolled into view
+ *   [data-companion-card]      card slide-up elevation as 3rd section goes down
  * Re-runs (and cleans up) on every route change.
  */
 export function ScrollEffects() {
@@ -60,6 +61,42 @@ export function ScrollEffects() {
           }
         );
       });
+
+      // 4th Screen Card Slide-Up Animation:
+      // When scrolling from #applications (3rd screen) into #approach (4th screen),
+      // the 4th screen comes up smoothly like an elevated card over the 3rd screen.
+      const companionCard = document.querySelector<HTMLElement>('[data-companion-card]');
+      const appsSection = document.getElementById('applications');
+
+      if (companionCard && appsSection) {
+        gsap.fromTo(
+          companionCard,
+          { yPercent: 18 },
+          {
+            yPercent: 0,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: companionCard,
+              start: 'top bottom',
+              end: 'top 15%',
+              scrub: 1
+            }
+          }
+        );
+
+        // Subtle recessed sink/depth on 3rd screen as 4th screen card slides up
+        gsap.to(appsSection, {
+          scale: 0.96,
+          opacity: 0.82,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: companionCard,
+            start: 'top bottom',
+            end: 'top 20%',
+            scrub: 1
+          }
+        });
+      }
 
       gsap.utils.toArray<HTMLElement>('[data-words]').forEach((el) => {
         gsap.fromTo(
