@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { SnakeLine } from '@/components/SnakeLine';
-import { Smile } from '@/components/icons';
 
 const COMPANION_ITEMS = [
   'Spatial telemetry & multi-modal perception',
@@ -10,86 +9,163 @@ const COMPANION_ITEMS = [
   'Cross-application context continuity'
 ];
 
+interface Particle {
+  x: number;
+  y: number;
+  alpha: number;
+  scale: number;
+  rot: number;
+}
+
 /**
  * CompanionSection (4th Screen):
  * Requirements:
- * 1. Background transition:
- *    - Scrolling into screen 4 transitions into a solid dark/black canvas (#0a0c0e) with a precision WHITE grid overlay (inverted technical grid).
- *    - Screen 4 glides up smoothly as you scroll into it.
- * 2. Layout & Typography:
- *    - Removed "[02] APPROACH".
- *    - 3 numbered points on the LEFT side with normal grey numbers (no box around the numbers).
- *    - "MEET THE DRAVA COMPANION." on the RIGHT side in exactly two lines:
- *      Line 1: "MEET THE DRAVA"
- *      Line 2: "COMPANION." with a bright green rectangle highlight box around "COMPANION.".
- *    - Reduced subheading size underneath the headline.
- * 3. Interactive Cursor Smile Logo:
- *    - On this 4th screen ONLY, a small green smile sticker/logo follows the cursor position and smoothly appears / disappears as the cursor moves over this section.
+ * 1. Background: Solid dark/black (#0a0c0e) with precision white architectural grid overlay.
+ * 2. Layout (Swapped sides):
+ *    - LEFT SIDE: Main content
+ *      Line 1: "MEET THE DRAVA" (white font)
+ *      Line 2: "COMPANION." (WHITE font inside a full green rectangle highlight box)
+ *      Subheading: Refined, compact typography underneath.
+ *    - RIGHT SIDE: 3 Numbered points
+ *      Numbered with normal grey font (no box around numbers).
+ * 3. Interactive Cursor Smile Logo Trail:
+ *    - No black enclosing box around the sticker — raw, pure green Drava Smile logo mark.
+ *    - Normal prominent size (approx 36px - 44px).
+ *    - Cursor trail: Whenever the cursor moves across this section (especially when moved fast),
+ *      it spawns glowing green smile logos that linger smoothly and fade out organically everywhere the cursor moves!
  */
 export function CompanionSection() {
   const sectionRef = useRef<HTMLElement>(null);
-  const smileCursorRef = useRef<HTMLDivElement>(null);
-  const [cursorVisible, setCursorVisible] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const sec = sectionRef.current;
-    const sticker = smileCursorRef.current;
-    if (!sec || !sticker) return;
+    const canvas = canvasRef.current;
+    if (!sec || !canvas) return;
 
-    let targetX = -100;
-    let targetY = -100;
-    let currX = -100;
-    let currY = -100;
-    let rafId: number;
-    let idleTimer: NodeJS.Timeout;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = (canvas.width = sec.offsetWidth);
+    let height = (canvas.height = sec.offsetHeight);
+
+    const onResize = () => {
+      if (!sec || !canvas) return;
+      width = canvas.width = sec.offsetWidth;
+      height = canvas.height = sec.offsetHeight;
+    };
+    window.addEventListener('resize', onResize);
+
+    const particles: Particle[] = [];
+    let lastX = -1000;
+    let lastY = -1000;
+    let animId: number;
+
+    // Draw the Drava Smile logo mark directly onto 2D canvas with high performance
+    // Smile shape coordinates normalized to 40x40
+    const drawSmile = (
+      context: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      scale: number,
+      alpha: number,
+      rotation: number
+    ) => {
+      context.save();
+      context.translate(x, y);
+      context.rotate(rotation);
+      context.scale(scale, scale);
+      context.globalAlpha = alpha;
+
+      // Radiant green glow
+      context.shadowColor = '#b6ff66';
+      context.shadowBlur = 14;
+      context.fillStyle = '#b6ff66';
+
+      // Draw Drava Smile Logo Geometry:
+      // Two square eyes + a quarter-circle curve smile
+      const s = 0.22; // scale factor
+      context.translate(-18, -18);
+
+      // Eye 1
+      context.beginPath();
+      context.roundRect(14 * s, 10 * s, 40 * s, 40 * s, 4 * s);
+      context.fill();
+
+      // Eye 2
+      context.beginPath();
+      context.roundRect(77 * s, 10 * s, 40 * s, 40 * s, 4 * s);
+      context.fill();
+
+      // Quarter-circle mouth: M118 50h40A104 104 0 0 1 54 154v-40a64 64 0 0 0 64-64z
+      context.beginPath();
+      context.moveTo(118 * s, 50 * s);
+      context.lineTo(158 * s, 50 * s);
+      context.arc(54 * s, 50 * s, 104 * s, 0, Math.PI / 2, false);
+      context.lineTo(54 * s, 114 * s);
+      context.arc(54 * s, 50 * s, 64 * s, Math.PI / 2, 0, true);
+      context.closePath();
+      context.fill();
+
+      context.restore();
+    };
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = sec.getBoundingClientRect();
-      // Check if cursor is inside this section
       if (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom
       ) {
-        targetX = e.clientX;
-        targetY = e.clientY;
-        setCursorVisible(true);
-
-        clearTimeout(idleTimer);
-        // Gently fade out after 1.8s of inactivity, or reappears on motion
-        idleTimer = setTimeout(() => {
-          setCursorVisible(false);
-        }, 1800);
-      } else {
-        setCursorVisible(false);
+        return;
       }
-    };
 
-    const onPointerLeave = () => {
-      setCursorVisible(false);
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const dist = Math.hypot(x - lastX, y - lastY);
+
+      // When moving (especially moving fast), spawn particles along the path
+      if (dist > 18) {
+        particles.push({
+          x,
+          y,
+          alpha: 1.0,
+          scale: 0.95 + Math.random() * 0.25,
+          rot: (Math.random() - 0.5) * 0.3
+        });
+        lastX = x;
+        lastY = y;
+      }
     };
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    sec.addEventListener('pointerleave', onPointerLeave);
 
-    const loop = () => {
-      currX += (targetX - currX) * 0.18;
-      currY += (targetY - currY) * 0.18;
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
 
-      if (sticker) {
-        sticker.style.transform = `translate3d(${currX}px, ${currY}px, 0) translate(-50%, -50%)`;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.alpha -= 0.016; // smooth organic fade out
+        p.scale += 0.003; // subtle expanding breath
+
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+        } else {
+          drawSmile(ctx, p.x, p.y, p.scale, p.alpha, p.rot);
+        }
       }
-      rafId = requestAnimationFrame(loop);
+
+      animId = requestAnimationFrame(render);
     };
 
-    rafId = requestAnimationFrame(loop);
+    animId = requestAnimationFrame(render);
 
     return () => {
-      cancelAnimationFrame(rafId);
-      clearTimeout(idleTimer);
+      cancelAnimationFrame(animId);
       window.removeEventListener('pointermove', onPointerMove);
-      sec.removeEventListener('pointerleave', onPointerLeave);
+      window.removeEventListener('resize', onResize);
     };
   }, []);
 
@@ -97,7 +173,7 @@ export function CompanionSection() {
     <section
       ref={sectionRef}
       id="approach"
-      className="relative z-10 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-32 overflow-hidden transition-colors duration-700"
+      className="relative z-10 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden transition-colors duration-700"
     >
       {/* 1. Precision WHITE architectural grid on black background */}
       <div
@@ -131,27 +207,40 @@ export function CompanionSection() {
       {/* 4. Animated Green Snake Line */}
       <SnakeLine variant="approach" />
 
-      {/* 5. Interactive Cursor Green Smile Logo Sticker (Follows pointer and fades in/out) */}
-      <div
-        ref={smileCursorRef}
+      {/* 5. Interactive Green Smile Cursor Canvas (Particles trail on fast movement without any black shape) */}
+      <canvas
+        ref={canvasRef}
         aria-hidden="true"
-        className={`pointer-events-none fixed top-0 left-0 z-50 transition-opacity duration-300 ease-out will-change-transform ${
-          cursorVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-        }`}
-      >
-        <div className="relative grid place-items-center size-10 rounded-2xl bg-[#0a0c0e]/90 border border-[#b6ff66]/70 shadow-[0_0_20px_rgba(182,255,102,0.65)] backdrop-blur-sm p-1.5">
-          <Smile className="size-full fill-accent drop-shadow-[0_0_8px_rgba(182,255,102,0.9)]" />
-        </div>
-      </div>
+        className="pointer-events-none absolute inset-0 z-20 h-full w-full select-none"
+      />
 
-      {/* --- MAIN CONTENT GRID --- */}
+      {/* --- MAIN CONTENT GRID (SWAPPED SIDES) --- */}
       <div className="wrap relative z-10 flex min-h-[75vh] flex-col justify-center">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           
-          {/* --- LEFT SIDE: 3 NUMBERED POINTS ---
-              No box around numbers, clean grey numerals, high-contrast text
+          {/* --- LEFT SIDE: TWO-LINE HEADLINE & REDUCED SUBHEADING ---
+              Line 1: MEET THE DRAVA (white)
+              Line 2: COMPANION. (WHITE font inside a FULL RECTANGLE green box)
           */}
-          <div className="order-2 lg:order-1 lg:col-span-5 flex flex-col justify-center">
+          <div className="lg:col-span-7 flex flex-col justify-center">
+            <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold uppercase tracking-tight leading-[1.08] text-white">
+              <span className="block text-white">MEET THE DRAVA</span>
+              <span className="inline-block mt-3 bg-[#b6ff66] text-white px-5 sm:px-6 py-2 rounded-[6px] shadow-[0_6px_30px_rgba(182,255,102,0.45)]">
+                COMPANION.
+              </span>
+            </h2>
+
+            {/* Slightly reduced, refined subheading */}
+            <p className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#a0a5b0]">
+              Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges
+              applications and guides zero-friction workflows in real time.
+            </p>
+          </div>
+
+          {/* --- RIGHT SIDE: 3 NUMBERED POINTS ---
+              Normal grey font numbers (no box around numbers), high-contrast text
+          */}
+          <div className="lg:col-span-5 flex flex-col justify-center">
             <ol className="divide-y divide-white/10 border-t border-b border-white/10">
               {COMPANION_ITEMS.map((item, i) => (
                 <li
@@ -167,25 +256,6 @@ export function CompanionSection() {
                 </li>
               ))}
             </ol>
-          </div>
-
-          {/* --- RIGHT SIDE: TWO-LINE HEADLINE & REDUCED SUBHEADING ---
-              Line 1: MEET THE DRAVA
-              Line 2: COMPANION. (with bright green rectangle box)
-          */}
-          <div className="order-1 lg:order-2 lg:col-span-7 flex flex-col justify-center">
-            <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold uppercase tracking-tight leading-[1.08] text-white">
-              <span className="block">MEET THE DRAVA</span>
-              <span className="inline-block mt-2 bg-[#b6ff66] text-black px-3.5 sm:px-5 py-1 rounded-[6px] shadow-[0_4px_25px_rgba(182,255,102,0.4)]">
-                COMPANION.
-              </span>
-            </h2>
-
-            {/* Slightly reduced, refined subheading */}
-            <p className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#a0a5b0]">
-              Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges
-              applications and guides zero-friction workflows in real time.
-            </p>
           </div>
 
         </div>
