@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import { SnakeLine } from '@/components/SnakeLine';
 
 const COMPANION_ITEMS = [
@@ -9,74 +8,9 @@ const COMPANION_ITEMS = [
   'Cross-application context continuity'
 ];
 
-interface Sticker {
-  id: number;
-  x: number;
-  y: number;
-  rotation: number;
-  scale: number;
-}
-
 export function CompanionSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [stickers, setStickers] = useState<Sticker[]>([]);
-  const lastPosRef = useRef<{ x: number; y: number } | null>(null);
-  const nextIdRef = useRef(0);
-
-  useEffect(() => {
-    const sec = sectionRef.current;
-    if (!sec) return;
-
-    const handlePointerMove = (e: PointerEvent) => {
-      const rect = sec.getBoundingClientRect();
-      if (
-        e.clientX < rect.left ||
-        e.clientX > rect.right ||
-        e.clientY < rect.top ||
-        e.clientY > rect.bottom
-      ) {
-        return;
-      }
-
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      const last = lastPosRef.current;
-      if (!last) {
-        lastPosRef.current = { x, y };
-        return;
-      }
-
-      const dist = Math.hypot(x - last.x, y - last.y);
-
-      // Drops a sticker stamp whenever the cursor moves ~65px distance
-      if (dist >= 65) {
-        const id = ++nextIdRef.current;
-        // Random tilt between -18deg and +18deg
-        const rotation = (Math.random() - 0.5) * 36;
-        // Random subtle scale between 0.95 and 1.15
-        const scale = 0.95 + Math.random() * 0.2;
-
-        setStickers((prev) => {
-          // Keep up to 28 stickers in DOM, older ones drop off
-          const next = [...prev.slice(-27), { id, x, y, rotation, scale }];
-          return next;
-        });
-
-        lastPosRef.current = { x, y };
-      }
-    };
-
-    window.addEventListener('pointermove', handlePointerMove, { passive: true });
-
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-    };
-  }, []);
-
   return (
     <section
-      ref={sectionRef}
       id="approach"
       className="relative z-20 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-25px_60px_rgba(0,0,0,0.45)] -mt-10 sm:-mt-14"
     >
@@ -111,40 +45,6 @@ export function CompanionSection() {
 
       {/* 4. Animated Green Snake Line */}
       <SnakeLine variant="approach" />
-
-      {/* 5. Cursor Interactive Smile Stickers stamped along cursor path (as in reference video) */}
-      <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden select-none">
-        {stickers.map((s) => (
-          <div
-            key={s.id}
-            className="absolute transition-transform duration-200 ease-out animate-in fade-in zoom-in-75 fill-mode-forwards"
-            style={{
-              left: `${s.x}px`,
-              top: `${s.y}px`,
-              transform: `translate(-50%, -50%) rotate(${s.rotation}deg) scale(${s.scale})`
-            }}
-          >
-            <svg
-              width="54"
-              height="54"
-              viewBox="0 0 200 200"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]"
-            >
-              {/* Eye 1 */}
-              <rect x="25" y="16" width="46" height="46" rx="6" fill="#b6ff66" />
-              {/* Eye 2 */}
-              <rect x="129" y="16" width="46" height="46" rx="6" fill="#b6ff66" />
-              {/* Smile Mouth: quarter-circle arc curve */}
-              <path
-                d="M118 50h40A104 104 0 0 1 54 154v-40a64 64 0 0 0 64-64z"
-                fill="#b6ff66"
-              />
-            </svg>
-          </div>
-        ))}
-      </div>
 
       {/* --- MAIN CONTENT GRID (SWAPPED SIDES) --- */}
       <div className="wrap relative z-20 flex min-h-[75vh] flex-col justify-center">
