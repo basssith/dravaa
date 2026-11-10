@@ -32,7 +32,7 @@ export function Marquee({ items, label, reverse, slow, bordered, size = 'mega', 
   return (
     <section
       aria-label={label}
-      className={cn('relative z-1 overflow-hidden bg-bg', size === 'mega' ? 'py-block' : 'py-2', bordered && 'border-y border-line')}
+      className={cn('relative z-1 overflow-hidden bg-transparent', size === 'mega' ? 'py-block' : 'py-2', bordered && 'border-y border-line')}
     >
       <div
         aria-hidden="true"
