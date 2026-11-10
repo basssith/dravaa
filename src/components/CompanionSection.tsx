@@ -1,7 +1,5 @@
 'use client';
 
-import { SnakeLine } from '@/components/SnakeLine';
-
 const COMPANION_ITEMS = [
   'Spatial telemetry & multi-modal perception',
   'Zero-latency neural automation engine',
@@ -13,9 +11,9 @@ export function CompanionSection() {
     <section
       id="approach"
       data-companion-card
-      className="relative z-30 min-h-screen w-full bg-[#0a0c0e] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-30px_70px_rgba(0,0,0,0.6)]"
+      className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-30px_70px_rgba(0,0,0,0.6)]"
     >
-      {/* 1. Precision WHITE architectural grid on black background */}
+      {/* 1. Precision WHITE architectural grid on pure pitch black background - NO glows or colored shadows */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.16] select-none"
@@ -38,27 +36,18 @@ export function CompanionSection() {
         }}
       />
 
-      {/* 3. Subtle ambient luminous glow */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] rounded-full bg-[radial-gradient(circle,rgba(182,255,102,0.1)_0%,transparent_70%)] blur-[60px]"
-      />
-
-      {/* 4. Animated Green Snake Line */}
-      <SnakeLine variant="approach" />
-
       {/* --- MAIN CONTENT GRID (SWAPPED SIDES) --- */}
       <div className="wrap relative z-20 flex min-h-[75vh] flex-col justify-center">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           
           {/* --- LEFT SIDE: TWO-LINE HEADLINE & REDUCED SUBHEADING ---
               Line 1: MEET THE DRAVA (white)
-              Line 2: COMPANION. (BLACK font inside full solid green rectangle covering entire word)
+              Line 2: COMPANION. (BLACK font inside full solid green rectangle covering entire word, no shadow)
           */}
           <div className="lg:col-span-7 flex flex-col justify-center">
             <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold uppercase tracking-tight leading-[1.08] text-white">
               <span className="block text-white">MEET THE DRAVA</span>
-              <span className="inline-block mt-3 bg-[#b6ff66] text-[#0d0d0d] font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-[6px] tracking-tight">
+              <span className="inline-block mt-3 bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-[6px] tracking-tight">
                 COMPANION.
               </span>
             </h2>
