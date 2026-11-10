@@ -45,10 +45,6 @@ export default function Home() {
             className="t-statement max-w-[24ch] mx-auto text-center"
             text="*Connecting everything, designing for *clarity, bringing it all into *one unified *space. The new era of *Drava — where work flows *effortlessly."
           />
-          <div className="mt-12 flex flex-col items-center gap-3">
-            <i aria-hidden="true" className="h-10 w-0.5 animate-cue bg-accent rounded-full shadow-[0_0_8px_rgba(182,255,102,0.8)]" />
-            <span className="tag text-ink-2 font-medium tracking-widest text-[11px]">SCROLL</span>
-          </div>
         </div>
       </section>
 
