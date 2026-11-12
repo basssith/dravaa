@@ -24,18 +24,34 @@ export default function Home() {
   return (
     <>
       <EyeBlinkTransition />
-      <PageHero
+      <section
         id="hero"
-        full
-        lines={['The Connected Ecosystem', 'for Modern Work.']}
-        highlight={1}
-        sub="Drava unifies high-velocity workspaces, autonomous intelligence and spatial computing — built for teams where work flows effortlessly."
-        action={
-          <SeeAllButton href="/applications" text="Explore all applications" />
-        }
-        cue="Scroll to explore"
-        background={<MatrixFluidCanvas />}
-      />
+        data-hero
+        className="relative flex min-h-svh flex-col justify-end overflow-hidden px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 lg:pb-12"
+      >
+        <MatrixFluidCanvas />
+
+        {/* Bottom Left Content: just THE DRAVA with DRAVA in green rectangle box */}
+        <div className="relative z-10 mt-auto flex flex-wrap items-baseline gap-3 sm:gap-4 pb-4">
+          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight uppercase text-ink leading-none">
+            <span>THE </span>
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
+              DRAVA
+            </span>
+          </h1>
+        </div>
+
+        {/* Bottom edge scroll cue */}
+        <div className="relative z-10 flex items-center justify-between border-t border-line pt-4 lg:pt-5">
+          <p className="tag tracking-widest text-ink-2 font-mono text-xs">
+            [00] INTRO
+          </p>
+          <p className="tag flex items-center gap-3">
+            <i aria-hidden="true" className="h-7 w-px animate-cue bg-ink" />
+            Scroll to explore
+          </p>
+        </div>
+      </section>
 
       <CompanyWireframeSection />
 

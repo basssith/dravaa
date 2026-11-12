@@ -44,6 +44,13 @@ export function Header() {
       </TransitionLink>
 
       <div className="flex items-center gap-2">
+        <TransitionLink
+          href="/applications"
+          className={pill('outline', 'max-md:hidden text-xs font-semibold tracking-wider uppercase')}
+        >
+          Explore all applications
+        </TransitionLink>
+
         <TransitionLink href="#contact" className={pill('dark', 'max-sm:hidden')}>
           <span className="size-2 rounded-full bg-accent" />
           Let&apos;s talk
