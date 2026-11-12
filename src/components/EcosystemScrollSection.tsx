@@ -309,6 +309,11 @@ export function EcosystemScrollSection() {
 
                 {/* 3. CENTER-RIGHT: Product Details & Specifications */}
                 <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[340px] shrink-0 will-change-transform pointer-events-auto">
+                  {/* Product Step Number Indicator: 01 / 04 */}
+                  <div className="font-mono text-xs sm:text-sm tracking-widest text-white/60">
+                    0{i + 1} / 0{apps.length}
+                  </div>
+
                   <h3 className="font-display text-[clamp(2.2rem,2rem+1.8vw,3.6rem)] font-bold leading-none tracking-tight text-white">
                     {app.name}
                   </h3>
