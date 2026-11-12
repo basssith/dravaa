@@ -263,11 +263,8 @@ export function EcosystemScrollSection() {
         {/* RIGHT COLUMN: 40% Width Area in Initial State, Houses the Resting 01 Centered */}
         <div
           data-right-resting
-          className="hidden lg:flex w-[40%] h-full items-center justify-center select-none z-10 pointer-events-none"
+          className="hidden"
         >
-          <span className="font-display font-black text-[clamp(6rem,12vw,16rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_50px_rgba(255,255,255,0.15)]">
-            01
-          </span>
         </div>
 
         {/* FULL-SCREEN PRODUCT STAGE: Active Products on Scroll */}
