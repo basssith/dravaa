@@ -13,29 +13,6 @@ export function CompanionSection() {
       data-companion-card
       className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-30px_70px_rgba(0,0,0,0.6)]"
     >
-      {/* 1. Precision WHITE architectural grid on pure pitch black background - NO glows or colored shadows */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.16] select-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255, 255, 255, 0.9) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 1px, transparent 1px)
-          `,
-          backgroundSize: '56px 56px'
-        }}
-      />
-
-      {/* 2. White cross-dot accent points */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.25] select-none"
-        style={{
-          backgroundImage: 'radial-gradient(circle, rgba(255, 255, 255, 0.8) 1.5px, transparent 1.5px)',
-          backgroundSize: '112px 112px'
-        }}
-      />
-
       {/* --- MAIN CONTENT GRID (SWAPPED SIDES) --- */}
       <div className="wrap relative z-20 flex min-h-[75vh] flex-col justify-center">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">

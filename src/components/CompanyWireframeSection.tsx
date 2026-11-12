@@ -419,19 +419,6 @@ export function CompanyWireframeSection() {
         <canvas ref={canvasRef} className="block h-full w-full" />
       </div>
 
-      {/* Precision architectural dark grid & cross dots overlay */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-1 opacity-[0.14] select-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(255, 255, 255, 0.8) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 1px, transparent 1px)
-          `,
-          backgroundSize: '64px 64px'
-        }}
-      />
-
       {/* Content wrapper with stepped diagonal layout: Left top -> Center -> Right bottom */}
       <div
         ref={textWrapperRef}
