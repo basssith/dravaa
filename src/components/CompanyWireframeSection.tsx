@@ -358,8 +358,10 @@ export function CompanyWireframeSection() {
       ctx.textBaseline = 'middle';
 
       // Wireframe binary points:
-      // In the beginning (morphFactor = 0), digits are prominent (~20px-24px) matching the hero stream.
-      // As they stick into the 3D room wireframe (morphFactor -> 1), they shrink down smoothly to a delicate, small size (~8px-11px).
+      // While in the free stream / transition (morphFactor < 0.65), maintain the exact same size as the landing page (~20px-24px).
+      // Only once the room wireframe forms and locks into place (morphFactor > 0.65 -> 1.0) do they transition down to small size (~9.5px).
+      const roomLockFactor = Math.min(1, Math.max(0, (morphFactor - 0.65) / 0.35));
+
       particles.forEach((pt) => {
         if (morphFactor < 0.95) {
           pt.flipTimer++;
@@ -378,18 +380,17 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          // Dynamic scale interpolation:
-          // morphFactor 0 (floating / beginning) -> base ~20px (matching hero Matrix digits)
-          // morphFactor 1 (stuck to wireframe)   -> base ~9.5px (small, refined, decongested)
-          const baseSize = 20 * (1 - morphFactor) + 9.5 * morphFactor;
-          const minSize = Math.round(8 * (1 - morphFactor) + 8 * morphFactor);
-          const maxSize = Math.round(24 * (1 - morphFactor) + 11 * morphFactor);
+          // Keep identical landing page size (~20px-22px) throughout the whole initial stream transition,
+          // then smoothly shrink to small (~9.5px) ONLY after the room wireframe forms.
+          const baseSize = 21 * (1 - roomLockFactor) + 9.5 * roomLockFactor;
+          const minSize = Math.round(16 * (1 - roomLockFactor) + 8 * roomLockFactor);
+          const maxSize = Math.round(25 * (1 - roomLockFactor) + 11 * roomLockFactor);
           const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
           
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
           // Refined contrast: clearly visible but subtle and non-congested
-          const depthAlpha = Math.max(0.25, Math.min(0.9, 2.4 / dist));
+          const depthAlpha = Math.max(0.3, Math.min(0.95, 2.4 / dist));
           ctx.fillStyle = pt.isBright
             ? `rgba(182, 255, 102, ${0.92 * depthAlpha})`
             : `rgba(225, 235, 245, ${0.72 * depthAlpha})`;
@@ -397,7 +398,7 @@ export function CompanyWireframeSection() {
         }
       });
 
-      // Full-screen ambient binary numbers: Start at hero size (~20px) and smoothly shrink/fade
+      // Full-screen ambient binary numbers: Stay full landing page size (20px-24px) during the stream
       if (morphFactor < 0.8) {
         const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
         freeParticles.forEach((fp) => {
@@ -406,8 +407,7 @@ export function CompanyWireframeSection() {
 
           const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
           if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-            const baseSize = 20 * (1 - morphFactor) + 10 * morphFactor;
-            const fontSize = Math.max(9, Math.min(22, Math.round(baseSize * (2.6 / dist))));
+            const fontSize = Math.max(16, Math.min(24, Math.round(21 * (2.6 / dist))));
             ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
             ctx.fillStyle = fp.isGreen
               ? `rgba(182, 255, 102, ${0.85 * ambientAlpha})`
