@@ -246,19 +246,19 @@ export function EcosystemScrollSection() {
               data-product-slide
               className="absolute inset-0 flex items-center justify-center p-4 sm:p-8 lg:p-12 will-change-transform"
             >
-              {/* Product Layout: Full Screen Centered Layout (Number + Terminal Monitor Image + Details + Full Height Vertical Divider) */}
-              <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-6xl">
+              {/* Product Layout: Full Screen Centered Layout (Number + Horizontal Screen Image + Details + Full Height Vertical Divider) */}
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full max-w-7xl">
                 
                 {/* 1. NUMBER INDICATOR (White color) */}
                 <div data-flow-num className="flex flex-col items-center lg:items-start select-none shrink-0 will-change-transform">
-                  <span className="font-display font-black text-[clamp(5rem,9vw,13rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]">
+                  <span className="font-display font-black text-[clamp(4.5rem,7vw,10.5rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]">
                     0{i + 1}
                   </span>
                 </div>
 
-                {/* 2. CENTER: Terminal Monitor Screen */}
+                {/* 2. CENTER: Horizontal Screen Monitor */}
                 <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform pointer-events-auto">
-                  <div className="relative aspect-[9/15] w-[220px] sm:w-[250px] xl:w-[280px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden p-3.5 flex flex-col justify-between shadow-[0_0_40px_rgba(255,255,255,0.05)]">
+                  <div className="relative aspect-[16/10] w-[340px] sm:w-[460px] md:w-[540px] lg:w-[480px] xl:w-[560px] 2xl:w-[620px] max-h-[60vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden p-3.5 flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)]">
                     <TransitionLink
                       href={`/applications/${slugOf(app)}`}
                       className="group/img relative flex-1 w-full rounded-lg overflow-hidden bg-black/60 block cursor-pointer"
@@ -269,7 +269,7 @@ export function EcosystemScrollSection() {
                         alt={app.name}
                         fill
                         quality={95}
-                        className="object-cover transition-transform duration-700 group-hover/img:scale-105"
+                        className="object-cover object-center transition-transform duration-700 group-hover/img:scale-105"
                       />
 
                       {/* Hover Overlay with "View" Button */}
@@ -302,7 +302,7 @@ export function EcosystemScrollSection() {
                 </div>
 
                 {/* 3. CENTER-RIGHT: Product Details & Specifications */}
-                <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[340px] shrink-0 will-change-transform pointer-events-auto">
+                <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[320px] lg:max-w-[340px] shrink-0 will-change-transform pointer-events-auto">
                   {/* Product Step Number Indicator: 01 / 04 */}
                   <div className="font-mono text-xs sm:text-sm tracking-widest text-white/60">
                     0{i + 1} / 0{apps.length}
