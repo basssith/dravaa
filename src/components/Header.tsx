@@ -32,7 +32,7 @@ export function Header() {
       className={cn(
         'fixed inset-x-0 top-0 z-60 flex h-header items-center justify-between px-gutter transition-[transform,background-color,color] duration-500 ease-expo',
         hidden && !menuOpen && '-translate-y-[110%]',
-        scrolled && !menuOpen && 'bg-bg/80 backdrop-blur-md',
+        scrolled && !menuOpen && 'bg-black/80 backdrop-blur-md border-b border-white/5',
         onDark && 'text-paper'
       )}
     >
