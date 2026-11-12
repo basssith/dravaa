@@ -1,5 +1,6 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
+import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
 import { Marquee } from '@/components/Marquee';
@@ -30,6 +31,7 @@ export default function Home() {
           <SeeAllButton href="/applications" text="Explore all applications" />
         }
         cue="Scroll to explore"
+        background={<MatrixFluidCanvas />}
       />
 
       <section id="intro" className="relative flex min-h-screen flex-col justify-center py-section overflow-hidden">
