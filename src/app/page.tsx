@@ -1,6 +1,7 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
 import { CompanyWireframeSection } from '@/components/CompanyWireframeSection';
+import { EcosystemScrollSection } from '@/components/EcosystemScrollSection';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
@@ -53,22 +54,7 @@ export default function Home() {
 
       <CompanyWireframeSection />
 
-      <section id="applications" className="section pt-block-lg">
-        <div className="wrap">
-          <header className="mb-block flex flex-col items-start gap-4">
-            <h2 className="font-display text-[clamp(2.5rem,1.8rem+2.8vw,5rem)] leading-[1.08] font-medium tracking-tight uppercase">
-              THE <span className="highlight text-ink px-3 py-0.5 rounded-[4px]">ECOSYSTEM</span>
-            </h2>
-            <p className="max-w-[58ch] text-[clamp(1rem,0.9rem+0.35vw,1.2rem)] leading-relaxed text-ink-2">
-              Each application solves one problem well — and shares context with the rest.
-            </p>
-          </header>
-          <AppGrid apps={applications.slice(0, 4)} />
-          <div className="mt-block-lg flex justify-center">
-            <SeeAllButton href="/applications" text="SEE ALL APPLICATIONS" />
-          </div>
-        </div>
-      </section>
+      <EcosystemScrollSection />
 
       <CompanionSection />
 
