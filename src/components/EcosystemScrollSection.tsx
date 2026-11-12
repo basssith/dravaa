@@ -31,9 +31,32 @@ export function EcosystemScrollSection() {
     // LEFT SIDE & RIGHT RESTING ELEMENTS:
     const leftCol = container.querySelector<HTMLElement>('[data-left-col]');
     const rightResting = container.querySelector<HTMLElement>('[data-right-resting]');
+    const resting01 = rightResting?.querySelector<HTMLElement>('span');
 
-    // Panels start: All product slides are initially offscreen to the right (xPercent: 120, opacity: 0)
-    for (let i = 0; i < panels.length; i++) {
+    // Slide 0 elements
+    const slide0Num = panels[0].querySelector<HTMLElement>('[data-flow-num]');
+    const slide0Img = panels[0].querySelector<HTMLElement>('[data-flow-img]');
+    const slide0Details = panels[0].querySelector<HTMLElement>('[data-flow-details]');
+    const slide0Divider = panels[0].querySelector<HTMLElement>('[data-flow-divider]');
+
+    // Panels start:
+    // Panel 0 is present. In resting state, its 01 sits exactly in place on the right side.
+    // We calculate the delta between the center of the right 40% column and the docked position of 01 inside max-w-6xl.
+    const isDesktop = window.innerWidth >= 1024;
+    // Desktop layout: left column is 60vw, right column is 40vw (center is at 80vw from left).
+    // In max-w-6xl (1152px) centered in viewport, 01 is at the left edge of max-w-6xl.
+    // The offset to place 01 at 80vw is approximately:
+    const initialOffset01 = isDesktop
+      ? (window.innerWidth * 0.8) - ((window.innerWidth - Math.min(window.innerWidth - 64, 1152)) / 2 + 80)
+      : 0;
+
+    gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
+    if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
+    if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
+    if (slide0Details) gsap.set(slide0Details, { x: 420, opacity: 0 });
+    if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
+
+    for (let i = 1; i < panels.length; i++) {
       gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
     }
 
@@ -55,7 +78,7 @@ export function EcosystemScrollSection() {
     });
 
     // STEP 1: Scroll starts ->
-    // Left column content slides out to the left
+    // 1. Left column content slides out to the left
     if (leftCol) {
       tl.to(
         leftCol,
@@ -69,31 +92,41 @@ export function EcosystemScrollSection() {
       );
     }
 
-    // Right resting "01" fades/glides out
-    if (rightResting) {
+    // 2. The SAME 01 glides from the right side towards the left into its docked product position!
+    if (slide0Num) {
       tl.to(
-        rightResting,
+        slide0Num,
         {
-          opacity: 0,
-          duration: 0.5,
+          x: 0,
+          duration: 1,
           ease: 'power2.inOut',
         },
         'p0'
       );
     }
 
-    // Slide 0 (Product 01 full view) glides in smoothly from the right to the center
-    tl.to(
-      panels[0],
-      {
-        xPercent: 0,
-        opacity: 1,
-        pointerEvents: 'auto',
-        duration: 1,
-        ease: 'power2.inOut',
-      },
-      'p0'
-    );
+    // 3. Simultaneously, product monitor image, details, and vertical line glide in from the right to join 01!
+    if (slide0Img) {
+      tl.to(
+        slide0Img,
+        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+        'p0+=0.15'
+      );
+    }
+    if (slide0Details) {
+      tl.to(
+        slide0Details,
+        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+        'p0+=0.25'
+      );
+    }
+    if (slide0Divider) {
+      tl.to(
+        slide0Divider,
+        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+        'p0+=0.25'
+      );
+    }
 
     // Resting pause for Product 01 full screen
     tl.to({}, { duration: 0.5 });
@@ -197,12 +230,10 @@ export function EcosystemScrollSection() {
             </div>
           </div>
 
-          {/* Centered Main Content: Prominent 3-line heading in Sentence Case */}
+          {/* Centered Main Content: Prominent heading in Sentence Case */}
           <div className="my-auto py-6 max-w-3xl">
-            <h2 className="font-display text-[clamp(2.8rem,3rem+4vw,6.5rem)] font-bold tracking-tight leading-[1.02] text-white">
-              <span className="block">The product</span>
-              <span className="block">changes,</span>
-              <span className="block">the experience stays.</span>
+            <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
+              The product changes but the experience stays.
             </h2>
 
             <p className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
@@ -311,10 +342,11 @@ export function EcosystemScrollSection() {
                   </TransitionLink>
                 </div>
 
-                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (After product details) */}
+                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (With generous breathing distance after details) */}
                 <div
+                  data-flow-divider
                   style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                  className="hidden lg:block w-[1px] h-screen shrink-0 mx-6 xl:mx-10"
+                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-12 mr-6 xl:ml-16 xl:mr-8 will-change-transform"
                 />
 
               </div>
