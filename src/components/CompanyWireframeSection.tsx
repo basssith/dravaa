@@ -11,7 +11,7 @@ interface Line3D {
 function buildInteriorWireframe(): Line3D[] {
   const lines: Line3D[] = [];
 
-  // 1. Room Boundary (Floor, Ceiling, Walls)
+  // Floor & Ceiling perimeter
   lines.push({ p1: [-2.2, 0.9, -1.0], p2: [2.2, 0.9, -1.0] });
   lines.push({ p1: [2.2, 0.9, -1.0], p2: [2.5, 0.9, 3.0] });
   lines.push({ p1: [-2.2, 0.9, -1.0], p2: [-2.5, 0.9, 3.0] });
@@ -20,26 +20,26 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [2.2, -1.1, -1.0], p2: [2.5, -1.1, 3.0] });
   lines.push({ p1: [-2.2, -1.1, -1.0], p2: [-2.5, -1.1, 3.0] });
 
+  // Columns
   lines.push({ p1: [-2.2, -1.1, -1.0], p2: [-2.2, 0.9, -1.0] });
   lines.push({ p1: [2.2, -1.1, -1.0], p2: [2.2, 0.9, -1.0] });
   lines.push({ p1: [-2.5, -1.1, 3.0], p2: [-2.5, 0.9, 3.0] });
   lines.push({ p1: [2.5, -1.1, 3.0], p2: [2.5, 0.9, 3.0] });
 
-  // Left Window Mullions
+  // Windows & Partitions
   for (let z = -0.5; z <= 2.2; z += 0.9) {
     const x = -2.2 - (z + 1.0) * 0.08;
     lines.push({ p1: [x, -1.1, z], p2: [x, 0.9, z] });
     lines.push({ p1: [x, -0.1, z], p2: [x, -0.1, z + 0.9] });
   }
 
-  // Right Glass Partition
   for (let z = -0.5; z <= 2.2; z += 0.9) {
     const x = 2.2 + (z + 1.0) * 0.08;
     lines.push({ p1: [x, -1.1, z], p2: [x, 0.9, z] });
     lines.push({ p1: [x, 0.0, z], p2: [x, 0.0, z + 0.9] });
   }
 
-  // Ceiling Baffles & Suspended Luminaire
+  // Ceiling baffles & Luminaires
   for (let z = -0.5; z <= 2.5; z += 0.75) {
     lines.push({ p1: [-2.0, -1.1, z], p2: [2.0, -1.1, z] });
   }
@@ -53,7 +53,7 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [-1.0, -1.1, 1.4], p2: [-1.0, -0.85, 1.4] });
   lines.push({ p1: [1.0, -1.1, 1.4], p2: [1.0, -0.85, 1.4] });
 
-  // 2. Central Executive Boardroom Table
+  // Boardroom Table
   const tableTopY = 0.38;
   const tableZ1 = 0.1;
   const tableZ2 = 2.1;
@@ -75,7 +75,7 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [-tableW + 0.12, tableTopY, tableZ2 - 0.12], p2: [-tableW + 0.12, 0.9, tableZ2 - 0.12] });
   lines.push({ p1: [tableW - 0.12, tableTopY, tableZ2 - 0.12], p2: [tableW - 0.12, 0.9, tableZ2 - 0.12] });
 
-  // 3. Ergonomic Office Chairs
+  // Chairs
   const chairPositions: [number, number][] = [
     [-tableW - 0.35, 0.55],
     [-tableW - 0.35, 1.55],
@@ -102,7 +102,7 @@ function buildInteriorWireframe(): Line3D[] {
     lines.push({ p1: [cx, 0.88, cz - 0.2], p2: [cx, 0.88, cz + 0.2] });
   });
 
-  // 4. Back Wall Screen & Console
+  // Screen
   const scrX1 = -1.3;
   const scrX2 = 1.3;
   const scrY1 = -0.7;
@@ -114,15 +114,11 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [scrX2, scrY2, scrZ], p2: [scrX1, scrY2, scrZ] });
   lines.push({ p1: [scrX1, scrY2, scrZ], p2: [scrX1, scrY1, scrZ] });
 
+  // Console
   lines.push({ p1: [-1.5, 0.52, -0.85], p2: [1.5, 0.52, -0.85] });
   lines.push({ p1: [1.5, 0.52, -0.85], p2: [1.5, 0.88, -0.85] });
   lines.push({ p1: [1.5, 0.88, -0.85], p2: [-1.5, 0.88, -0.85] });
   lines.push({ p1: [-1.5, 0.88, -0.85], p2: [-1.5, 0.52, -0.85] });
-
-  // Architectural Floor Grid
-  for (let z = -0.5; z <= 2.8; z += 0.55) {
-    lines.push({ p1: [-2.1, 0.9, z], p2: [2.1, 0.9, z] });
-  }
 
   return lines;
 }
@@ -148,17 +144,22 @@ export function CompanyWireframeSection() {
 
     const wireframeLines = buildInteriorWireframe();
 
-    interface WireframePoint {
-      x3d: number;
-      y3d: number;
-      z3d: number;
+    // 1. Target wireframe positions
+    interface MorphBinaryParticle {
       char: string;
-      alpha: number;
-      color: string;
+      // Landing 2D stream start pos
+      streamX: number;
+      streamY: number;
+      speedY: number;
+      // 3D wireframe destination
+      tx3d: number;
+      ty3d: number;
+      tz3d: number;
+      isBright: boolean;
       flipTimer: number;
     }
 
-    const binaryPoints: WireframePoint[] = [];
+    const particles: MorphBinaryParticle[] = [];
 
     wireframeLines.forEach((line) => {
       const [x1, y1, z1] = line.p1;
@@ -173,46 +174,42 @@ export function CompanyWireframeSection() {
         const py = y1 + (y2 - y1) * t;
         const pz = z1 + (z2 - z1) * t;
 
-        const isBright = Math.random() < 0.22;
-        binaryPoints.push({
-          x3d: px,
-          y3d: py,
-          z3d: pz,
+        particles.push({
           char: Math.random() > 0.5 ? '1' : '0',
-          alpha: isBright ? 0.8 : 0.4 + Math.random() * 0.35,
-          color: isBright ? '#b6ff66' : '#888888',
+          streamX: (Math.random() - 0.5) * 4.2,
+          streamY: (Math.random() - 0.5) * 3.5,
+          speedY: 0.003 + Math.random() * 0.006,
+          tx3d: px,
+          ty3d: py,
+          tz3d: pz,
+          isBright: Math.random() < 0.22,
           flipTimer: Math.floor(Math.random() * 120),
         });
       }
     });
 
-    interface FreeBinaryParticle {
+    // Ambient floating particles
+    const freeParticles: Array<{
       x: number;
       y: number;
       z: number;
-      vx: number;
       vy: number;
-      vz: number;
       char: string;
-      opacity: number;
       color: string;
-    }
+    }> = [];
 
-    const freeParticles: FreeBinaryParticle[] = [];
-    for (let i = 0; i < 180; i++) {
+    for (let i = 0; i < 140; i++) {
       freeParticles.push({
         x: (Math.random() - 0.5) * 4.5,
-        y: (Math.random() - 0.5) * 2.2,
+        y: (Math.random() - 0.5) * 2.5,
         z: -0.8 + Math.random() * 3.6,
-        vx: (Math.random() - 0.5) * 0.002,
-        vy: -0.001 - Math.random() * 0.003,
-        vz: (Math.random() - 0.5) * 0.002,
+        vy: -0.002 - Math.random() * 0.003,
         char: Math.random() > 0.5 ? '1' : '0',
-        opacity: 0.2 + Math.random() * 0.5,
         color: Math.random() < 0.15 ? '#b6ff66' : '#777777',
       });
     }
 
+    // Scroll progress normalized [0, 1] across pinned section
     let scrollProgress = 0;
     let targetProgress = 0;
     let mouseX = 0;
@@ -248,13 +245,14 @@ export function CompanyWireframeSection() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // 1. PINNED TIMELINE:
-    // First stage (0.0 -> 0.35): pure binary wireframe camera exploration without text overlay.
-    // Second stage (0.35 -> 1.0): Sentences appear smoothly one by one as the user continues scrolling!
+    // PINNED SCROLL TIMELINE:
+    // Stage 1 (0 -> 35%): Binary numbers assemble smoothly from free fluid stream into the architectural 3D wireframe interior.
+    // Stage 2 (35% -> 55%): Pure wireframe interior camera navigation.
+    // Stage 3 (55% -> 100%): Sentences appear one-by-one with green box on Drava!
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=200%',
+      end: '+=240%',
       pin: true,
       scrub: 1.2,
       onUpdate: (self) => {
@@ -262,30 +260,25 @@ export function CompanyWireframeSection() {
       },
     });
 
-    // 2. Sentence-by-sentence scroll reveal animation:
     if (textWrapper) {
       const lines = textWrapper.querySelectorAll<HTMLElement>('[data-sentence]');
-      
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
           start: 'top top',
-          end: '+=200%',
+          end: '+=240%',
           scrub: 1.2,
         },
       });
 
-      // Stage 1 (0 -> 25% scroll): Pure wireframe display (lines remain hidden)
+      // Initially hidden while wireframe assembles
       tl.set(lines, { opacity: 0, y: 35 });
 
-      // Stage 2: Sentence 1 appears
-      tl.to(lines[0], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.25);
-
-      // Sentence 2 appears
-      tl.to(lines[1], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.5);
-
-      // Sentence 3 appears (with Drava in green rectangle)
-      tl.to(lines[2], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.75);
+      // Sentence reveals sequentially
+      tl.to(lines[0], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.42);
+      tl.to(lines[1], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.58);
+      tl.to(lines[2], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.74);
+      tl.to(lines[3], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.88);
     }
 
     const project = (
@@ -321,6 +314,9 @@ export function CompanyWireframeSection() {
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
+      // Morph progress: from free stream (0) to fully constructed wireframe (1)
+      const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.0));
+
       const cameraZ = 2.8 - scrollProgress * 1.5;
       const cameraPitch = currRotX - scrollProgress * 0.12;
       const cameraYaw = currRotY;
@@ -329,45 +325,60 @@ export function CompanyWireframeSection() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(70, 75, 85, 0.4)';
+      // Render wireframe outline as morphFactor builds
+      if (morphFactor > 0.45) {
+        const wireAlpha = Math.min(0.4, (morphFactor - 0.45) * 1.2);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(70, 75, 85, ${wireAlpha})`;
 
-      wireframeLines.forEach((line) => {
-        const [x1, y1, z1] = line.p1;
-        const [x2, y2, z2] = line.p2;
+        wireframeLines.forEach((line) => {
+          const [x1, y1, z1] = line.p1;
+          const [x2, y2, z2] = line.p2;
 
-        const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-        const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
+          const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
+          const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
 
-        if (v1 && v2) {
-          ctx.beginPath();
-          ctx.moveTo(px1, py1);
-          ctx.lineTo(px2, py2);
-          ctx.stroke();
-        }
-      });
+          if (v1 && v2) {
+            ctx.beginPath();
+            ctx.moveTo(px1, py1);
+            ctx.lineTo(px2, py2);
+            ctx.stroke();
+          }
+        });
+      }
 
       ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      binaryPoints.forEach((pt) => {
+      // Binary particles morphing into wireframe
+      particles.forEach((pt) => {
         pt.flipTimer++;
         if (pt.flipTimer > 90) {
           pt.char = pt.char === '1' ? '0' : '1';
           pt.flipTimer = 0;
         }
 
-        const [px, py, dist, visible] = project(pt.x3d, pt.y3d, pt.z3d, cameraPitch, cameraYaw, cameraZ);
+        // Drifting stream coordinates
+        pt.streamY += pt.speedY;
+        if (pt.streamY > 1.8) pt.streamY = -1.8;
+
+        // Interpolate between free stream and 3D wireframe location
+        const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
+        const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
+        const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
+
+        const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
           const depthAlpha = Math.max(0.1, Math.min(1, (3.8 - dist) / 2.8));
-          ctx.fillStyle = pt.color === '#b6ff66'
-            ? `rgba(182, 255, 102, ${pt.alpha * depthAlpha})`
-            : `rgba(200, 205, 215, ${pt.alpha * depthAlpha * 0.75})`;
+          ctx.fillStyle = pt.isBright
+            ? `rgba(182, 255, 102, ${0.85 * depthAlpha})`
+            : `rgba(200, 205, 215, ${0.75 * depthAlpha})`;
           ctx.fillText(pt.char, px, py);
         }
       });
 
+      // Ambient particles
       freeParticles.forEach((fp) => {
         fp.y += fp.vy;
         if (fp.y < -1.4) fp.y = 1.2;
@@ -375,8 +386,8 @@ export function CompanyWireframeSection() {
         const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
         if (visible) {
           ctx.fillStyle = fp.color === '#b6ff66'
-            ? `rgba(182, 255, 102, ${fp.opacity * 0.8})`
-            : `rgba(140, 145, 155, ${fp.opacity * 0.4})`;
+            ? 'rgba(182, 255, 102, 0.7)'
+            : 'rgba(140, 145, 155, 0.35)';
           ctx.fillText(fp.char, px, py);
         }
       });
@@ -422,7 +433,7 @@ export function CompanyWireframeSection() {
         }}
       />
 
-      {/* Content reveals sentence-by-sentence as the user scrolls through the wireframe */}
+      {/* Sequential sentence reveal after wireframe assembly */}
       <div
         ref={textWrapperRef}
         className="wrap relative z-10 flex flex-col items-center text-center px-4 max-w-[1050px] mx-auto pointer-events-auto"
@@ -435,17 +446,14 @@ export function CompanyWireframeSection() {
         </p>
 
         <div className="font-display text-[clamp(1.75rem,1.3rem+2.6vw,3.6rem)] font-bold uppercase tracking-tight leading-[1.2] text-white max-w-[28ch] mx-auto text-center space-y-3 sm:space-y-4">
-          {/* Sentence 1 */}
           <div data-sentence className="block will-change-transform">
             Connecting everything, designing for clarity,
           </div>
 
-          {/* Sentence 2 */}
           <div data-sentence className="block text-[#d0d4dc] will-change-transform">
             bringing it all into one unified space.
           </div>
 
-          {/* Sentence 3 (Green box ONLY for Drava) */}
           <div data-sentence className="block will-change-transform">
             The new era of{' '}
             <span className="inline-block bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-tight mx-1 align-baseline shadow-none">
