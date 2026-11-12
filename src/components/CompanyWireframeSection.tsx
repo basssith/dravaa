@@ -187,7 +187,7 @@ export function CompanyWireframeSection() {
             y,
             vx: 0,
             vy: 0,
-            speed: 0.35 + Math.random() * 0.7,
+            speed: 0.55 + Math.random() * 0.85,
             opacity: baseOpacity,
             baseColor,
             isGreen,
@@ -382,27 +382,6 @@ export function CompanyWireframeSection() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      if (morphFactor > 0.45) {
-        const wireAlpha = Math.min(0.4, (morphFactor - 0.45) * 1.2);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = `rgba(70, 75, 85, ${wireAlpha})`;
-
-        wireframeLines.forEach((line) => {
-          const [x1, y1, z1] = line.p1;
-          const [x2, y2, z2] = line.p2;
-
-          const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-          const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
-
-          if (v1 && v2) {
-            ctx.beginPath();
-            ctx.moveTo(px1, py1);
-            ctx.lineTo(px2, py2);
-            ctx.stroke();
-          }
-        });
-      }
-
       // Always render at the EXACT same 20px monospace font size as landing page
       ctx.font = '700 20px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
       ctx.textAlign = 'center';
@@ -410,7 +389,7 @@ export function CompanyWireframeSection() {
 
       const radiusSq = mouse.radius * mouse.radius;
 
-      // 1. Full-screen binary matrix (100% viewport coverage, identical size & colors to landing page)
+      // 1. Full-screen binary matrix (downward flow, identical size & colors to landing page)
       for (let i = 0; i < gridParticles.length; i++) {
         const p = gridParticles[i];
 
@@ -421,11 +400,11 @@ export function CompanyWireframeSection() {
           p.changeTimer = 0;
         }
 
-        // Fluid downward matrix drift
+        // Fluid downward matrix drift (strictly flowing down)
         p.originY += p.speed;
-        if (p.originY > height + 20) {
-          p.originY = -20;
-          p.y = -20;
+        if (p.originY > height + 25) {
+          p.originY = -25;
+          p.y = -25;
         }
 
         // Interaction with mouse (fluid push & swirl)
