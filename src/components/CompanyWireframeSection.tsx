@@ -357,7 +357,9 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Wireframe binary points: Small, refined typography with sharp monospace positioning
+      // Wireframe binary points:
+      // In the beginning (morphFactor = 0), digits are prominent (~20px-24px) matching the hero stream.
+      // As they stick into the 3D room wireframe (morphFactor -> 1), they shrink down smoothly to a delicate, small size (~8px-11px).
       particles.forEach((pt) => {
         if (morphFactor < 0.95) {
           pt.flipTimer++;
@@ -375,21 +377,27 @@ export function CompanyWireframeSection() {
         const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
-        if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
-          // Compact size 8px - 11px
-          const fontSize = Math.max(8, Math.min(11, Math.round(9.5 * (2.6 / dist))));
+        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          // Dynamic scale interpolation:
+          // morphFactor 0 (floating / beginning) -> base ~20px (matching hero Matrix digits)
+          // morphFactor 1 (stuck to wireframe)   -> base ~9.5px (small, refined, decongested)
+          const baseSize = 20 * (1 - morphFactor) + 9.5 * morphFactor;
+          const minSize = Math.round(8 * (1 - morphFactor) + 8 * morphFactor);
+          const maxSize = Math.round(24 * (1 - morphFactor) + 11 * morphFactor);
+          const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
+          
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
           // Refined contrast: clearly visible but subtle and non-congested
-          const depthAlpha = Math.max(0.25, Math.min(0.85, 2.4 / dist));
+          const depthAlpha = Math.max(0.25, Math.min(0.9, 2.4 / dist));
           ctx.fillStyle = pt.isBright
-            ? `rgba(182, 255, 102, ${0.9 * depthAlpha})`
-            : `rgba(215, 225, 238, ${0.6 * depthAlpha})`;
+            ? `rgba(182, 255, 102, ${0.92 * depthAlpha})`
+            : `rgba(225, 235, 245, ${0.72 * depthAlpha})`;
           ctx.fillText(pt.char, px, py);
         }
       });
 
-      // Full-screen ambient binary numbers: Small, subtle particles
+      // Full-screen ambient binary numbers: Start at hero size (~20px) and smoothly shrink/fade
       if (morphFactor < 0.8) {
         const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
         freeParticles.forEach((fp) => {
@@ -397,12 +405,13 @@ export function CompanyWireframeSection() {
           if (fp.y < -2.6) fp.y = 2.6;
 
           const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
-          if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
-            const fontSize = Math.max(8, Math.min(12, Math.round(10 * (2.6 / dist))));
-            ctx.font = `500 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+          if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+            const baseSize = 20 * (1 - morphFactor) + 10 * morphFactor;
+            const fontSize = Math.max(9, Math.min(22, Math.round(baseSize * (2.6 / dist))));
+            ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
             ctx.fillStyle = fp.isGreen
-              ? `rgba(182, 255, 102, ${0.6 * ambientAlpha})`
-              : `rgba(190, 205, 225, ${0.45 * ambientAlpha})`;
+              ? `rgba(182, 255, 102, ${0.85 * ambientAlpha})`
+              : `rgba(215, 225, 240, ${0.75 * ambientAlpha})`;
             ctx.fillText(fp.char, px, py);
           }
         });
