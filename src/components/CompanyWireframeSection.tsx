@@ -161,8 +161,9 @@ export function CompanyWireframeSection() {
       const [x1, y1, z1] = line.p1;
       const [x2, y2, z2] = line.p2;
       const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
-      const step = 0.38; // Increased spacing between numbers so wireframe isn't cluttered
-      const count = Math.max(1, Math.floor(len / step));
+      // Clean, rhythmic node placement: numbers sit only at well-spaced structural joints
+      const step = 0.85;
+      const count = Math.max(1, Math.round(len / step));
 
       for (let i = 0; i <= count; i++) {
         const t = i / count;
@@ -178,13 +179,13 @@ export function CompanyWireframeSection() {
           tx3d: px,
           ty3d: py,
           tz3d: pz,
-          isBright: Math.random() < 0.22,
+          isBright: Math.random() < 0.25,
           flipTimer: Math.floor(Math.random() * 120),
         });
       }
     });
 
-    // Screen-filling matrix binary field + wireframe morph particles
+    // Gentle ambient floating particles count reduced to keep background peaceful and clean
     const freeParticles: Array<{
       x: number;
       y: number;
@@ -195,15 +196,15 @@ export function CompanyWireframeSection() {
       opacity: number;
     }> = [];
 
-    for (let i = 0; i < 220; i++) {
+    for (let i = 0; i < 70; i++) {
       freeParticles.push({
         x: (Math.random() - 0.5) * 8.5,
         y: (Math.random() - 0.5) * 5.5,
         z: -1.2 + Math.random() * 4.8,
-        vy: -0.002 - Math.random() * 0.004,
+        vy: -0.0015 - Math.random() * 0.003,
         char: Math.random() > 0.5 ? '1' : '0',
         isGreen: Math.random() < 0.2,
-        opacity: 0.25 + Math.random() * 0.45,
+        opacity: 0.2 + Math.random() * 0.35,
       });
     }
 
@@ -356,11 +357,11 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Wireframe binary points: Smaller, delicate, refined typography with depth fading
+      // Wireframe binary points: Small, refined typography with sharp monospace positioning
       particles.forEach((pt) => {
         if (morphFactor < 0.95) {
           pt.flipTimer++;
-          if (pt.flipTimer > 120) {
+          if (pt.flipTimer > 140) {
             pt.char = pt.char === '1' ? '0' : '1';
             pt.flipTimer = 0;
           }
@@ -375,15 +376,15 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
-          // Delicate size scaling between 9px and 13px
-          const fontSize = Math.max(9, Math.min(13, Math.round(11 * (2.6 / dist))));
+          // Compact size 8px - 11px
+          const fontSize = Math.max(8, Math.min(11, Math.round(9.5 * (2.6 / dist))));
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
-          // Subtle fade with distance so distant numbers don't overpower
-          const depthAlpha = Math.max(0.2, Math.min(0.85, 2.5 / dist));
+          // Refined contrast: clearly visible but subtle and non-congested
+          const depthAlpha = Math.max(0.25, Math.min(0.85, 2.4 / dist));
           ctx.fillStyle = pt.isBright
             ? `rgba(182, 255, 102, ${0.9 * depthAlpha})`
-            : `rgba(210, 220, 235, ${0.65 * depthAlpha})`;
+            : `rgba(215, 225, 238, ${0.6 * depthAlpha})`;
           ctx.fillText(pt.char, px, py);
         }
       });
