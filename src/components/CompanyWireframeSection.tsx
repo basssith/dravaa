@@ -380,12 +380,8 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          // Keep identical landing page size (~22px-24px) throughout the initial stream transition,
-          // then smoothly settle into a slightly larger, comfortably readable size (~12.5px - 14px) after room wireframe forms.
-          const baseSize = 22 * (1 - roomLockFactor) + 12.5 * roomLockFactor;
-          const minSize = Math.round(18 * (1 - roomLockFactor) + 10 * roomLockFactor);
-          const maxSize = Math.round(26 * (1 - roomLockFactor) + 14 * roomLockFactor);
-          const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
+          // Exactly matching landing page binary number size (~20px - 24px)
+          const fontSize = Math.max(16, Math.min(24, Math.round(21 * (2.6 / dist))));
           
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
