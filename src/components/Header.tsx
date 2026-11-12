@@ -39,10 +39,10 @@ export function Header() {
       <TransitionLink
         href="/"
         aria-label="Drava home"
-        className="flex items-center gap-2 font-display text-[1.375rem] font-bold leading-none tracking-tight no-underline text-white hover:text-[#b6ff66] transition-colors duration-300"
+        className="flex items-center gap-2 font-display text-[1.375rem] font-bold leading-none tracking-tight no-underline text-white transition-colors duration-300"
       >
-        <Smile className="w-7 fill-white hover:fill-[#b6ff66] transition-colors duration-300" />
-        <span>drava</span>
+        <Smile className="w-7 fill-[#b6ff66]" />
+        <span className="hover:text-[#b6ff66] transition-colors duration-300">drava</span>
       </TransitionLink>
 
       <div className="flex items-center gap-3">
