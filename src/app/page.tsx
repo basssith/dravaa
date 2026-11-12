@@ -1,5 +1,6 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
+import { CompanyWireframeSection } from '@/components/CompanyWireframeSection';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
@@ -34,16 +35,7 @@ export default function Home() {
         background={<MatrixFluidCanvas />}
       />
 
-      <section id="intro" className="relative flex min-h-screen flex-col justify-center py-section overflow-hidden">
-        <SnakeLine variant="intro" />
-        <div className="wrap relative z-10 flex flex-col items-center text-center">
-          <p className="tag mb-4">[01] What we do</p>
-          <WordScrub
-            className="t-statement max-w-[24ch] mx-auto text-center"
-            text="*Connecting everything, designing for *clarity, bringing it all into *one unified *space. The new era of *Drava — where work flows *effortlessly."
-          />
-        </div>
-      </section>
+      <CompanyWireframeSection />
 
       <section id="applications" className="section pt-block-lg">
         <div className="wrap">
