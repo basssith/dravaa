@@ -18,6 +18,7 @@ const logoGreenTheme = {
 export function EcosystemScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
+  const [fullscreenApp, setFullscreenApp] = useState<(typeof applications)[number] | null>(null);
 
   const apps = applications.slice(0, 4);
 
@@ -301,9 +302,23 @@ export function EcosystemScrollSection() {
                       />
                     </div>
 
-                    <div className="flex justify-end items-center text-xs font-mono pt-2.5 border-t border-white/10 text-white/70">
+                    <button
+                      type="button"
+                      onClick={() => setFullscreenApp(app)}
+                      className="group/fs inline-flex items-center gap-1.5 text-xs font-mono pt-2.5 border-t border-white/10 text-white/70 hover:text-[#b6ff66] transition-colors cursor-pointer ml-auto"
+                      aria-label={`View ${app.name} in fullscreen`}
+                    >
+                      <svg
+                        className="size-3.5 fill-none stroke-current transition-transform duration-200 group-hover/fs:scale-110"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                      </svg>
                       <span>Fullscreen</span>
-                    </div>
+                    </button>
                   </div>
                 </div>
 
@@ -359,6 +374,62 @@ export function EcosystemScrollSection() {
         </div>
 
       </div>
+
+      {/* FULLSCREEN POPUP MODAL */}
+      {fullscreenApp && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-200"
+          onClick={() => setFullscreenApp(null)}
+        >
+          <div
+            className="relative max-w-5xl w-full max-h-[90vh] bg-[#0a0c0e] border-2 border-white/20 rounded-2xl overflow-hidden p-4 sm:p-6 flex flex-col justify-between shadow-[0_0_80px_rgba(0,0,0,0.8)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex justify-between items-center pb-3 border-b border-white/10 text-xs sm:text-sm font-mono">
+              <div className="flex items-center gap-3">
+                <span className="text-[#b6ff66] font-bold">Terminal {fullscreenApp.id}</span>
+                <span className="text-white/40">/</span>
+                <span className="text-white font-semibold">{fullscreenApp.name}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFullscreenApp(null)}
+                aria-label="Close fullscreen modal"
+                className="size-8 rounded-full border border-white/20 bg-white/5 hover:bg-[#b6ff66] hover:text-black flex items-center justify-center transition-colors cursor-pointer text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Image Body */}
+            <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[68vh] my-4 rounded-xl overflow-hidden bg-black/80">
+              <Image
+                src={fullscreenApp.image}
+                alt={fullscreenApp.name}
+                fill
+                quality={100}
+                className="object-contain"
+              />
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-3 border-t border-white/10 text-xs sm:text-sm font-mono text-white/70">
+              <p className="max-w-xl text-xs sm:text-sm text-[#c8ccd6]">{fullscreenApp.description}</p>
+              <TransitionLink
+                href={`/applications/${slugOf(fullscreenApp)}`}
+                style={{ color: logoGreenTheme.primary }}
+                className="inline-flex items-center gap-2 font-semibold hover:brightness-125 transition-all"
+              >
+                <span>Explore {fullscreenApp.name}</span>
+                <Arrow className="size-3.5 -rotate-45" />
+              </TransitionLink>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
