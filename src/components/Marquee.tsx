@@ -25,7 +25,7 @@ export function Marquee({ items, label, reverse, slow, bordered, size = 'mega', 
       )}
     >
       {text}
-      <Smile className={cn('h-[0.6em] w-auto', accent ? 'fill-accent' : 'fill-[#000000]')} />
+      <Smile className="h-[0.6em] w-auto fill-[#b6ff66]" />
     </span>
   ));
 
