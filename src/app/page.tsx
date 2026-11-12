@@ -40,11 +40,16 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Bottom edge scroll cue */}
-        <div className="relative z-10 flex items-center justify-between border-t border-white/20 pt-4 lg:pt-5">
-          <p className="tag tracking-widest text-[#d0d4dc] font-mono text-xs">
-            [00] Intro
-          </p>
+        {/* Bottom edge scroll cue: without border line, with green box for 01 and INTRO */}
+        <div className="relative z-10 flex items-center justify-between pt-4 lg:pt-5">
+          <div className="inline-flex items-center gap-2.5">
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+              01
+            </span>
+            <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
+              INTRO
+            </span>
+          </div>
           <p className="tag flex items-center gap-3 text-[#d0d4dc]">
             <i aria-hidden="true" className="h-7 w-px animate-cue bg-white" />
             Scroll to explore
