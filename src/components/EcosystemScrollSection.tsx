@@ -327,14 +327,13 @@ export function EcosystemScrollSection() {
                     </div>
                   </div>
 
-                  {/* ONLY THIS BUTTON IS IN SIGNATURE GREEN */}
+                  {/* EXPLORE BUTTON: SIGNATURE GREEN -> HOVER TURNS WHITE */}
                   <TransitionLink
                     href={`/applications/${slugOf(app)}`}
-                    style={{ color: logoGreenTheme.primary }}
-                    className="inline-flex items-center gap-3 text-sm sm:text-base font-semibold tracking-wider transition-colors group pt-1 hover:brightness-125"
+                    className="inline-flex items-center gap-3 text-sm sm:text-base font-semibold tracking-wider text-[#b6ff66] hover:text-white transition-colors duration-300 group pt-1"
                   >
                     <span>Explore {app.name}</span>
-                    <Arrow className="size-4 -rotate-45 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    <Arrow className="size-4 -rotate-45 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 text-current" />
                   </TransitionLink>
                 </div>
 
