@@ -374,13 +374,11 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          const depthAlpha = Math.max(0.18, Math.min(1, (4.2 - dist) / 3.0));
-          // Scale font with depth so near and far digits feel large and legible like landing page
-          const fontSize = Math.max(16, Math.min(26, Math.round(20 * (2.8 / dist))));
+          const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
           ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           ctx.fillStyle = pt.isBright
-            ? `rgba(182, 255, 102, ${0.9 * depthAlpha})`
-            : `rgba(235, 240, 248, ${0.85 * depthAlpha})`;
+            ? 'rgba(182, 255, 102, 0.95)'
+            : 'rgba(235, 240, 248, 0.92)';
           ctx.fillText(pt.char, px, py);
         }
       });
@@ -392,12 +390,11 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          const depthAlpha = Math.max(0.15, Math.min(1, (4.5 - dist) / 3.2));
-          const fontSize = Math.max(16, Math.min(26, Math.round(20 * (2.8 / dist))));
+          const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
           ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           ctx.fillStyle = fp.isGreen
-            ? `rgba(182, 255, 102, ${fp.opacity * depthAlpha})`
-            : `rgba(235, 240, 248, ${fp.opacity * depthAlpha * 0.85})`;
+            ? 'rgba(182, 255, 102, 0.92)'
+            : 'rgba(235, 240, 248, 0.90)';
           ctx.fillText(fp.char, px, py);
         }
       });
