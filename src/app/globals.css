@@ -110,7 +110,7 @@
 
   body {
     overflow-x: hidden;
-    background: var(--color-bg);
+    background: #000000;
     color: var(--color-ink);
     font-family: var(--font-body);
     font-size: var(--text-body);
