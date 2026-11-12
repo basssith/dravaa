@@ -164,7 +164,6 @@
   font-weight: 700;
   line-height: var(--text-mega--line-height);
   letter-spacing: -0.045em;
-  text-transform: uppercase;
 }
 @utility t-h1 {
   font-family: var(--font-display);
@@ -172,7 +171,6 @@
   font-weight: 700;
   line-height: var(--text-h1--line-height);
   letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
 }
 @utility t-h2 {
   font-family: var(--font-display);
@@ -180,7 +178,6 @@
   font-weight: 700;
   line-height: var(--text-h2--line-height);
   letter-spacing: var(--tracking-display);
-  text-transform: uppercase;
 }
 @utility t-statement {
   font-family: var(--font-display);
@@ -188,7 +185,6 @@
   font-weight: 600;
   line-height: var(--text-statement--line-height);
   letter-spacing: -0.025em;
-  text-transform: uppercase;
 }
 @utility t-h3 {
   font-family: var(--font-display);
@@ -196,7 +192,6 @@
   font-weight: 700;
   line-height: var(--text-h3--line-height);
   letter-spacing: -0.02em;
-  text-transform: uppercase;
 }
 @utility t-h4 {
   font-family: var(--font-display);
@@ -212,14 +207,13 @@
   color: var(--color-ink-2);
 }
 
-/* small uppercase labels: .tag is muted, .label inherits colour */
+/* small labels: .tag is muted, .label inherits colour */
 @utility tag {
   font-family: var(--font-body);
   font-size: var(--text-micro);
   font-weight: 500;
   line-height: var(--text-micro--line-height);
   letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
   color: var(--color-muted);
 }
 @utility label {
@@ -228,7 +222,6 @@
   font-weight: 500;
   line-height: var(--text-micro--line-height);
   letter-spacing: var(--tracking-label);
-  text-transform: uppercase;
 }
 
 /* masked line reveal: <span class="line"><span>Text</span></span> */

@@ -436,7 +436,7 @@ export function CompanyWireframeSection() {
         <div className="flex items-center justify-between w-full pt-4">
           <p
             data-tag
-            className="tag text-[#888c94] tracking-widest uppercase text-xs sm:text-sm font-mono border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md bg-black/50"
+            className="tag text-[#888c94] tracking-widest text-xs sm:text-sm font-mono border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md bg-black/50"
           >
             [01] What we do
           </p>
@@ -447,7 +447,7 @@ export function CompanyWireframeSection() {
           data-block="1"
           className="self-start max-w-[40ch] text-left pt-4 lg:pt-6 will-change-transform"
         >
-          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold uppercase tracking-tight leading-[1.12] text-white">
+          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold tracking-tight leading-[1.12] text-white">
             <span className="block">Connecting everything,</span>
             <span className="block text-[#c8ccd6]">designing for clarity,</span>
           </h2>
@@ -458,22 +458,22 @@ export function CompanyWireframeSection() {
           data-block="2"
           className="self-center max-w-[42ch] text-center my-auto py-6 will-change-transform"
         >
-          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold uppercase tracking-tight leading-[1.12] text-white">
-            <span className="block">bringing it all</span>
+          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold tracking-tight leading-[1.12] text-white">
+            <span className="block">Bringing it all</span>
             <span className="block text-[#c8ccd6]">into one unified space.</span>
           </h2>
         </div>
 
-        {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for DRAVA) */}
+        {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for Drava) */}
         <div
           data-block="3"
           className="self-end max-w-[42ch] text-right pb-4 lg:pb-6 will-change-transform"
         >
-          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold uppercase tracking-tight leading-[1.12] text-white">
+          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold tracking-tight leading-[1.12] text-white">
             <span className="block">
               The new era of{' '}
               <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1">
-                DRAVA
+                Drava
               </span>
             </span>
             <span className="block text-[#c8ccd6] mt-1">— where work flows effortlessly.</span>
