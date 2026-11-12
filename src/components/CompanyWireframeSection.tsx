@@ -357,12 +357,14 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Wireframe binary points matching exact landing page size (20px font), color and prominence
+      // Wireframe binary points: Once assembled into the architectural wireframe, digits remain static (no distracting random flipping or jitter)
       particles.forEach((pt) => {
-        pt.flipTimer++;
-        if (pt.flipTimer > 90) {
-          pt.char = pt.char === '1' ? '0' : '1';
-          pt.flipTimer = 0;
+        if (morphFactor < 0.95) {
+          pt.flipTimer++;
+          if (pt.flipTimer > 90) {
+            pt.char = pt.char === '1' ? '0' : '1';
+            pt.flipTimer = 0;
+          }
         }
 
         pt.streamY += pt.speedY;
@@ -383,21 +385,24 @@ export function CompanyWireframeSection() {
         }
       });
 
-      // Full-screen ambient binary numbers with exact landing page size (20px) and colors
-      freeParticles.forEach((fp) => {
-        fp.y += fp.vy;
-        if (fp.y < -2.6) fp.y = 2.6;
+      // Full-screen ambient binary numbers fade out once wireframe forms (morphFactor > 0.3) so it stays calm and not disturbing
+      if (morphFactor < 0.8) {
+        const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
+        freeParticles.forEach((fp) => {
+          fp.y += fp.vy;
+          if (fp.y < -2.6) fp.y = 2.6;
 
-        const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
-        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
-          ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
-          ctx.fillStyle = fp.isGreen
-            ? 'rgba(182, 255, 102, 0.92)'
-            : 'rgba(235, 240, 248, 0.90)';
-          ctx.fillText(fp.char, px, py);
-        }
-      });
+          const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
+          if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+            const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
+            ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+            ctx.fillStyle = fp.isGreen
+              ? `rgba(182, 255, 102, ${0.92 * ambientAlpha})`
+              : `rgba(235, 240, 248, ${0.90 * ambientAlpha})`;
+            ctx.fillText(fp.char, px, py);
+          }
+        });
+      }
 
       ctx.restore();
       animId = requestAnimationFrame(render);
