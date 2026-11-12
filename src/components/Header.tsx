@@ -48,23 +48,23 @@ export function Header() {
       <div className="flex items-center gap-3">
         <TransitionLink
           href="/applications"
-          className="max-md:hidden inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider uppercase text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:text-[#b6ff66]"
+          className="max-md:hidden inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider uppercase text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000]"
         >
           Explore all applications
         </TransitionLink>
 
         <TransitionLink
           href="#contact"
-          className="max-sm:hidden inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:text-[#b6ff66]"
+          className="group max-sm:hidden inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000]"
         >
-          <span className="size-2 rounded-full bg-[#b6ff66]" />
+          <span className="size-2 rounded-full bg-[#b6ff66] group-hover:bg-[#000000] transition-colors duration-300" />
           Let&apos;s talk
         </TransitionLink>
 
         <button
           type="button"
           id="menu-btn"
-          className="inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider text-white transition-all duration-300 hover:border-[#b6ff66] hover:text-[#b6ff66]"
+          className="inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider text-white transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000]"
           aria-expanded={menuOpen}
           aria-controls="menu"
           onClick={() => setMenuOpen(!menuOpen)}
