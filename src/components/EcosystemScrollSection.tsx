@@ -230,14 +230,6 @@ export function EcosystemScrollSection() {
 
                   {/* 3. RIGHT: Product Details & Specifications */}
                   <div className="flex flex-col justify-center text-left space-y-4 max-w-[340px] shrink-0">
-                    {/* Protocol text removed, clean index */}
-                    <span
-                      style={{ color: logoGreenTheme.subtext }}
-                      className="font-mono text-xs tracking-widest uppercase"
-                    >
-                      {app.id} / 0{apps.length}
-                    </span>
-
                     <h3
                       style={{ color: logoGreenTheme.primary }}
                       className="font-display text-[clamp(2.2rem,1.8rem+1.5vw,3.5rem)] font-bold uppercase leading-none tracking-tight"
