@@ -390,7 +390,7 @@ export function EcosystemScrollSection() {
             {/* Modal Header */}
             <div className="flex justify-between items-center pb-3 border-b border-white/10 text-xs sm:text-sm font-mono">
               <div className="flex items-center gap-3">
-                <span className="text-[#b6ff66] font-bold">Terminal {fullscreenApp.id}</span>
+                <span className="text-[#b6ff66] font-bold">Product {fullscreenApp.id}</span>
                 <span className="text-white/40">/</span>
                 <span className="text-white font-semibold">{fullscreenApp.name}</span>
               </div>
