@@ -380,17 +380,17 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          // Keep identical landing page size (~20px-22px) throughout the whole initial stream transition,
-          // then smoothly shrink to small (~9.5px) ONLY after the room wireframe forms.
-          const baseSize = 21 * (1 - roomLockFactor) + 9.5 * roomLockFactor;
-          const minSize = Math.round(16 * (1 - roomLockFactor) + 8 * roomLockFactor);
-          const maxSize = Math.round(25 * (1 - roomLockFactor) + 11 * roomLockFactor);
+          // Keep identical landing page size (~22px-24px) throughout the initial stream transition,
+          // then smoothly settle into a slightly larger, comfortably readable size (~12.5px - 14px) after room wireframe forms.
+          const baseSize = 22 * (1 - roomLockFactor) + 12.5 * roomLockFactor;
+          const minSize = Math.round(18 * (1 - roomLockFactor) + 10 * roomLockFactor);
+          const maxSize = Math.round(26 * (1 - roomLockFactor) + 14 * roomLockFactor);
           const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
           
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
           // Refined contrast: clearly visible but subtle and non-congested
-          const depthAlpha = Math.max(0.3, Math.min(0.95, 2.4 / dist));
+          const depthAlpha = Math.max(0.35, Math.min(0.95, 2.4 / dist));
           ctx.fillStyle = pt.isBright
             ? `rgba(182, 255, 102, ${0.92 * depthAlpha})`
             : `rgba(225, 235, 245, ${0.72 * depthAlpha})`;
