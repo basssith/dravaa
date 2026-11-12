@@ -161,7 +161,7 @@ export function CompanyWireframeSection() {
       const [x1, y1, z1] = line.p1;
       const [x2, y2, z2] = line.p2;
       const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
-      const step = 0.12;
+      const step = 0.22;
       const count = Math.max(1, Math.floor(len / step));
 
       for (let i = 0; i <= count; i++) {
@@ -350,7 +350,7 @@ export function CompanyWireframeSection() {
         });
       }
 
-      ctx.font = '600 11px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+      ctx.font = '700 18px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 

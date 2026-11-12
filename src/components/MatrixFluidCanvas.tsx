@@ -56,30 +56,29 @@ export function MatrixFluidCanvas() {
 
     let particles: BinaryParticle[] = [];
 
-    // Distinct black and grey palette
+    // High-visibility palette for #393b3d background: clean greys and whites
     const greyShades = [
-      'rgba(18, 18, 18, ',    // deep charcoal black
-      'rgba(38, 38, 38, ',    // black-grey
-      'rgba(65, 65, 65, ',    // dark slate grey
-      'rgba(90, 90, 90, ',    // mid dark grey
-      'rgba(125, 125, 125, ', // medium grey
-      'rgba(160, 160, 160, ', // light muted grey
+      'rgba(240, 245, 250, ', // near white
+      'rgba(215, 222, 230, ', // light silver
+      'rgba(185, 195, 205, ', // medium silver grey
+      'rgba(145, 155, 165, ', // slate grey
+      'rgba(25, 28, 30, ',    // deep charcoal accent
     ];
 
     const initParticles = () => {
       particles = [];
-      const colSpacing = 24; // density
-      const rowSpacing = 28;
+      const colSpacing = 36; // larger spacing for big digits
+      const rowSpacing = 42;
       const cols = Math.ceil(width / colSpacing);
       const rows = Math.ceil(height / rowSpacing);
 
       for (let c = 0; c < cols; c++) {
-        const x = c * colSpacing + (Math.random() - 0.5) * 6;
+        const x = c * colSpacing + (Math.random() - 0.5) * 8;
         for (let r = 0; r < rows; r++) {
-          const y = r * rowSpacing + (Math.random() - 0.5) * 6;
+          const y = r * rowSpacing + (Math.random() - 0.5) * 8;
           const char = Math.random() > 0.5 ? '1' : '0';
           const shade = greyShades[Math.floor(Math.random() * greyShades.length)];
-          const baseOpacity = 0.15 + Math.random() * 0.45;
+          const baseOpacity = 0.25 + Math.random() * 0.55;
 
           particles.push({
             char,
@@ -89,10 +88,10 @@ export function MatrixFluidCanvas() {
             y,
             vx: 0,
             vy: 0,
-            speed: 0.3 + Math.random() * 0.6,
+            speed: 0.35 + Math.random() * 0.7,
             opacity: baseOpacity,
             baseColor: shade,
-            size: 11 + Math.random() * 3,
+            size: 20 + Math.random() * 4,
             changeTimer: Math.floor(Math.random() * 200),
           });
         }
@@ -151,7 +150,7 @@ export function MatrixFluidCanvas() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      ctx.font = '500 13px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+      ctx.font = '700 20px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 

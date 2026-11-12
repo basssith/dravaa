@@ -1,7 +1,6 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
 import { CompanyWireframeSection } from '@/components/CompanyWireframeSection';
-import { EyeBlinkTransition } from '@/components/EyeBlinkTransition';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
@@ -23,17 +22,16 @@ const COMPANION = [
 export default function Home() {
   return (
     <>
-      <EyeBlinkTransition />
       <section
         id="hero"
         data-hero
-        className="relative flex min-h-svh flex-col justify-end overflow-hidden px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 lg:pb-12"
+        className="relative flex min-h-svh flex-col justify-end overflow-hidden px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 lg:pb-12 bg-[#393b3d]"
       >
         <MatrixFluidCanvas />
 
         {/* Bottom Left Content: just THE DRAVA with DRAVA in green rectangle box */}
         <div className="relative z-10 mt-auto flex flex-wrap items-baseline gap-3 sm:gap-4 pb-4">
-          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight uppercase text-ink leading-none">
+          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight uppercase text-white leading-none">
             <span>THE </span>
             <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
               DRAVA
@@ -42,12 +40,12 @@ export default function Home() {
         </div>
 
         {/* Bottom edge scroll cue */}
-        <div className="relative z-10 flex items-center justify-between border-t border-line pt-4 lg:pt-5">
-          <p className="tag tracking-widest text-ink-2 font-mono text-xs">
+        <div className="relative z-10 flex items-center justify-between border-t border-white/20 pt-4 lg:pt-5">
+          <p className="tag tracking-widest text-[#d0d4dc] font-mono text-xs">
             [00] INTRO
           </p>
-          <p className="tag flex items-center gap-3">
-            <i aria-hidden="true" className="h-7 w-px animate-cue bg-ink" />
+          <p className="tag flex items-center gap-3 text-[#d0d4dc]">
+            <i aria-hidden="true" className="h-7 w-px animate-cue bg-white" />
             Scroll to explore
           </p>
         </div>
