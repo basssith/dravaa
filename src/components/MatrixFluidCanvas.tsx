@@ -56,18 +56,9 @@ export function MatrixFluidCanvas() {
 
     let particles: BinaryParticle[] = [];
 
-    // High-visibility palette for #393b3d background: clean greys and whites
-    const greyShades = [
-      'rgba(240, 245, 250, ', // near white
-      'rgba(215, 222, 230, ', // light silver
-      'rgba(185, 195, 205, ', // medium silver grey
-      'rgba(145, 155, 165, ', // slate grey
-      'rgba(25, 28, 30, ',    // deep charcoal accent
-    ];
-
     const initParticles = () => {
       particles = [];
-      const colSpacing = 36; // larger spacing for big digits
+      const colSpacing = 36; // prominent spacing for large digits
       const rowSpacing = 42;
       const cols = Math.ceil(width / colSpacing);
       const rows = Math.ceil(height / rowSpacing);
@@ -77,8 +68,11 @@ export function MatrixFluidCanvas() {
         for (let r = 0; r < rows; r++) {
           const y = r * rowSpacing + (Math.random() - 0.5) * 8;
           const char = Math.random() > 0.5 ? '1' : '0';
-          const shade = greyShades[Math.floor(Math.random() * greyShades.length)];
-          const baseOpacity = 0.25 + Math.random() * 0.55;
+          
+          // Green accent (~25% of digits like in second page) & White/Silver
+          const isGreen = Math.random() < 0.25;
+          const baseColor = isGreen ? 'rgba(182, 255, 102, ' : 'rgba(235, 240, 248, ';
+          const baseOpacity = isGreen ? 0.75 + Math.random() * 0.25 : 0.45 + Math.random() * 0.45;
 
           particles.push({
             char,
@@ -90,7 +84,7 @@ export function MatrixFluidCanvas() {
             vy: 0,
             speed: 0.35 + Math.random() * 0.7,
             opacity: baseOpacity,
-            baseColor: shade,
+            baseColor,
             size: 20 + Math.random() * 4,
             changeTimer: Math.floor(Math.random() * 200),
           });
