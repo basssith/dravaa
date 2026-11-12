@@ -143,100 +143,74 @@ export function CompanyWireframeSection() {
 
     const wireframeLines = buildInteriorWireframe();
 
-    // Full-screen matrix binary grid (EXACT match to landing page MatrixFluidCanvas)
-    interface GridBinaryParticle {
+    interface MorphBinaryParticle {
       char: string;
-      originX: number;
-      originY: number;
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      speed: number;
-      opacity: number;
-      baseColor: string;
-      isGreen: boolean;
-      changeTimer: number;
+      streamX: number;
+      streamY: number;
+      speedY: number;
+      tx3d: number;
+      ty3d: number;
+      tz3d: number;
+      isBright: boolean;
+      flipTimer: number;
     }
 
-    let gridParticles: GridBinaryParticle[] = [];
+    const particles: MorphBinaryParticle[] = [];
 
-    const initParticles = () => {
-      gridParticles = [];
-      const colSpacing = 36; // exact spacing as landing page
-      const rowSpacing = 42;
-      const cols = Math.ceil(width / colSpacing);
-      const rows = Math.ceil(height / rowSpacing);
+    wireframeLines.forEach((line) => {
+      const [x1, y1, z1] = line.p1;
+      const [x2, y2, z2] = line.p2;
+      const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
+      const step = 0.22;
+      const count = Math.max(1, Math.floor(len / step));
 
-      for (let c = 0; c < cols; c++) {
-        const x = c * colSpacing + (Math.random() - 0.5) * 8;
-        for (let r = 0; r < rows; r++) {
-          const y = r * rowSpacing + (Math.random() - 0.5) * 8;
-          const char = Math.random() > 0.5 ? '1' : '0';
+      for (let i = 0; i <= count; i++) {
+        const t = i / count;
+        const px = x1 + (x2 - x1) * t;
+        const py = y1 + (y2 - y1) * t;
+        const pz = z1 + (z2 - z1) * t;
 
-          // 25% neon green #b6ff66 and 75% crisp white/silver, exact match to landing page
-          const isGreen = Math.random() < 0.25;
-          const baseColor = isGreen ? 'rgba(182, 255, 102, ' : 'rgba(235, 240, 248, ';
-          const baseOpacity = isGreen ? 0.75 + Math.random() * 0.25 : 0.45 + Math.random() * 0.45;
-
-          gridParticles.push({
-            char,
-            originX: x,
-            originY: y,
-            x,
-            y,
-            vx: 0,
-            vy: 0,
-            speed: 0.55 + Math.random() * 0.85,
-            opacity: baseOpacity,
-            baseColor,
-            isGreen,
-            changeTimer: Math.floor(Math.random() * 200),
-          });
-        }
+        particles.push({
+          char: Math.random() > 0.5 ? '1' : '0',
+          streamX: (Math.random() - 0.5) * 4.2,
+          streamY: (Math.random() - 0.5) * 3.5,
+          speedY: 0.003 + Math.random() * 0.006,
+          tx3d: px,
+          ty3d: py,
+          tz3d: pz,
+          isBright: Math.random() < 0.22,
+          flipTimer: Math.floor(Math.random() * 120),
+        });
       }
-    };
+    });
 
-    // 3D wireframe interior anchor vertices
-    interface WireVertex {
+    // Screen-filling matrix binary field + wireframe morph particles
+    const freeParticles: Array<{
       x: number;
       y: number;
       z: number;
+      vy: number;
       char: string;
-      timer: number;
+      isGreen: boolean;
+      opacity: number;
+    }> = [];
+
+    for (let i = 0; i < 450; i++) {
+      freeParticles.push({
+        x: (Math.random() - 0.5) * 8.5,
+        y: (Math.random() - 0.5) * 5.5,
+        z: -1.2 + Math.random() * 4.8,
+        vy: -0.003 - Math.random() * 0.005,
+        char: Math.random() > 0.5 ? '1' : '0',
+        isGreen: Math.random() < 0.25,
+        opacity: 0.35 + Math.random() * 0.55,
+      });
     }
-    const wireVertices: WireVertex[] = [];
-    wireframeLines.forEach((line) => {
-      wireVertices.push({
-        x: line.p1[0],
-        y: line.p1[1],
-        z: line.p1[2],
-        char: Math.random() > 0.5 ? '1' : '0',
-        timer: Math.floor(Math.random() * 100),
-      });
-      wireVertices.push({
-        x: line.p2[0],
-        y: line.p2[1],
-        z: line.p2[2],
-        char: Math.random() > 0.5 ? '1' : '0',
-        timer: Math.floor(Math.random() * 100),
-      });
-    });
 
     let scrollProgress = 0;
     let targetProgress = 0;
-
-    // Mouse & Fluid physics state
-    const mouse = {
-      x: -1000,
-      y: -1000,
-      prevX: -1000,
-      prevY: -1000,
-      vx: 0,
-      vy: 0,
-      radius: 140,
-      active: false,
-    };
+    let mouseX = 0;
+    let mouseY = 0;
     let targetRotY = 0;
     let targetRotX = 0;
     let currRotY = 0;
@@ -244,36 +218,14 @@ export function CompanyWireframeSection() {
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
-      const currentX = e.clientX - rect.left;
-      const currentY = e.clientY - rect.top;
-
-      if (mouse.prevX !== -1000) {
-        mouse.vx = (currentX - mouse.prevX) * 0.4;
-        mouse.vy = (currentY - mouse.prevY) * 0.4;
-      }
-      mouse.prevX = mouse.x = currentX;
-      mouse.prevY = mouse.y = currentY;
-      mouse.active = true;
-
-      // 3D camera parallax tilt
-      const normX = currentX / width - 0.5;
-      const normY = currentY / height - 0.5;
-      targetRotY = normX * 0.45;
-      targetRotX = -normY * 0.25;
-    };
-
-    const onPointerLeave = () => {
-      mouse.active = false;
-      mouse.x = -1000;
-      mouse.y = -1000;
-      mouse.vx = 0;
-      mouse.vy = 0;
-      targetRotY = 0;
-      targetRotX = 0;
+      if (e.clientY < rect.top || e.clientY > rect.bottom) return;
+      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
+      targetRotY = mouseX * 0.45;
+      targetRotX = -mouseY * 0.25;
     };
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerleave', onPointerLeave);
 
     const handleResize = () => {
       const rect = container.getBoundingClientRect();
@@ -285,8 +237,6 @@ export function CompanyWireframeSection() {
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
-
-      initParticles();
     };
 
     handleResize();
@@ -382,80 +332,10 @@ export function CompanyWireframeSection() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // Always render at the EXACT same 20px monospace font size as landing page
-      ctx.font = '700 20px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-
-      const radiusSq = mouse.radius * mouse.radius;
-
-      // 1. Full-screen binary matrix (downward flow, identical size & colors to landing page)
-      for (let i = 0; i < gridParticles.length; i++) {
-        const p = gridParticles[i];
-
-        // Random matrix digit flip
-        p.changeTimer++;
-        if (p.changeTimer > 180) {
-          p.char = p.char === '1' ? '0' : '1';
-          p.changeTimer = 0;
-        }
-
-        // Fluid downward matrix drift (strictly flowing down)
-        p.originY += p.speed;
-        if (p.originY > height + 25) {
-          p.originY = -25;
-          p.y = -25;
-        }
-
-        // Interaction with mouse (fluid push & swirl)
-        if (mouse.active) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const distSq = dx * dx + dy * dy;
-
-          if (distSq < radiusSq && distSq > 0) {
-            const dist = Math.sqrt(distSq);
-            const force = (1 - dist / mouse.radius);
-
-            // Push away
-            const pushX = (dx / dist) * force * 12;
-            const pushY = (dy / dist) * force * 12;
-
-            // Swirl
-            const swirlX = -(dy / dist) * force * (mouse.vx * 0.5 + 2);
-            const swirlY = (dx / dist) * force * (mouse.vy * 0.5 + 2);
-
-            p.vx += pushX + swirlX * 0.3;
-            p.vy += pushY + swirlY * 0.3;
-          }
-        }
-
-        // Spring force returning particle smoothly to stream position
-        const targetX = p.originX;
-        const targetY = p.originY;
-        const homeDx = targetX - p.x;
-        const homeDy = targetY - p.y;
-
-        p.vx += homeDx * 0.045;
-        p.vy += homeDy * 0.045;
-        p.vx *= 0.88;
-        p.vy *= 0.88;
-        p.x += p.vx;
-        p.y += p.vy;
-
-        // Dynamic opacity based on fluid velocity
-        const vel = Math.hypot(p.vx, p.vy);
-        const dynamicAlpha = Math.min(p.opacity + vel * 0.08, 0.95);
-
-        ctx.fillStyle = `${p.baseColor}${dynamicAlpha})`;
-        ctx.fillText(p.char, p.x, p.y);
-      }
-
-      // 2. 3D Architectural wireframe lines emergence on scroll
-      if (morphFactor > 0.08) {
-        const wireAlpha = Math.min(0.65, (morphFactor - 0.08) * 1.6);
-        ctx.lineWidth = 1.2;
-        ctx.strokeStyle = `rgba(182, 255, 102, ${wireAlpha * 0.55})`;
+      if (morphFactor > 0.45) {
+        const wireAlpha = Math.min(0.4, (morphFactor - 0.45) * 1.2);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(70, 75, 85, ${wireAlpha})`;
 
         wireframeLines.forEach((line) => {
           const [x1, y1, z1] = line.p1;
@@ -471,21 +351,53 @@ export function CompanyWireframeSection() {
             ctx.stroke();
           }
         });
-
-        // Key wireframe node accents (rendered in exact 20px size)
-        wireVertices.forEach((wv) => {
-          wv.timer++;
-          if (wv.timer > 100) {
-            wv.char = wv.char === '1' ? '0' : '1';
-            wv.timer = 0;
-          }
-          const [px, py, dist, visible] = project(wv.x, wv.y, wv.z, cameraPitch, cameraYaw, cameraZ);
-          if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-            ctx.fillStyle = `rgba(182, 255, 102, ${wireAlpha * 0.95})`;
-            ctx.fillText(wv.char, px, py);
-          }
-        });
       }
+
+      ctx.font = '700 18px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // Wireframe binary points matching exact landing page size (20px font), color and prominence
+      particles.forEach((pt) => {
+        pt.flipTimer++;
+        if (pt.flipTimer > 90) {
+          pt.char = pt.char === '1' ? '0' : '1';
+          pt.flipTimer = 0;
+        }
+
+        pt.streamY += pt.speedY;
+        if (pt.streamY > 2.2) pt.streamY = -2.2;
+
+        const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
+        const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
+        const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
+
+        const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
+        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
+          ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+          ctx.fillStyle = pt.isBright
+            ? 'rgba(182, 255, 102, 0.95)'
+            : 'rgba(235, 240, 248, 0.92)';
+          ctx.fillText(pt.char, px, py);
+        }
+      });
+
+      // Full-screen ambient binary numbers with exact landing page size (20px) and colors
+      freeParticles.forEach((fp) => {
+        fp.y += fp.vy;
+        if (fp.y < -2.6) fp.y = 2.6;
+
+        const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
+        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
+          ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+          ctx.fillStyle = fp.isGreen
+            ? 'rgba(182, 255, 102, 0.92)'
+            : 'rgba(235, 240, 248, 0.90)';
+          ctx.fillText(fp.char, px, py);
+        }
+      });
 
       ctx.restore();
       animId = requestAnimationFrame(render);
@@ -497,7 +409,6 @@ export function CompanyWireframeSection() {
       cancelAnimationFrame(animId);
       pinTrigger.kill();
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerleave', onPointerLeave);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
