@@ -85,46 +85,46 @@ export function EcosystemScrollSection() {
         {
           xPercent: -105,
           opacity: 0,
-          duration: 1,
+          duration: 1.2,
           ease: 'power2.inOut',
         },
         'p0'
       );
     }
 
-    // 2. The SAME 01 glides from the right side towards the left into its docked product position!
+    // 2. The 01 MOVES FIRST: glides from the right side towards the left into position!
     if (slide0Num) {
       tl.to(
         slide0Num,
         {
           x: 0,
-          duration: 1,
+          duration: 1.2,
           ease: 'power2.inOut',
         },
         'p0'
       );
     }
 
-    // 3. Simultaneously, product monitor image, details, and vertical line glide in from the right to join 01!
+    // 3. AFTER 01 has started moving, the product monitor image, details, and vertical line come in!
     if (slide0Img) {
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-        'p0+=0.15'
+        { x: 0, opacity: 1, duration: 1.0, ease: 'power2.out' },
+        'p0+=0.6'
       );
     }
     if (slide0Details) {
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-        'p0+=0.25'
+        { x: 0, opacity: 1, duration: 1.0, ease: 'power2.out' },
+        'p0+=0.75'
       );
     }
     if (slide0Divider) {
       tl.to(
         slide0Divider,
-        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-        'p0+=0.25'
+        { x: 0, opacity: 1, duration: 1.0, ease: 'power2.out' },
+        'p0+=0.85'
       );
     }
 
@@ -339,11 +339,11 @@ export function EcosystemScrollSection() {
                   </TransitionLink>
                 </div>
 
-                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (With generous breathing distance after details) */}
+                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (With extra generous space after details) */}
                 <div
                   data-flow-divider
                   style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-12 mr-6 xl:ml-16 xl:mr-8 will-change-transform"
+                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-20 mr-10 xl:ml-32 xl:mr-14 will-change-transform"
                 />
 
               </div>
