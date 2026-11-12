@@ -218,14 +218,14 @@ export function EcosystemScrollSection() {
           data-left-col
           className="w-full lg:w-[60%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none will-change-transform"
         >
-          {/* Top Tag: Green Box for 03 & White Text in Sentence Case */}
+          {/* Top Tag: Green Box for 03 & White Text PRODUCTS without rounded pill stroke */}
           <div className="pt-2">
-            <div className="inline-flex items-center gap-2.5 border border-white/20 bg-white/5 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-sm">
+            <div className="inline-flex items-center gap-2.5">
               <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
                 03
               </span>
-              <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold pr-1">
-                The products
+              <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
+                PRODUCTS
               </span>
             </div>
           </div>
