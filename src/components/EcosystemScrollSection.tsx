@@ -339,29 +339,17 @@ export function EcosystemScrollSection() {
                   </TransitionLink>
                 </div>
 
-                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (With extra generous space after details) */}
-                <div
-                  data-flow-divider
-                  style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-20 mr-10 xl:ml-32 xl:mr-14 will-change-transform"
-                />
+                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (Shown for products 1, 2, 3; omitted for 4th product) */}
+                {i < apps.length - 1 && (
+                  <div
+                    data-flow-divider
+                    style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
+                    className="hidden lg:block w-[1px] h-screen shrink-0 ml-20 mr-10 xl:ml-32 xl:mr-14 will-change-transform"
+                  />
+                )}
 
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* Floating Right Pagination Indicators */}
-        <div className="hidden lg:flex fixed right-4 top-1/2 -translate-y-1/2 z-30 flex-col gap-2 pointer-events-none">
-          {apps.map((_, i) => (
-            <span
-              key={i}
-              style={{
-                backgroundColor: i === activeIdx ? logoGreenTheme.primary : 'rgba(255, 255, 255, 0.2)',
-                height: i === activeIdx ? '28px' : '6px',
-              }}
-              className="w-1.5 rounded-full transition-all duration-300"
-            />
           ))}
         </div>
 
