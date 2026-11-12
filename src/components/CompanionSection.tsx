@@ -18,13 +18,18 @@ export function CompanionSection() {
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           
           {/* --- LEFT SIDE: TWO-LINE HEADLINE & REDUCED SUBHEADING ---
-              Line 1: Meet the Drava (white)
-              Line 2: Companion. (BLACK font inside full solid green rectangle covering entire word, no shadow)
+              Line 1: Meet the (white) [Drava in solid green rectangle with black text]
+              Line 2: Companion. (white)
           */}
           <div className="lg:col-span-7 flex flex-col justify-center">
-            <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold tracking-tight leading-[1.08] text-white">
-              <span className="block text-white">Meet the Drava</span>
-              <span className="inline-block mt-3 bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-[6px] tracking-tight">
+            <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.8rem)] font-bold tracking-tight leading-[1.12] text-white">
+              <span className="block text-white">
+                Meet the{' '}
+                <span className="inline-block bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 sm:py-1 rounded-[6px] tracking-tight">
+                  Drava
+                </span>
+              </span>
+              <span className="block mt-2 text-white">
                 Companion.
               </span>
             </h2>
