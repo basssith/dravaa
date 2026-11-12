@@ -37,20 +37,19 @@ export function EcosystemScrollSection() {
     const slide0Img = panels[0].querySelector<HTMLElement>('[data-flow-img]');
     const slide0Details = panels[0].querySelector<HTMLElement>('[data-flow-details]');
 
-    const isDesktop = window.innerWidth >= 1024;
-    // Initial right position of 01: centered nicely inside the right 40% area
-    // In panels[0], the contents are centered at 50vw. The 40% column center is at 80vw.
-    // So shifting 01 by +30vw places it squarely in the middle of the right side.
-    const initialCenterX = isDesktop ? window.innerWidth * 0.30 : 0;
-
     // Slide 0 setup:
     gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
-    if (slide0Num) gsap.set(slide0Num, { x: initialCenterX, scale: 1.1, opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { x: 300, opacity: 0 });
-    if (slide0Details) gsap.set(slide0Details, { x: 350, opacity: 0 });
+    // In Slide 0, the layout container has [01, Monitor, Details].
+    // Left column ends at 60vw. The right area is 60vw to 100vw, center is at 80vw.
+    // Slide 0 starts at left: 80vw (so its 01 is centered at 80vw, resting cleanly in the right space).
+    // Monitor and details start hidden.
+    gsap.set(panels[0], { left: '80vw', xPercent: -50 });
+    if (slide0Num) gsap.set(slide0Num, { opacity: 1 });
+    if (slide0Img) gsap.set(slide0Img, { opacity: 0, scale: 0.9 });
+    if (slide0Details) gsap.set(slide0Details, { opacity: 0, x: 50 });
 
     for (let i = 1; i < panels.length; i++) {
-      gsap.set(panels[i], { xPercent: 100, opacity: 0, pointerEvents: 'none' });
+      gsap.set(panels[i], { left: '50vw', xPercent: 100, opacity: 0, pointerEvents: 'none' });
     }
 
     const tl = gsap.timeline({
@@ -85,27 +84,25 @@ export function EcosystemScrollSection() {
       );
     }
 
-    // Number 01 glides from the right side into its centered product position
-    if (slide0Num) {
-      tl.to(
-        slide0Num,
-        { x: 0, scale: 1, duration: 1, ease: 'power2.inOut' },
-        'p0'
-      );
-    }
+    // Slide 0 glides from 80vw (right side) to 50vw (center of full screen)
+    tl.to(
+      panels[0],
+      { left: '50vw', duration: 1, ease: 'power2.inOut' },
+      'p0'
+    );
 
-    // Monitor image and specs glide in from the right to complete Product 01 full view
+    // Monitor image and specs fade & glide in cleanly
     if (slide0Img) {
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-        'p0+=0.15'
+        { opacity: 1, scale: 1, duration: 0.8, ease: 'power2.out' },
+        'p0+=0.2'
       );
     }
     if (slide0Details) {
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+        { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' },
         'p0+=0.25'
       );
     }
@@ -126,7 +123,7 @@ export function EcosystemScrollSection() {
       tl.to(
         prev,
         {
-          xPercent: -100,
+          xPercent: -150,
           opacity: 0,
           pointerEvents: 'none',
           duration: 1,
@@ -135,12 +132,13 @@ export function EcosystemScrollSection() {
         step
       );
 
-      // Next slide glides in from right
+      // Next slide glides in from right to center (left: 50vw, xPercent: -50)
       tl.fromTo(
         next,
-        { xPercent: 100, opacity: 0, pointerEvents: 'none' },
+        { left: '50vw', xPercent: 100, opacity: 0, pointerEvents: 'none' },
         {
-          xPercent: 0,
+          left: '50vw',
+          xPercent: -50,
           opacity: 1,
           pointerEvents: 'auto',
           duration: 1,
@@ -305,13 +303,7 @@ export function EcosystemScrollSection() {
                   </div>
                 </div>
 
-                {/* VERTICAL GREEN LINE DIVIDER */}
-                <div
-                  style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                  className="hidden lg:block w-[1px] h-[340px] xl:h-[400px] shrink-0 mx-2"
-                />
-
-                {/* 3. RIGHT: Product Details & Specifications */}
+                {/* 3. CENTER-RIGHT: Product Details & Specifications */}
                 <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[340px] shrink-0 will-change-transform">
                   <h3 className="font-display text-[clamp(2.2rem,2rem+1.8vw,3.6rem)] font-bold leading-none tracking-tight text-white">
                     {app.name}
@@ -344,6 +336,12 @@ export function EcosystemScrollSection() {
                     <Arrow className="size-4 -rotate-45 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </TransitionLink>
                 </div>
+
+                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (After product details) */}
+                <div
+                  style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
+                  className="hidden lg:block w-[1px] h-screen shrink-0 mx-6 xl:mx-10"
+                />
 
               </div>
             </div>
