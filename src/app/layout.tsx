@@ -46,7 +46,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Preloader />
           <CleanMinimalBackground />
           <Cursor />
-          <GlassFluidCanvas />
           <Header />
           <Menu />
           <main id="main" className="relative z-1">
