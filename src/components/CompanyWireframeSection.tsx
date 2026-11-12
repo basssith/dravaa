@@ -102,7 +102,7 @@ function buildInteriorWireframe(): Line3D[] {
     lines.push({ p1: [cx, 0.88, cz - 0.2], p2: [cx, 0.88, cz + 0.2] });
   });
 
-  // Screen
+  // Screen & Console
   const scrX1 = -1.3;
   const scrX2 = 1.3;
   const scrY1 = -0.7;
@@ -114,7 +114,6 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [scrX2, scrY2, scrZ], p2: [scrX1, scrY2, scrZ] });
   lines.push({ p1: [scrX1, scrY2, scrZ], p2: [scrX1, scrY1, scrZ] });
 
-  // Console
   lines.push({ p1: [-1.5, 0.52, -0.85], p2: [1.5, 0.52, -0.85] });
   lines.push({ p1: [1.5, 0.52, -0.85], p2: [1.5, 0.88, -0.85] });
   lines.push({ p1: [1.5, 0.88, -0.85], p2: [-1.5, 0.88, -0.85] });
@@ -144,14 +143,11 @@ export function CompanyWireframeSection() {
 
     const wireframeLines = buildInteriorWireframe();
 
-    // 1. Target wireframe positions
     interface MorphBinaryParticle {
       char: string;
-      // Landing 2D stream start pos
       streamX: number;
       streamY: number;
       speedY: number;
-      // 3D wireframe destination
       tx3d: number;
       ty3d: number;
       tz3d: number;
@@ -188,7 +184,6 @@ export function CompanyWireframeSection() {
       }
     });
 
-    // Ambient floating particles
     const freeParticles: Array<{
       x: number;
       y: number;
@@ -209,7 +204,6 @@ export function CompanyWireframeSection() {
       });
     }
 
-    // Scroll progress normalized [0, 1] across pinned section
     let scrollProgress = 0;
     let targetProgress = 0;
     let mouseX = 0;
@@ -246,13 +240,14 @@ export function CompanyWireframeSection() {
     window.addEventListener('resize', handleResize);
 
     // PINNED SCROLL TIMELINE:
-    // Stage 1 (0 -> 35%): Binary numbers assemble smoothly from free fluid stream into the architectural 3D wireframe interior.
-    // Stage 2 (35% -> 55%): Pure wireframe interior camera navigation.
-    // Stage 3 (55% -> 100%): Sentences appear one-by-one with green box on Drava!
+    // 0 -> 35%: Wireframe assemble & exploration
+    // 35% -> 55%: Left-side top block appears
+    // 55% -> 75%: Center block appears
+    // 75% -> 100%: Right-side bottom block appears (with DRAVA)
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=240%',
+      end: '+=280%',
       pin: true,
       scrub: 1.2,
       onUpdate: (self) => {
@@ -261,24 +256,34 @@ export function CompanyWireframeSection() {
     });
 
     if (textWrapper) {
-      const lines = textWrapper.querySelectorAll<HTMLElement>('[data-sentence]');
+      const tag = textWrapper.querySelector<HTMLElement>('[data-tag]');
+      const block1 = textWrapper.querySelector<HTMLElement>('[data-block="1"]');
+      const block2 = textWrapper.querySelector<HTMLElement>('[data-block="2"]');
+      const block3 = textWrapper.querySelector<HTMLElement>('[data-block="3"]');
+
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
           start: 'top top',
-          end: '+=240%',
+          end: '+=280%',
           scrub: 1.2,
         },
       });
 
-      // Initially hidden while wireframe assembles
-      tl.set(lines, { opacity: 0, y: 35 });
+      // Initially all content is hidden while exploring the pure binary wireframe
+      tl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
 
-      // Sentence reveals sequentially
-      tl.to(lines[0], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.42);
-      tl.to(lines[1], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.58);
-      tl.to(lines[2], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.74);
-      tl.to(lines[3], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.88);
+      // Step 1: Tag appears
+      tl.to(tag, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.25);
+
+      // Step 2: Left-side top 2 lines appear
+      tl.to(block1, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.38);
+
+      // Step 3: Center 2 lines appear
+      tl.to(block2, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.58);
+
+      // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
+      tl.to(block3, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.78);
     }
 
     const project = (
@@ -314,7 +319,6 @@ export function CompanyWireframeSection() {
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
-      // Morph progress: from free stream (0) to fully constructed wireframe (1)
       const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.0));
 
       const cameraZ = 2.8 - scrollProgress * 1.5;
@@ -325,7 +329,6 @@ export function CompanyWireframeSection() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // Render wireframe outline as morphFactor builds
       if (morphFactor > 0.45) {
         const wireAlpha = Math.min(0.4, (morphFactor - 0.45) * 1.2);
         ctx.lineWidth = 1;
@@ -351,7 +354,6 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Binary particles morphing into wireframe
       particles.forEach((pt) => {
         pt.flipTimer++;
         if (pt.flipTimer > 90) {
@@ -359,11 +361,9 @@ export function CompanyWireframeSection() {
           pt.flipTimer = 0;
         }
 
-        // Drifting stream coordinates
         pt.streamY += pt.speedY;
         if (pt.streamY > 1.8) pt.streamY = -1.8;
 
-        // Interpolate between free stream and 3D wireframe location
         const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
         const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
         const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
@@ -378,7 +378,6 @@ export function CompanyWireframeSection() {
         }
       });
 
-      // Ambient particles
       freeParticles.forEach((fp) => {
         fp.y += fp.vy;
         if (fp.y < -1.4) fp.y = 1.2;
@@ -410,7 +409,7 @@ export function CompanyWireframeSection() {
     <section
       ref={containerRef}
       id="intro"
-      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-center items-center overflow-hidden"
+      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-between py-12 lg:py-16 overflow-hidden"
     >
       {/* 3D Wireframe Interior Binary Canvas */}
       <div
@@ -433,34 +432,57 @@ export function CompanyWireframeSection() {
         }}
       />
 
-      {/* Sequential sentence reveal after wireframe assembly */}
+      {/* Content wrapper with stepped diagonal layout: Left top -> Center -> Right bottom */}
       <div
         ref={textWrapperRef}
-        className="wrap relative z-10 flex flex-col items-center text-center px-4 max-w-[1050px] mx-auto pointer-events-auto"
+        className="wrap relative z-10 flex flex-col justify-between min-h-[82vh] w-full px-gutter pointer-events-auto"
       >
-        <p
-          data-sentence
-          className="tag mb-6 text-[#888c94] tracking-widest uppercase text-xs sm:text-sm font-mono border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md bg-black/50"
+        {/* Top bar with Tag */}
+        <div className="flex items-center justify-between w-full pt-4">
+          <p
+            data-tag
+            className="tag text-[#888c94] tracking-widest uppercase text-xs sm:text-sm font-mono border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md bg-black/50"
+          >
+            [01] What we do
+          </p>
+        </div>
+
+        {/* 1. LEFT SIDE ABOVE: First Two Lines */}
+        <div
+          data-block="1"
+          className="self-start max-w-[40ch] text-left pt-4 lg:pt-6 will-change-transform"
         >
-          [01] What we do
-        </p>
+          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold uppercase tracking-tight leading-[1.12] text-white">
+            <span className="block">Connecting everything,</span>
+            <span className="block text-[#c8ccd6]">designing for clarity,</span>
+          </h2>
+        </div>
 
-        <div className="font-display text-[clamp(1.75rem,1.3rem+2.6vw,3.6rem)] font-bold uppercase tracking-tight leading-[1.2] text-white max-w-[28ch] mx-auto text-center space-y-3 sm:space-y-4">
-          <div data-sentence className="block will-change-transform">
-            Connecting everything, designing for clarity,
-          </div>
+        {/* 2. CENTER: Second Two Lines */}
+        <div
+          data-block="2"
+          className="self-center max-w-[42ch] text-center my-auto py-6 will-change-transform"
+        >
+          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold uppercase tracking-tight leading-[1.12] text-white">
+            <span className="block">bringing it all</span>
+            <span className="block text-[#c8ccd6]">into one unified space.</span>
+          </h2>
+        </div>
 
-          <div data-sentence className="block text-[#d0d4dc] will-change-transform">
-            bringing it all into one unified space.
-          </div>
-
-          <div data-sentence className="block will-change-transform">
-            The new era of{' '}
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-normal mx-1 align-middle whitespace-nowrap shadow-none leading-tight">
-              DRAVA
-            </span>{' '}
-            — where work flows effortlessly.
-          </div>
+        {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for DRAVA) */}
+        <div
+          data-block="3"
+          className="self-end max-w-[42ch] text-right pb-4 lg:pb-6 will-change-transform"
+        >
+          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold uppercase tracking-tight leading-[1.12] text-white">
+            <span className="block">
+              The new era of{' '}
+              <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1">
+                DRAVA
+              </span>
+            </span>
+            <span className="block text-[#c8ccd6] mt-1">— where work flows effortlessly.</span>
+          </h2>
         </div>
       </div>
     </section>
