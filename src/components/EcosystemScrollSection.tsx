@@ -28,18 +28,26 @@ export function EcosystemScrollSection() {
     const panels = container.querySelectorAll<HTMLElement>('[data-product-slide]');
     if (panels.length === 0) return;
 
-    // Slide 0: Initially present on screen with number 01 centered in right side
+    // LEFT SIDE: Pinned Content Column
+    const leftCol = container.querySelector<HTMLElement>('[data-left-col]');
+
+    // Slide 0 elements
     const slide0Num = panels[0].querySelector<HTMLElement>('[data-flow-num]');
     const slide0Img = panels[0].querySelector<HTMLElement>('[data-flow-img]');
     const slide0Details = panels[0].querySelector<HTMLElement>('[data-flow-details]');
 
+    // Calculate initial center position of the 40% right section:
+    // With leftCol taking 60% of viewport width (vw), the 40% right section is from 0.6*vw to 1.0*vw.
+    // Center of the 40% section is at 0.8*vw (i.e. +30% of viewport width from the right stage's left edge).
+    // The slide container is centered across the whole viewport (inset-0).
+    // So to position '01' initially in the center of that 40% zone:
     const isDesktop = window.innerWidth >= 1024;
-    const initialCenterX = isDesktop ? 260 : 0;
+    const initialCenterX = isDesktop ? window.innerWidth * 0.3 : 0;
 
     gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
     if (slide0Num) gsap.set(slide0Num, { x: initialCenterX, scale: 1.15, opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { x: 260, opacity: 0 });
-    if (slide0Details) gsap.set(slide0Details, { x: 300, opacity: 0 });
+    if (slide0Img) gsap.set(slide0Img, { x: 400, opacity: 0 });
+    if (slide0Details) gsap.set(slide0Details, { x: 450, opacity: 0 });
 
     for (let i = 1; i < panels.length; i++) {
       gsap.set(panels[i], { xPercent: 125, opacity: 0, pointerEvents: 'none' });
@@ -62,22 +70,37 @@ export function EcosystemScrollSection() {
       },
     });
 
-    // 1. Initial Flow for Product 01: 01 glides smoothly from center to docked position,
-    // and monitor & details glide in from right side to join it
+    // 1. Initial Flow on Scroll:
+    // Left column content smoothly glides leftwards outside the viewport!
+    if (leftCol) {
+      tl.to(
+        leftCol,
+        {
+          xPercent: -105,
+          opacity: 0,
+          duration: 1.4,
+          ease: 'power1.inOut',
+        },
+        'p0-in'
+      );
+    }
+
+    // Simultaneously, 01 glides from the right 40% center into its aligned product layout position,
+    // and slide 0 terminal monitor & specs glide in from the right into the viewport!
     if (slide0Num && slide0Img && slide0Details) {
       tl.to(
         slide0Num,
-        { x: 0, scale: 1, duration: 1.3, ease: 'power1.inOut' },
+        { x: 0, scale: 1, duration: 1.4, ease: 'power1.inOut' },
         'p0-in'
       );
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 1.3, ease: 'power1.out' },
+        { x: 0, opacity: 1, duration: 1.4, ease: 'power1.out' },
         'p0-in+=0.15'
       );
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 1.3, ease: 'power1.out' },
+        { x: 0, opacity: 1, duration: 1.4, ease: 'power1.out' },
         'p0-in+=0.25'
       );
     }
@@ -167,8 +190,11 @@ export function EcosystemScrollSection() {
     >
       <div className="relative flex-1 flex flex-col lg:flex-row w-full h-screen">
         
-        {/* LEFT COLUMN: Pinned Content with single vertical green line */}
-        <div className="w-full lg:w-[42%] xl:w-[38%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-14 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none">
+        {/* LEFT COLUMN: 60% Width Pinned Content with single vertical green line that glides out on scroll */}
+        <div
+          data-left-col
+          className="w-full lg:w-[60%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none will-change-transform"
+        >
           {/* Top Tag: Green Box for 03 & White Text in Sentence Case */}
           <div className="pt-2">
             <div className="inline-flex items-center gap-2.5 border border-white/20 bg-white/5 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-sm">
@@ -181,15 +207,15 @@ export function EcosystemScrollSection() {
             </div>
           </div>
 
-          {/* Centered Main Content: 3-line heading in Sentence Case */}
-          <div className="my-auto py-4 max-w-xl">
-            <h2 className="font-display text-[clamp(2.5rem,2rem+3vw,4.8rem)] font-bold tracking-tight leading-[1.04] text-white">
+          {/* Centered Main Content: Larger 3-line heading in Sentence Case taking prominent 60% space */}
+          <div className="my-auto py-6 max-w-3xl">
+            <h2 className="font-display text-[clamp(2.8rem,3rem+4vw,6.5rem)] font-bold tracking-tight leading-[1.02] text-white">
               <span className="block">The product</span>
               <span className="block">changes,</span>
               <span className="block">the experience stays.</span>
             </h2>
 
-            <p className="mt-6 text-sm sm:text-base lg:text-lg text-white/80 leading-relaxed max-w-[40ch] font-normal">
+            <p className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
               Four intelligent systems engineered to unify every environment.
               <br className="hidden sm:inline" />
               One cohesive OS connecting hardware, spaces, and digital workflows.
@@ -213,8 +239,8 @@ export function EcosystemScrollSection() {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: Flowing Animated Products Stage (01 starts in center, flows with scroll) */}
-        <div className="relative flex-1 h-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-10">
+        {/* RIGHT COLUMN: 40% Width Stage for Vertical Line & Number, flowing in on scroll */}
+        <div className="relative w-full lg:w-[40%] flex-1 h-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-8">
           {apps.map((app, i) => (
             <div
               key={app.id}
