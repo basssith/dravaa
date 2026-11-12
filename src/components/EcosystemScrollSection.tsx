@@ -136,25 +136,32 @@ export function EcosystemScrollSection() {
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
+      const prevNum = prev.querySelector<HTMLElement>('[data-flow-num]');
+      const prevImg = prev.querySelector<HTMLElement>('[data-flow-img]');
+      const prevDetails = prev.querySelector<HTMLElement>('[data-flow-details]');
+      const prevDivider = prev.querySelector<HTMLElement>('[data-flow-divider]');
+
       const nextNum = next.querySelector<HTMLElement>('[data-flow-num]');
       const nextImg = next.querySelector<HTMLElement>('[data-flow-img]');
       const nextDetails = next.querySelector<HTMLElement>('[data-flow-details]');
+      const nextDivider = next.querySelector<HTMLElement>('[data-flow-divider]');
       const step = `step-${i + 1}`;
 
-      // Current slide glides out left
+      // Current slide exits left:
+      // The current number moves out left, and monitor/details glide out to the left
       tl.to(
         prev,
         {
           xPercent: -120,
           opacity: 0,
           pointerEvents: 'none',
-          duration: 1,
+          duration: 1.1,
           ease: 'power2.inOut',
         },
         step
       );
 
-      // Next slide glides in from right to center
+      // Next slide container enters into position
       tl.fromTo(
         next,
         { xPercent: 120, opacity: 0, pointerEvents: 'none' },
@@ -162,40 +169,50 @@ export function EcosystemScrollSection() {
           xPercent: 0,
           opacity: 1,
           pointerEvents: 'auto',
-          duration: 1,
+          duration: 1.1,
           ease: 'power2.inOut',
         },
         step
       );
 
-      // Snappy, clean inner entrance for the next slide's components
+      // The next number (e.g. 02, 03, 04) moves into its left docked position first!
       if (nextNum) {
         tl.fromTo(
           nextNum,
-          { opacity: 0.4, scale: 0.95 },
-          { opacity: 1, scale: 1, duration: 0.8, ease: 'power2.out' },
+          { x: 200, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
           `${step}+=0.1`
         );
       }
+
+      // Then the monitor, details, and vertical line glide in from the right to join it!
       if (nextImg) {
         tl.fromTo(
           nextImg,
-          { x: 60, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
-          `${step}+=0.15`
+          { x: 260, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+          `${step}+=0.3`
         );
       }
       if (nextDetails) {
         tl.fromTo(
           nextDetails,
-          { x: 80, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
-          `${step}+=0.2`
+          { x: 300, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+          `${step}+=0.4`
+        );
+      }
+      if (nextDivider) {
+        tl.fromTo(
+          nextDivider,
+          { x: 320, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
+          `${step}+=0.45`
         );
       }
 
       // Resting pause on current product
-      tl.to({}, { duration: 0.5 });
+      tl.to({}, { duration: 0.6 });
     }
 
     return () => {
