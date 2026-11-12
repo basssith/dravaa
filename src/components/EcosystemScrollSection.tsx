@@ -216,15 +216,25 @@ export function EcosystemScrollSection() {
             </p>
           </div>
 
-          {/* Bottom Forward Arrow Button: Only Arrow, No Circular Stroke/Background */}
+          {/* Bottom Forward Arrow Button: Clicking scrolls directly to 01 product section */}
           <div className="pb-2">
-            <TransitionLink
-              href="/applications"
-              aria-label="Explore all products"
-              className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2"
+            <button
+              type="button"
+              onClick={() => {
+                const st = ScrollTrigger.getById('ecosystem-scroll') || ScrollTrigger.getAll().find(t => t.trigger === containerRef.current);
+                if (st) {
+                  // Scroll to the moment 01 Nex product settles into place
+                  const targetScroll = st.start + (st.end - st.start) * 0.16;
+                  window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+                } else if (containerRef.current) {
+                  containerRef.current.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              aria-label="Advance to first product (01 Nex)"
+              className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2 cursor-pointer focus:outline-none"
             >
               <Arrow className="size-8 sm:size-10 text-white group-hover:text-[#b6ff66] transition-all duration-300 group-hover:translate-x-2" />
-            </TransitionLink>
+            </button>
           </div>
         </div>
 
