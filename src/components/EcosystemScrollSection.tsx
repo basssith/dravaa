@@ -39,17 +39,23 @@ export function EcosystemScrollSection() {
 
     // Slide 0 setup:
     gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
-    // In Slide 0, the layout container has [01, Monitor, Details].
-    // Left column ends at 60vw. The right area is 60vw to 100vw, center is at 80vw.
-    // Slide 0 starts at left: 80vw (so its 01 is centered at 80vw, resting cleanly in the right space).
-    // Monitor and details start hidden.
-    gsap.set(panels[0], { left: '80vw', xPercent: -50 });
-    if (slide0Num) gsap.set(slide0Num, { opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { opacity: 0, scale: 0.9 });
-    if (slide0Details) gsap.set(slide0Details, { opacity: 0, x: 50 });
+    // In Slide 0:
+    // Left column takes 60% of viewport width.
+    // The right area is 60% to 100% (middle is at 80vw).
+    // The slide container has [01, Monitor, Details, Divider] centered inside max-w-6xl.
+    // To center 01 in the right 40% area at start:
+    // 01 is near the left edge of max-w-6xl.
+    // We set panel 0 to start at 0, but offset 01, monitor, details:
+    const isDesktop = window.innerWidth >= 1024;
+    // Calculate how much to shift 01 to the right so it sits prominently in the right 40%:
+    const numInitialX = isDesktop ? window.innerWidth * 0.28 : 0;
+
+    if (slide0Num) gsap.set(slide0Num, { x: numInitialX, opacity: 1 });
+    if (slide0Img) gsap.set(slide0Img, { opacity: 0, scale: 0.9, x: 200 });
+    if (slide0Details) gsap.set(slide0Details, { opacity: 0, x: 250 });
 
     for (let i = 1; i < panels.length; i++) {
-      gsap.set(panels[i], { left: '50vw', xPercent: 100, opacity: 0, pointerEvents: 'none' });
+      gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
     }
 
     const tl = gsap.timeline({
@@ -84,18 +90,20 @@ export function EcosystemScrollSection() {
       );
     }
 
-    // Slide 0 glides from 80vw (right side) to 50vw (center of full screen)
-    tl.to(
-      panels[0],
-      { left: '50vw', duration: 1, ease: 'power2.inOut' },
-      'p0'
-    );
+    // Number 01 glides smoothly from its right-side resting spot into its centered layout spot
+    if (slide0Num) {
+      tl.to(
+        slide0Num,
+        { x: 0, duration: 1, ease: 'power2.inOut' },
+        'p0'
+      );
+    }
 
     // Monitor image and specs fade & glide in cleanly
     if (slide0Img) {
       tl.to(
         slide0Img,
-        { opacity: 1, scale: 1, duration: 0.8, ease: 'power2.out' },
+        { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: 'power2.out' },
         'p0+=0.2'
       );
     }
@@ -123,7 +131,7 @@ export function EcosystemScrollSection() {
       tl.to(
         prev,
         {
-          xPercent: -150,
+          xPercent: -120,
           opacity: 0,
           pointerEvents: 'none',
           duration: 1,
@@ -132,13 +140,12 @@ export function EcosystemScrollSection() {
         step
       );
 
-      // Next slide glides in from right to center (left: 50vw, xPercent: -50)
+      // Next slide glides in from right to center
       tl.fromTo(
         next,
-        { left: '50vw', xPercent: 100, opacity: 0, pointerEvents: 'none' },
+        { xPercent: 120, opacity: 0, pointerEvents: 'none' },
         {
-          left: '50vw',
-          xPercent: -50,
+          xPercent: 0,
           opacity: 1,
           pointerEvents: 'auto',
           duration: 1,
