@@ -184,23 +184,26 @@ export function CompanyWireframeSection() {
       }
     });
 
+    // Screen-filling matrix binary field + wireframe morph particles
     const freeParticles: Array<{
       x: number;
       y: number;
       z: number;
       vy: number;
       char: string;
-      color: string;
+      isGreen: boolean;
+      opacity: number;
     }> = [];
 
-    for (let i = 0; i < 140; i++) {
+    for (let i = 0; i < 450; i++) {
       freeParticles.push({
-        x: (Math.random() - 0.5) * 4.5,
-        y: (Math.random() - 0.5) * 2.5,
-        z: -0.8 + Math.random() * 3.6,
-        vy: -0.002 - Math.random() * 0.003,
+        x: (Math.random() - 0.5) * 8.5,
+        y: (Math.random() - 0.5) * 5.5,
+        z: -1.2 + Math.random() * 4.8,
+        vy: -0.003 - Math.random() * 0.005,
         char: Math.random() > 0.5 ? '1' : '0',
-        color: Math.random() < 0.15 ? '#b6ff66' : '#777777',
+        isGreen: Math.random() < 0.25,
+        opacity: 0.35 + Math.random() * 0.55,
       });
     }
 
@@ -354,6 +357,7 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
+      // Wireframe binary points matching exact landing page color and prominence
       particles.forEach((pt) => {
         pt.flipTimer++;
         if (pt.flipTimer > 90) {
@@ -362,31 +366,33 @@ export function CompanyWireframeSection() {
         }
 
         pt.streamY += pt.speedY;
-        if (pt.streamY > 1.8) pt.streamY = -1.8;
+        if (pt.streamY > 2.2) pt.streamY = -2.2;
 
         const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
         const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
         const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
-        if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
-          const depthAlpha = Math.max(0.1, Math.min(1, (3.8 - dist) / 2.8));
+        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          const depthAlpha = Math.max(0.18, Math.min(1, (4.2 - dist) / 3.0));
           ctx.fillStyle = pt.isBright
-            ? `rgba(182, 255, 102, ${0.85 * depthAlpha})`
-            : `rgba(200, 205, 215, ${0.75 * depthAlpha})`;
+            ? `rgba(182, 255, 102, ${0.9 * depthAlpha})`
+            : `rgba(235, 240, 248, ${0.85 * depthAlpha})`;
           ctx.fillText(pt.char, px, py);
         }
       });
 
+      // Full-screen ambient binary numbers with exact landing page green & white colors
       freeParticles.forEach((fp) => {
         fp.y += fp.vy;
-        if (fp.y < -1.4) fp.y = 1.2;
+        if (fp.y < -2.6) fp.y = 2.6;
 
         const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
-        if (visible) {
-          ctx.fillStyle = fp.color === '#b6ff66'
-            ? 'rgba(182, 255, 102, 0.7)'
-            : 'rgba(140, 145, 155, 0.35)';
+        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          const depthAlpha = Math.max(0.15, Math.min(1, (4.5 - dist) / 3.2));
+          ctx.fillStyle = fp.isGreen
+            ? `rgba(182, 255, 102, ${fp.opacity * depthAlpha})`
+            : `rgba(235, 240, 248, ${fp.opacity * depthAlpha * 0.85})`;
           ctx.fillText(fp.char, px, py);
         }
       });
