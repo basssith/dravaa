@@ -54,44 +54,8 @@ export function EcosystemScrollSection() {
       id="applications"
       className="relative z-20 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-between overflow-hidden"
     >
-      {/* Top Precision Header Bar */}
-      <div
-        style={{ borderColor: logoGreenTheme.border }}
-        className="flex items-center justify-between border-b px-gutter py-3.5 z-20 bg-black/50 backdrop-blur-md"
-      >
-        <div className="flex items-center gap-3">
-          <span
-            style={{ color: logoGreenTheme.primary }}
-            className="font-mono text-xs tracking-widest uppercase"
-          >
-            [03] ECOSYSTEM
-          </span>
-          <span
-            style={{ color: logoGreenTheme.subtext }}
-            className="text-xs uppercase tracking-wider"
-          >
-            THE PRODUCTS
-          </span>
-        </div>
-        <div className="flex items-center gap-4">
-          <span
-            style={{ color: logoGreenTheme.subtext }}
-            className="font-mono text-xs tracking-widest"
-          >
-            0{activeIndex + 1} / 0{apps.length}
-          </span>
-          <TransitionLink
-            href="/applications"
-            style={{ color: logoGreenTheme.primary }}
-            className="text-xs font-mono uppercase tracking-widest hover:underline"
-          >
-            [ SEE ALL ]
-          </TransitionLink>
-        </div>
-      </div>
-
       {/* Main Split Screen Area */}
-      <div className="relative flex-1 flex flex-col lg:flex-row w-full h-[calc(100vh-56px)]">
+      <div className="relative flex-1 flex flex-col lg:flex-row w-full h-screen">
         
         {/* LEFT COLUMN: Pinned Heading, Subheading & Forward Arrow */}
         <div
