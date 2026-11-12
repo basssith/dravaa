@@ -28,33 +28,12 @@ export function EcosystemScrollSection() {
     const panels = container.querySelectorAll<HTMLElement>('[data-product-slide]');
     if (panels.length === 0) return;
 
-    // LEFT SIDE: Intro Column that occupies 60% initially and slides out left
+    // LEFT SIDE & RIGHT RESTING ELEMENTS:
     const leftCol = container.querySelector<HTMLElement>('[data-left-col]');
-    const rightCol = container.querySelector<HTMLElement>('[data-right-stage]');
+    const rightResting = container.querySelector<HTMLElement>('[data-right-resting]');
 
-    // Slide 0 elements
-    const slide0Num = panels[0].querySelector<HTMLElement>('[data-flow-num]');
-    const slide0Img = panels[0].querySelector<HTMLElement>('[data-flow-img]');
-    const slide0Details = panels[0].querySelector<HTMLElement>('[data-flow-details]');
-
-    // Slide 0 setup:
-    gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
-    // In Slide 0:
-    // Left column takes 60% of viewport width.
-    // The right area is 60% to 100% (middle is at 80vw).
-    // The slide container has [01, Monitor, Details, Divider] centered inside max-w-6xl.
-    // To center 01 in the right 40% area at start:
-    // 01 is near the left edge of max-w-6xl.
-    // We set panel 0 to start at 0, but offset 01, monitor, details:
-    const isDesktop = window.innerWidth >= 1024;
-    // Calculate how much to shift 01 to the right so it sits prominently in the right 40%:
-    const numInitialX = isDesktop ? window.innerWidth * 0.28 : 0;
-
-    if (slide0Num) gsap.set(slide0Num, { x: numInitialX, opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { opacity: 0, scale: 0.9, x: 200 });
-    if (slide0Details) gsap.set(slide0Details, { opacity: 0, x: 250 });
-
-    for (let i = 1; i < panels.length; i++) {
+    // Panels start: All product slides are initially offscreen to the right (xPercent: 120, opacity: 0)
+    for (let i = 0; i < panels.length; i++) {
       gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
     }
 
@@ -75,8 +54,8 @@ export function EcosystemScrollSection() {
       },
     });
 
-    // STEP 1: Intro exit & Product 01 entrance
-    // Left column content slides smoothly out to the left
+    // STEP 1: Scroll starts ->
+    // Left column content slides out to the left
     if (leftCol) {
       tl.to(
         leftCol,
@@ -90,32 +69,33 @@ export function EcosystemScrollSection() {
       );
     }
 
-    // Number 01 glides smoothly from its right-side resting spot into its centered layout spot
-    if (slide0Num) {
+    // Right resting "01" fades/glides out
+    if (rightResting) {
       tl.to(
-        slide0Num,
-        { x: 0, duration: 1, ease: 'power2.inOut' },
+        rightResting,
+        {
+          opacity: 0,
+          duration: 0.5,
+          ease: 'power2.inOut',
+        },
         'p0'
       );
     }
 
-    // Monitor image and specs fade & glide in cleanly
-    if (slide0Img) {
-      tl.to(
-        slide0Img,
-        { opacity: 1, scale: 1, x: 0, duration: 0.8, ease: 'power2.out' },
-        'p0+=0.2'
-      );
-    }
-    if (slide0Details) {
-      tl.to(
-        slide0Details,
-        { opacity: 1, x: 0, duration: 0.8, ease: 'power2.out' },
-        'p0+=0.25'
-      );
-    }
+    // Slide 0 (Product 01 full view) glides in smoothly from the right to the center
+    tl.to(
+      panels[0],
+      {
+        xPercent: 0,
+        opacity: 1,
+        pointerEvents: 'auto',
+        duration: 1,
+        ease: 'power2.inOut',
+      },
+      'p0'
+    );
 
-    // Resting pause for Product 01
+    // Resting pause for Product 01 full screen
     tl.to({}, { duration: 0.5 });
 
     // STEP 2: Subsequent products transition seamlessly across the full screen
@@ -198,12 +178,12 @@ export function EcosystemScrollSection() {
       id="applications"
       className="relative z-20 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-between overflow-hidden"
     >
-      <div className="relative flex-1 w-full h-screen overflow-hidden">
+      <div className="relative flex-1 flex flex-col lg:flex-row w-full h-screen">
         
         {/* LEFT COLUMN: 60% Width Intro Content with single vertical green line that glides out left on scroll */}
         <div
           data-left-col
-          className="absolute left-0 top-0 w-full lg:w-[60%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none will-change-transform"
+          className="w-full lg:w-[60%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none will-change-transform"
         >
           {/* Top Tag: Green Box for 03 & White Text in Sentence Case */}
           <div className="pt-2">
@@ -249,10 +229,20 @@ export function EcosystemScrollSection() {
           </div>
         </div>
 
-        {/* PRODUCT STAGE: Fixed full-screen container */}
+        {/* RIGHT COLUMN: 40% Width Area in Initial State, Houses the Resting 01 Centered */}
         <div
-          data-right-stage
-          className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-12 z-10"
+          data-right-resting
+          className="hidden lg:flex w-[40%] h-full items-center justify-center select-none z-10 pointer-events-none"
+        >
+          <span className="font-display font-black text-[clamp(6rem,12vw,16rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_50px_rgba(255,255,255,0.15)]">
+            01
+          </span>
+        </div>
+
+        {/* FULL-SCREEN PRODUCT STAGE: Active Products on Scroll */}
+        <div
+          data-product-stage
+          className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center p-4 sm:p-6 lg:p-12 z-30 pointer-events-none"
         >
           {apps.map((app, i) => (
             <div
@@ -260,7 +250,7 @@ export function EcosystemScrollSection() {
               data-product-slide
               className="absolute inset-0 flex items-center justify-center p-4 sm:p-8 lg:p-12 will-change-transform"
             >
-              {/* Product Layout: Full Screen Centered Layout (Number + Terminal Monitor Image + Vertical Divider + Details) */}
+              {/* Product Layout: Full Screen Centered Layout (Number + Terminal Monitor Image + Details + Full Height Vertical Divider) */}
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-6xl">
                 
                 {/* 1. NUMBER INDICATOR (White color) */}
@@ -271,7 +261,7 @@ export function EcosystemScrollSection() {
                 </div>
 
                 {/* 2. CENTER: Terminal Monitor Screen */}
-                <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform">
+                <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform pointer-events-auto">
                   <div className="relative aspect-[9/15] w-[220px] sm:w-[250px] xl:w-[280px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden p-3.5 flex flex-col justify-between shadow-[0_0_40px_rgba(255,255,255,0.05)]">
                     <div className="relative flex-1 w-full rounded-lg overflow-hidden bg-black/60">
                       <Image
@@ -290,7 +280,7 @@ export function EcosystemScrollSection() {
                 </div>
 
                 {/* 3. CENTER-RIGHT: Product Details & Specifications */}
-                <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[340px] shrink-0 will-change-transform">
+                <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[340px] shrink-0 will-change-transform pointer-events-auto">
                   <h3 className="font-display text-[clamp(2.2rem,2rem+1.8vw,3.6rem)] font-bold leading-none tracking-tight text-white">
                     {app.name}
                   </h3>
