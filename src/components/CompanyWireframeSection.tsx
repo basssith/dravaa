@@ -456,8 +456,8 @@ export function CompanyWireframeSection() {
 
           <div data-sentence className="block will-change-transform">
             The new era of{' '}
-            <span className="inline-block bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-tight mx-1 align-baseline shadow-none">
-              Drava
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-normal mx-1 align-middle whitespace-nowrap shadow-none leading-tight">
+              DRAVA
             </span>{' '}
             — where work flows effortlessly.
           </div>
