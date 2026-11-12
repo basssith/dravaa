@@ -258,10 +258,10 @@ export function EcosystemScrollSection() {
 
                 {/* 2. CENTER: Horizontal Screen Monitor */}
                 <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform pointer-events-auto">
-                  <div className="relative aspect-[16/10] w-[340px] sm:w-[460px] md:w-[540px] lg:w-[480px] xl:w-[560px] 2xl:w-[620px] max-h-[60vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden p-3.5 flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)]">
+                  <div className="relative aspect-[16/10] w-[340px] sm:w-[460px] md:w-[540px] lg:w-[500px] xl:w-[580px] 2xl:w-[640px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group/frame">
                     <TransitionLink
                       href={`/applications/${slugOf(app)}`}
-                      className="group/img relative flex-1 w-full rounded-lg overflow-hidden bg-black/60 block cursor-pointer"
+                      className="group/img relative w-full h-full block cursor-pointer overflow-hidden"
                       aria-label={`View ${app.name} details`}
                     >
                       <Image
@@ -269,35 +269,41 @@ export function EcosystemScrollSection() {
                         alt={app.name}
                         fill
                         quality={95}
-                        className="object-cover object-center transition-transform duration-700 group-hover/img:scale-105"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 640px"
+                        className="object-cover object-center w-full h-full transition-transform duration-700 group-hover/img:scale-105"
                       />
 
                       {/* Hover Overlay with "View" Button */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
-                        <span className="inline-flex items-center gap-2 bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-4 py-2 rounded-full shadow-lg transform translate-y-2 group-hover/img:translate-y-0 transition-transform duration-300">
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[1px]">
+                        <span className="inline-flex items-center gap-2 bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-2xl transform translate-y-2 group-hover/img:translate-y-0 transition-transform duration-300">
                           <span>View {app.name}</span>
                           <Arrow className="size-3.5 -rotate-45" />
                         </span>
                       </div>
-                    </TransitionLink>
 
-                    <button
-                      type="button"
-                      onClick={() => setFullscreenApp(app)}
-                      className="group/fs inline-flex items-center gap-1.5 text-xs font-mono pt-2.5 border-t border-white/10 text-white/70 hover:text-[#b6ff66] transition-colors cursor-pointer ml-auto"
-                      aria-label={`View ${app.name} in fullscreen modal`}
-                    >
-                      <svg
-                        className="size-3.5 fill-none stroke-current transition-transform duration-200 group-hover/fs:scale-110"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      {/* Fullscreen Button overlay inside the screen on top-right */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setFullscreenApp(app);
+                        }}
+                        className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-md bg-black/75 hover:bg-black/90 border border-white/20 text-white/80 hover:text-[#b6ff66] transition-all cursor-pointer backdrop-blur-sm"
+                        aria-label={`View ${app.name} in fullscreen modal`}
                       >
-                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                      </svg>
-                      <span>Fullscreen</span>
-                    </button>
+                        <svg
+                          className="size-3.5 fill-none stroke-current"
+                          viewBox="0 0 24 24"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                        </svg>
+                        <span>Fullscreen</span>
+                      </button>
+                    </TransitionLink>
                   </div>
                 </div>
 
