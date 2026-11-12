@@ -143,10 +143,10 @@ export function EcosystemScrollSection() {
     >
       <div className="relative flex-1 w-full h-screen overflow-hidden">
         
-        {/* STAGE 0: FULLSCREEN INTRO (Headline, 2-line subheading & tag in white, no vertical line) */}
+        {/* STAGE 0: FULLSCREEN INTRO (Headline on 1 line, 2-line subheading & arrow fully visible) */}
         <div
           data-intro-panel
-          className="absolute inset-0 flex flex-col justify-between p-6 sm:p-12 lg:p-20 z-20 select-none will-change-transform"
+          className="absolute inset-0 flex flex-col justify-between p-6 sm:p-10 lg:p-14 z-20 select-none will-change-transform max-h-screen"
         >
           {/* Top Tag */}
           <div className="pt-2">
@@ -161,31 +161,29 @@ export function EcosystemScrollSection() {
           </div>
 
           {/* Centered Main Content in White */}
-          <div className="my-auto py-6 max-w-5xl">
-            {/* Main Headline in White */}
-            <h2 className="font-display text-[clamp(3.2rem,2.5rem+4.5vw,7.5rem)] font-bold uppercase tracking-tight leading-[1.02] text-white">
-              The room changes,
-              <br />
-              the experience stays.
+          <div className="my-auto py-2 max-w-6xl w-full">
+            {/* Single Line Headline: "The product changes, the experience stays." */}
+            <h2 className="font-display text-[clamp(1.6rem,1.1rem+2.6vw,3.6rem)] font-bold uppercase tracking-tight leading-tight text-white whitespace-normal lg:whitespace-nowrap">
+              The product changes, the experience stays.
             </h2>
 
             {/* 2-Line Subheading in White */}
-            <p className="mt-8 text-lg sm:text-xl lg:text-2xl text-white/90 leading-relaxed max-w-[44ch] font-normal">
+            <p className="mt-5 sm:mt-6 text-sm sm:text-base lg:text-lg text-white/90 leading-relaxed max-w-[50ch] font-normal">
               Four intelligent systems engineered to unify every environment.
               <br className="hidden sm:inline" />
               One cohesive OS connecting hardware, spaces, and digital workflows.
             </p>
 
             {/* Scroll Cue */}
-            <div className="mt-10 flex items-center gap-3 text-xs sm:text-sm font-mono tracking-wider text-white/50">
+            <div className="mt-6 sm:mt-8 flex items-center gap-3 text-xs sm:text-sm font-mono tracking-wider text-white/50">
               <span className="text-[#b6ff66]">●</span>
               <span>SCROLL TO EXPLORE PRODUCTS</span>
               <span className="text-[#b6ff66]">→</span>
             </div>
           </div>
 
-          {/* Bottom Forward Arrow */}
-          <div className="pt-4">
+          {/* Bottom Forward Arrow (Fully Visible) */}
+          <div className="pb-2">
             <TransitionLink
               href="/applications"
               aria-label="Explore all products"
@@ -194,9 +192,9 @@ export function EcosystemScrollSection() {
                 backgroundColor: logoGreenTheme.bgFaint,
                 color: logoGreenTheme.primary,
               }}
-              className="group inline-flex items-center justify-center size-16 rounded-full border transition-all duration-300 hover:scale-105 hover:bg-[#b6ff66] hover:text-black"
+              className="group inline-flex items-center justify-center size-14 sm:size-16 rounded-full border transition-all duration-300 hover:scale-105 hover:bg-[#b6ff66] hover:text-black"
             >
-              <Arrow className="size-7 text-white group-hover:text-black transition-colors duration-300 group-hover:translate-x-1" />
+              <Arrow className="size-6 sm:size-7 text-white group-hover:text-black transition-colors duration-300 group-hover:translate-x-1" />
             </TransitionLink>
           </div>
         </div>
