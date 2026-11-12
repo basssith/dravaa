@@ -161,7 +161,7 @@ export function CompanyWireframeSection() {
       const [x1, y1, z1] = line.p1;
       const [x2, y2, z2] = line.p2;
       const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
-      const step = 0.22;
+      const step = 0.38; // Increased spacing between numbers so wireframe isn't cluttered
       const count = Math.max(1, Math.floor(len / step));
 
       for (let i = 0; i <= count; i++) {
@@ -195,15 +195,15 @@ export function CompanyWireframeSection() {
       opacity: number;
     }> = [];
 
-    for (let i = 0; i < 450; i++) {
+    for (let i = 0; i < 220; i++) {
       freeParticles.push({
         x: (Math.random() - 0.5) * 8.5,
         y: (Math.random() - 0.5) * 5.5,
         z: -1.2 + Math.random() * 4.8,
-        vy: -0.003 - Math.random() * 0.005,
+        vy: -0.002 - Math.random() * 0.004,
         char: Math.random() > 0.5 ? '1' : '0',
-        isGreen: Math.random() < 0.25,
-        opacity: 0.35 + Math.random() * 0.55,
+        isGreen: Math.random() < 0.2,
+        opacity: 0.25 + Math.random() * 0.45,
       });
     }
 
@@ -333,9 +333,9 @@ export function CompanyWireframeSection() {
       ctx.scale(dpr, dpr);
 
       if (morphFactor > 0.45) {
-        const wireAlpha = Math.min(0.4, (morphFactor - 0.45) * 1.2);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = `rgba(70, 75, 85, ${wireAlpha})`;
+        const wireAlpha = Math.min(0.28, (morphFactor - 0.45) * 0.9);
+        ctx.lineWidth = 0.75;
+        ctx.strokeStyle = `rgba(160, 180, 200, ${wireAlpha})`;
 
         wireframeLines.forEach((line) => {
           const [x1, y1, z1] = line.p1;
@@ -353,15 +353,14 @@ export function CompanyWireframeSection() {
         });
       }
 
-      ctx.font = '700 18px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Wireframe binary points: Once assembled into the architectural wireframe, digits remain static (no distracting random flipping or jitter)
+      // Wireframe binary points: Smaller, delicate, refined typography with depth fading
       particles.forEach((pt) => {
         if (morphFactor < 0.95) {
           pt.flipTimer++;
-          if (pt.flipTimer > 90) {
+          if (pt.flipTimer > 120) {
             pt.char = pt.char === '1' ? '0' : '1';
             pt.flipTimer = 0;
           }
@@ -375,17 +374,21 @@ export function CompanyWireframeSection() {
         const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
-        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
-          ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+        if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
+          // Delicate size scaling between 9px and 13px
+          const fontSize = Math.max(9, Math.min(13, Math.round(11 * (2.6 / dist))));
+          ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+          
+          // Subtle fade with distance so distant numbers don't overpower
+          const depthAlpha = Math.max(0.2, Math.min(0.85, 2.5 / dist));
           ctx.fillStyle = pt.isBright
-            ? 'rgba(182, 255, 102, 0.95)'
-            : 'rgba(235, 240, 248, 0.92)';
+            ? `rgba(182, 255, 102, ${0.9 * depthAlpha})`
+            : `rgba(210, 220, 235, ${0.65 * depthAlpha})`;
           ctx.fillText(pt.char, px, py);
         }
       });
 
-      // Full-screen ambient binary numbers fade out once wireframe forms (morphFactor > 0.3) so it stays calm and not disturbing
+      // Full-screen ambient binary numbers: Small, subtle particles
       if (morphFactor < 0.8) {
         const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
         freeParticles.forEach((fp) => {
@@ -393,12 +396,12 @@ export function CompanyWireframeSection() {
           if (fp.y < -2.6) fp.y = 2.6;
 
           const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
-          if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-            const fontSize = Math.max(18, Math.min(26, Math.round(20 * (2.8 / dist))));
-            ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+          if (visible && px >= -20 && px <= width + 20 && py >= -20 && py <= height + 20) {
+            const fontSize = Math.max(8, Math.min(12, Math.round(10 * (2.6 / dist))));
+            ctx.font = `500 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
             ctx.fillStyle = fp.isGreen
-              ? `rgba(182, 255, 102, ${0.92 * ambientAlpha})`
-              : `rgba(235, 240, 248, ${0.90 * ambientAlpha})`;
+              ? `rgba(182, 255, 102, ${0.6 * ambientAlpha})`
+              : `rgba(190, 205, 225, ${0.45 * ambientAlpha})`;
             ctx.fillText(fp.char, px, py);
           }
         });
