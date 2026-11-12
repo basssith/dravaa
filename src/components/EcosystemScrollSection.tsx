@@ -258,7 +258,7 @@ export function EcosystemScrollSection() {
 
                 {/* 2. CENTER: Horizontal Screen Monitor */}
                 <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform pointer-events-auto">
-                  <div className="relative aspect-[16/10] w-[340px] sm:w-[460px] md:w-[540px] lg:w-[500px] xl:w-[580px] 2xl:w-[640px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group/frame">
+                  <div className="relative aspect-[16/9] w-[340px] sm:w-[460px] md:w-[540px] lg:w-[520px] xl:w-[600px] 2xl:w-[680px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group/frame">
                     <TransitionLink
                       href={`/applications/${slugOf(app)}`}
                       className="group/img relative w-full h-full block cursor-pointer overflow-hidden"
@@ -268,9 +268,9 @@ export function EcosystemScrollSection() {
                         src={app.image}
                         alt={app.name}
                         fill
-                        quality={95}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 640px"
-                        className="object-cover object-center w-full h-full transition-transform duration-700 group-hover/img:scale-105"
+                        quality={100}
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 680px"
+                        className="object-contain object-center w-full h-full transition-transform duration-700 group-hover/img:scale-[1.02]"
                       />
 
                       {/* Hover Overlay with "View" Button */}
