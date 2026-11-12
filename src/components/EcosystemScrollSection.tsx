@@ -136,80 +136,35 @@ export function EcosystemScrollSection() {
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
-      const prevNum = prev.querySelector<HTMLElement>('[data-flow-num]');
-      const prevImg = prev.querySelector<HTMLElement>('[data-flow-img]');
-      const prevDetails = prev.querySelector<HTMLElement>('[data-flow-details]');
-      const prevDivider = prev.querySelector<HTMLElement>('[data-flow-divider]');
-
-      const nextNum = next.querySelector<HTMLElement>('[data-flow-num]');
-      const nextImg = next.querySelector<HTMLElement>('[data-flow-img]');
-      const nextDetails = next.querySelector<HTMLElement>('[data-flow-details]');
-      const nextDivider = next.querySelector<HTMLElement>('[data-flow-divider]');
       const step = `step-${i + 1}`;
 
-      // Current slide exits left:
-      // The current number moves out left, and monitor/details glide out to the left
+      // Current slide (e.g. Product 01) glides out smoothly to the left
       tl.to(
         prev,
         {
-          xPercent: -120,
+          xPercent: -100,
           opacity: 0,
           pointerEvents: 'none',
-          duration: 1.1,
+          duration: 1.2,
           ease: 'power2.inOut',
         },
         step
       );
 
-      // Next slide container enters into position
+      // Next slide (e.g. Product 02) enters smoothly from the right to the center
+      // It arrives as a full cohesive unit (Number on left, Monitor center, Details right)
       tl.fromTo(
         next,
-        { xPercent: 120, opacity: 0, pointerEvents: 'none' },
+        { xPercent: 100, opacity: 0, pointerEvents: 'none' },
         {
           xPercent: 0,
           opacity: 1,
           pointerEvents: 'auto',
-          duration: 1.1,
+          duration: 1.2,
           ease: 'power2.inOut',
         },
         step
       );
-
-      // The next number (e.g. 02, 03, 04) moves into its left docked position first!
-      if (nextNum) {
-        tl.fromTo(
-          nextNum,
-          { x: 200, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-          `${step}+=0.1`
-        );
-      }
-
-      // Then the monitor, details, and vertical line glide in from the right to join it!
-      if (nextImg) {
-        tl.fromTo(
-          nextImg,
-          { x: 260, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-          `${step}+=0.3`
-        );
-      }
-      if (nextDetails) {
-        tl.fromTo(
-          nextDetails,
-          { x: 300, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-          `${step}+=0.4`
-        );
-      }
-      if (nextDivider) {
-        tl.fromTo(
-          nextDivider,
-          { x: 320, opacity: 0 },
-          { x: 0, opacity: 1, duration: 0.9, ease: 'power2.out' },
-          `${step}+=0.45`
-        );
-      }
 
       // Resting pause on current product
       tl.to({}, { duration: 0.6 });
