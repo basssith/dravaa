@@ -452,9 +452,9 @@ export function CompanyWireframeSection() {
         {/* 1. LEFT SIDE ABOVE: First Two Lines */}
         <div
           data-block="1"
-          className="self-start max-w-[40ch] text-left pt-4 lg:pt-6 will-change-transform"
+          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 will-change-transform"
         >
-          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold tracking-tight leading-[1.12] text-white">
+          <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block">Connecting everything,</span>
             <span className="block text-[#c8ccd6]">designing for clarity,</span>
           </h2>
@@ -463,9 +463,9 @@ export function CompanyWireframeSection() {
         {/* 2. CENTER: Second Two Lines */}
         <div
           data-block="2"
-          className="self-center max-w-[42ch] text-center my-auto py-6 will-change-transform"
+          className="self-center max-w-[36ch] text-center my-auto py-4 will-change-transform"
         >
-          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold tracking-tight leading-[1.12] text-white">
+          <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block">Bringing it all</span>
             <span className="block text-[#c8ccd6]">into one unified space.</span>
           </h2>
@@ -474,12 +474,12 @@ export function CompanyWireframeSection() {
         {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for Drava) */}
         <div
           data-block="3"
-          className="self-end max-w-[42ch] text-right pb-4 lg:pb-6 will-change-transform"
+          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 will-change-transform"
         >
-          <h2 className="font-display text-[clamp(1.75rem,1.2rem+2vw,3rem)] font-bold tracking-tight leading-[1.12] text-white">
+          <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block">
               The new era of{' '}
-              <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1">
+              <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-2.5 sm:px-3 py-0.5 rounded-[5px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1 text-[0.88em]">
                 Drava
               </span>
             </span>
