@@ -244,19 +244,14 @@ export function EcosystemScrollSection() {
             </p>
           </div>
 
-          {/* Bottom Forward Arrow Button */}
+          {/* Bottom Forward Arrow Button: Only Arrow, No Circular Stroke/Background */}
           <div className="pb-2">
             <TransitionLink
               href="/applications"
               aria-label="Explore all products"
-              style={{
-                borderColor: logoGreenTheme.border,
-                backgroundColor: logoGreenTheme.bgFaint,
-                color: logoGreenTheme.primary,
-              }}
-              className="group inline-flex items-center justify-center size-14 sm:size-16 rounded-full border transition-all duration-300 hover:scale-105 hover:bg-[#b6ff66] hover:text-black"
+              className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2"
             >
-              <Arrow className="size-6 sm:size-7 text-white group-hover:text-black transition-colors duration-300 group-hover:translate-x-1" />
+              <Arrow className="size-8 sm:size-10 text-white group-hover:text-[#b6ff66] transition-all duration-300 group-hover:translate-x-2" />
             </TransitionLink>
           </div>
         </div>

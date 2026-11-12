@@ -437,14 +437,16 @@ export function CompanyWireframeSection() {
         ref={textWrapperRef}
         className="wrap relative z-10 flex flex-col justify-between min-h-[82vh] w-full px-gutter pointer-events-auto"
       >
-        {/* Top bar with Tag */}
+        {/* Top bar with Tag: Green box for 01, no brackets, uppercase WHAT WE DO */}
         <div className="flex items-center justify-between w-full pt-4">
-          <p
-            data-tag
-            className="tag text-[#888c94] tracking-widest text-xs sm:text-sm font-mono border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md bg-black/50"
-          >
-            [01] What we do
-          </p>
+          <div data-tag className="inline-flex items-center gap-2.5">
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+              01
+            </span>
+            <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
+              WHAT WE DO
+            </span>
+          </div>
         </div>
 
         {/* 1. LEFT SIDE ABOVE: First Two Lines */}

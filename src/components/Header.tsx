@@ -11,7 +11,6 @@ export function Header() {
   const { menuOpen, setMenuOpen } = useUI();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [soundOn, setSoundOn] = useState(false);
 
   // Hide on scroll down, show on scroll up.
   useEffect(() => {
@@ -27,7 +26,6 @@ export function Header() {
   }, []);
 
   const onDark = menuOpen;
-  const outline = onDark ? 'border-line-inv' : undefined;
 
   return (
     <header
@@ -38,42 +36,35 @@ export function Header() {
         onDark && 'text-paper'
       )}
     >
-      <TransitionLink href="/" aria-label="Drava home" className="flex items-center gap-2 font-display text-[1.375rem] font-bold leading-none tracking-tight no-underline">
-        <Smile className="w-7 fill-accent transition-colors duration-500" />
+      <TransitionLink
+        href="/"
+        aria-label="Drava home"
+        className="flex items-center gap-2 font-display text-[1.375rem] font-bold leading-none tracking-tight no-underline text-white hover:text-[#b6ff66] transition-colors duration-300"
+      >
+        <Smile className="w-7 fill-white hover:fill-[#b6ff66] transition-colors duration-300" />
         <span>drava</span>
       </TransitionLink>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <TransitionLink
           href="/applications"
-          className={pill('outline', 'max-md:hidden text-xs font-semibold tracking-wider uppercase')}
+          className="max-md:hidden inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider uppercase text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:text-[#b6ff66]"
         >
           Explore all applications
         </TransitionLink>
 
-        <TransitionLink href="#contact" className={pill('dark', 'max-sm:hidden')}>
-          <span className="size-2 rounded-full bg-accent" />
+        <TransitionLink
+          href="#contact"
+          className="max-sm:hidden inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:text-[#b6ff66]"
+        >
+          <span className="size-2 rounded-full bg-[#b6ff66]" />
           Let&apos;s talk
         </TransitionLink>
 
         <button
           type="button"
-          className={iconBtn(outline)}
-          aria-pressed={soundOn}
-          aria-label={soundOn ? 'Turn sound off' : 'Turn sound on'}
-          onClick={() => setSoundOn(sound.toggle())}
-        >
-          <span className="flex h-3.5 items-center gap-0.5">
-            {[0, 0.2, 0.4, 0.6].map((delay) => (
-              <i key={delay} className={cn('h-1 w-0.5 rounded-[1px] bg-current', soundOn && 'animate-eq')} style={{ animationDelay: `${delay}s` }} />
-            ))}
-          </span>
-        </button>
-
-        <button
-          type="button"
           id="menu-btn"
-          className={pill('outline', outline)}
+          className="inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider text-white transition-all duration-300 hover:border-[#b6ff66] hover:text-[#b6ff66]"
           aria-expanded={menuOpen}
           aria-controls="menu"
           onClick={() => setMenuOpen(!menuOpen)}
