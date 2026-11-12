@@ -11,7 +11,7 @@ export function CompanionSection() {
     <section
       id="approach"
       data-companion-card
-      className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-36 overflow-hidden rounded-t-[32px] sm:rounded-t-[48px] shadow-[0_-30px_70px_rgba(0,0,0,0.6)]"
+      className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-36"
     >
       {/* --- MAIN CONTENT GRID (SWAPPED SIDES) --- */}
       <div className="wrap relative z-20 flex min-h-[75vh] flex-col justify-center">
