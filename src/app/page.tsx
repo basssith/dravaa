@@ -1,7 +1,5 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
-import { HandsTouchingHero } from '@/components/HandsTouchingHero';
-import { HeroCanvas } from '@/components/HeroCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
 import { Marquee } from '@/components/Marquee';
@@ -25,7 +23,6 @@ export default function Home() {
       <PageHero
         id="hero"
         full
-        centered
         lines={['Connecting everything', 'into one space.']}
         highlight={1}
         sub="Drava unifies high-velocity workspaces, autonomous intelligence and spatial computing — built for teams where work flows effortlessly."
@@ -33,7 +30,6 @@ export default function Home() {
           <SeeAllButton href="/applications" text="Explore all applications" />
         }
         cue="Scroll to explore"
-        background={<HandsTouchingHero />}
       />
 
       <section id="intro" className="relative flex min-h-screen flex-col justify-center py-section overflow-hidden">
