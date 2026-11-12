@@ -24,7 +24,7 @@ export default function Home() {
       <PageHero
         id="hero"
         full
-        lines={['Connecting everything', 'into one space.']}
+        lines={['The Connected Ecosystem', 'for Modern Work.']}
         highlight={1}
         sub="Drava unifies high-velocity workspaces, autonomous intelligence and spatial computing — built for teams where work flows effortlessly."
         action={
