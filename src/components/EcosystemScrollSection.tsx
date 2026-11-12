@@ -256,34 +256,17 @@ export function EcosystemScrollSection() {
               {/* Product Layout: Full Screen Centered Layout (Number + Terminal Monitor Image + Vertical Divider + Details) */}
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-6xl">
                 
-                {/* 1. NUMBER INDICATOR */}
+                {/* 1. NUMBER INDICATOR (White color) */}
                 <div data-flow-num className="flex flex-col items-center lg:items-start select-none shrink-0 will-change-transform">
-                  <span
-                    style={{ color: logoGreenTheme.primary }}
-                    className="font-display font-black text-[clamp(5rem,9vw,13rem)] leading-none tracking-tighter drop-shadow-[0_0_40px_rgba(182,255,102,0.22)]"
-                  >
+                  <span className="font-display font-black text-[clamp(5rem,9vw,13rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]">
                     0{i + 1}
                   </span>
                 </div>
 
                 {/* 2. CENTER: Terminal Monitor Screen */}
                 <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform">
-                  <div
-                    style={{
-                      borderColor: logoGreenTheme.border,
-                      boxShadow: `0 0 60px ${logoGreenTheme.bgFaint}`,
-                    }}
-                    className="relative aspect-[9/15] w-[220px] sm:w-[250px] xl:w-[280px] max-h-[62vh] rounded-2xl border-2 bg-[#0a0c0e] overflow-hidden p-3.5 flex flex-col justify-between"
-                  >
-                    <div
-                      style={{ borderColor: logoGreenTheme.border }}
-                      className="flex justify-between items-center text-xs font-mono pb-2 border-b"
-                    >
-                      <span style={{ color: logoGreenTheme.subtext }}>Terminal {app.id}</span>
-                      <span style={{ color: logoGreenTheme.primary }}>Live</span>
-                    </div>
-
-                    <div className="relative flex-1 w-full my-2.5 rounded-lg overflow-hidden bg-black/60">
+                  <div className="relative aspect-[9/15] w-[220px] sm:w-[250px] xl:w-[280px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden p-3.5 flex flex-col justify-between shadow-[0_0_40px_rgba(255,255,255,0.05)]">
+                    <div className="relative flex-1 w-full rounded-lg overflow-hidden bg-black/60">
                       <Image
                         src={app.image}
                         alt={app.name}
@@ -293,12 +276,8 @@ export function EcosystemScrollSection() {
                       />
                     </div>
 
-                    <div
-                      style={{ borderColor: logoGreenTheme.border }}
-                      className="flex justify-between items-center text-xs font-mono pt-2 border-t"
-                    >
-                      <span style={{ color: logoGreenTheme.subtext }}>{app.badge}</span>
-                      <span style={{ color: logoGreenTheme.primary }}>Fullscreen</span>
+                    <div className="flex justify-end items-center text-xs font-mono pt-2.5 border-t border-white/10 text-white/70">
+                      <span>Fullscreen</span>
                     </div>
                   </div>
                 </div>
@@ -313,20 +292,18 @@ export function EcosystemScrollSection() {
                     {app.description}
                   </p>
 
-                  <div
-                    style={{ borderColor: logoGreenTheme.border }}
-                    className="border-t border-b py-3.5 my-1 space-y-2.5"
-                  >
-                    <div className="flex justify-between text-xs sm:text-sm font-mono">
-                      <span style={{ color: logoGreenTheme.subtext }}>Category</span>
-                      <span style={{ color: logoGreenTheme.primary }}>{app.badge}</span>
+                  <div className="border-t border-b border-white/20 py-3.5 my-1 space-y-2.5">
+                    <div className="flex justify-between text-xs sm:text-sm font-mono text-white/80">
+                      <span>Category</span>
+                      <span className="text-white font-medium">{app.badge}</span>
                     </div>
-                    <div className="flex justify-between text-xs sm:text-sm font-mono">
-                      <span style={{ color: logoGreenTheme.subtext }}>System</span>
-                      <span style={{ color: logoGreenTheme.primary }}>Drava OS</span>
+                    <div className="flex justify-between text-xs sm:text-sm font-mono text-white/80">
+                      <span>System</span>
+                      <span className="text-white font-medium">Drava OS</span>
                     </div>
                   </div>
 
+                  {/* ONLY THIS BUTTON IS IN SIGNATURE GREEN */}
                   <TransitionLink
                     href={`/applications/${slugOf(app)}`}
                     style={{ color: logoGreenTheme.primary }}
