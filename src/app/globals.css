@@ -108,11 +108,13 @@
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    /* Scale the page so 100% browser zoom delivers the spacious proportion of 90% zoom */
-    zoom: 0.9;
+    width: 100%;
+    max-width: 100%;
   }
 
   body {
+    width: 100%;
+    max-width: 100vw;
     overflow-x: hidden;
     background: #000000;
     color: var(--color-ink);
