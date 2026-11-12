@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { WordScrub } from '@/components/type';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 interface Line3D {
@@ -12,45 +11,41 @@ interface Line3D {
 function buildInteriorWireframe(): Line3D[] {
   const lines: Line3D[] = [];
 
-  // 1. Room Boundary (Walls, Floor, Ceiling)
-  // Floor perimeter
+  // 1. Room Boundary (Floor, Ceiling, Walls)
   lines.push({ p1: [-2.2, 0.9, -1.0], p2: [2.2, 0.9, -1.0] });
   lines.push({ p1: [2.2, 0.9, -1.0], p2: [2.5, 0.9, 3.0] });
   lines.push({ p1: [-2.2, 0.9, -1.0], p2: [-2.5, 0.9, 3.0] });
 
-  // Ceiling perimeter
   lines.push({ p1: [-2.2, -1.1, -1.0], p2: [2.2, -1.1, -1.0] });
   lines.push({ p1: [2.2, -1.1, -1.0], p2: [2.5, -1.1, 3.0] });
   lines.push({ p1: [-2.2, -1.1, -1.0], p2: [-2.5, -1.1, 3.0] });
 
-  // Vertical corner pillars
   lines.push({ p1: [-2.2, -1.1, -1.0], p2: [-2.2, 0.9, -1.0] });
   lines.push({ p1: [2.2, -1.1, -1.0], p2: [2.2, 0.9, -1.0] });
   lines.push({ p1: [-2.5, -1.1, 3.0], p2: [-2.5, 0.9, 3.0] });
   lines.push({ p1: [2.5, -1.1, 3.0], p2: [2.5, 0.9, 3.0] });
 
-  // Wall window mullions (left wall)
+  // Left Window Mullions
   for (let z = -0.5; z <= 2.2; z += 0.9) {
     const x = -2.2 - (z + 1.0) * 0.08;
     lines.push({ p1: [x, -1.1, z], p2: [x, 0.9, z] });
     lines.push({ p1: [x, -0.1, z], p2: [x, -0.1, z + 0.9] });
   }
 
-  // Right glass partition wall
+  // Right Glass Partition
   for (let z = -0.5; z <= 2.2; z += 0.9) {
     const x = 2.2 + (z + 1.0) * 0.08;
     lines.push({ p1: [x, -1.1, z], p2: [x, 0.9, z] });
     lines.push({ p1: [x, 0.0, z], p2: [x, 0.0, z + 0.9] });
   }
 
-  // Ceiling grid acoustic baffles
+  // Ceiling Baffles & Suspended Luminaire
   for (let z = -0.5; z <= 2.5; z += 0.75) {
     lines.push({ p1: [-2.0, -1.1, z], p2: [2.0, -1.1, z] });
   }
   lines.push({ p1: [-0.8, -1.1, -1.0], p2: [-0.8, -1.1, 2.8] });
   lines.push({ p1: [0.8, -1.1, -1.0], p2: [0.8, -1.1, 2.8] });
 
-  // Suspended linear LED luminaire
   lines.push({ p1: [-1.0, -0.85, 0.2], p2: [1.0, -0.85, 0.2] });
   lines.push({ p1: [-1.0, -0.85, 1.4], p2: [1.0, -0.85, 1.4] });
   lines.push({ p1: [-1.0, -1.1, 0.2], p2: [-1.0, -0.85, 0.2] });
@@ -58,7 +53,7 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [-1.0, -1.1, 1.4], p2: [-1.0, -0.85, 1.4] });
   lines.push({ p1: [1.0, -1.1, 1.4], p2: [1.0, -0.85, 1.4] });
 
-  // 2. Large Central Executive Conference Table
+  // 2. Central Executive Boardroom Table
   const tableTopY = 0.38;
   const tableZ1 = 0.1;
   const tableZ2 = 2.1;
@@ -80,7 +75,7 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [-tableW + 0.12, tableTopY, tableZ2 - 0.12], p2: [-tableW + 0.12, 0.9, tableZ2 - 0.12] });
   lines.push({ p1: [tableW - 0.12, tableTopY, tableZ2 - 0.12], p2: [tableW - 0.12, 0.9, tableZ2 - 0.12] });
 
-  // 3. Ergonomic Office Chairs around the table
+  // 3. Ergonomic Office Chairs
   const chairPositions: [number, number][] = [
     [-tableW - 0.35, 0.55],
     [-tableW - 0.35, 1.55],
@@ -107,7 +102,7 @@ function buildInteriorWireframe(): Line3D[] {
     lines.push({ p1: [cx, 0.88, cz - 0.2], p2: [cx, 0.88, cz + 0.2] });
   });
 
-  // 4. Back Wall Presentation Display
+  // 4. Back Wall Screen & Console
   const scrX1 = -1.3;
   const scrX2 = 1.3;
   const scrY1 = -0.7;
@@ -119,13 +114,12 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [scrX2, scrY2, scrZ], p2: [scrX1, scrY2, scrZ] });
   lines.push({ p1: [scrX1, scrY2, scrZ], p2: [scrX1, scrY1, scrZ] });
 
-  // Console underneath screen
   lines.push({ p1: [-1.5, 0.52, -0.85], p2: [1.5, 0.52, -0.85] });
   lines.push({ p1: [1.5, 0.52, -0.85], p2: [1.5, 0.88, -0.85] });
   lines.push({ p1: [1.5, 0.88, -0.85], p2: [-1.5, 0.88, -0.85] });
   lines.push({ p1: [-1.5, 0.88, -0.85], p2: [-1.5, 0.52, -0.85] });
 
-  // Architectural Floor Tiles Grid
+  // Architectural Floor Grid
   for (let z = -0.5; z <= 2.8; z += 0.55) {
     lines.push({ p1: [-2.1, 0.9, z], p2: [2.1, 0.9, z] });
   }
@@ -136,10 +130,12 @@ function buildInteriorWireframe(): Line3D[] {
 export function CompanyWireframeSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
+    const textWrapper = textWrapperRef.current;
     if (!container || !canvas) return;
 
     const ctx = canvas.getContext('2d', { alpha: true });
@@ -252,16 +248,45 @@ export function CompanyWireframeSection() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // Smooth ScrollTrigger tracking with soft damping
-    const st = ScrollTrigger.create({
+    // 1. PINNED TIMELINE:
+    // First stage (0.0 -> 0.35): pure binary wireframe camera exploration without text overlay.
+    // Second stage (0.35 -> 1.0): Sentences appear smoothly one by one as the user continues scrolling!
+    const pinTrigger = ScrollTrigger.create({
       trigger: container,
-      start: 'top 80%',
-      end: 'bottom 20%',
-      scrub: 1.5,
+      start: 'top top',
+      end: '+=200%',
+      pin: true,
+      scrub: 1.2,
       onUpdate: (self) => {
         targetProgress = self.progress;
       },
     });
+
+    // 2. Sentence-by-sentence scroll reveal animation:
+    if (textWrapper) {
+      const lines = textWrapper.querySelectorAll<HTMLElement>('[data-sentence]');
+      
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: '+=200%',
+          scrub: 1.2,
+        },
+      });
+
+      // Stage 1 (0 -> 25% scroll): Pure wireframe display (lines remain hidden)
+      tl.set(lines, { opacity: 0, y: 35 });
+
+      // Stage 2: Sentence 1 appears
+      tl.to(lines[0], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.25);
+
+      // Sentence 2 appears
+      tl.to(lines[1], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.5);
+
+      // Sentence 3 appears (with Drava in green rectangle)
+      tl.to(lines[2], { opacity: 1, y: 0, duration: 1, ease: 'power2.out' }, 0.75);
+    }
 
     const project = (
       x: number,
@@ -292,7 +317,6 @@ export function CompanyWireframeSection() {
     };
 
     const render = () => {
-      // Butter-smooth interpolation for scroll camera & mouse pan
       scrollProgress += (targetProgress - scrollProgress) * 0.08;
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
@@ -365,7 +389,7 @@ export function CompanyWireframeSection() {
 
     return () => {
       cancelAnimationFrame(animId);
-      st.kill();
+      pinTrigger.kill();
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
     };
@@ -375,7 +399,7 @@ export function CompanyWireframeSection() {
     <section
       ref={containerRef}
       id="intro"
-      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-center items-center py-section overflow-hidden"
+      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-center items-center overflow-hidden"
     >
       {/* 3D Wireframe Interior Binary Canvas */}
       <div
@@ -398,15 +422,38 @@ export function CompanyWireframeSection() {
         }}
       />
 
-      {/* Statement Content appearing while scrolling with WordScrub, highlighting ONLY *Drava */}
-      <div className="wrap relative z-10 flex flex-col items-center text-center px-4 max-w-[950px] mx-auto pointer-events-auto">
-        <p className="tag mb-5 text-[#888c94] tracking-widest uppercase text-xs sm:text-sm font-mono border border-white/10 px-3.5 py-1 rounded-full backdrop-blur-md bg-black/40">
+      {/* Content reveals sentence-by-sentence as the user scrolls through the wireframe */}
+      <div
+        ref={textWrapperRef}
+        className="wrap relative z-10 flex flex-col items-center text-center px-4 max-w-[1050px] mx-auto pointer-events-auto"
+      >
+        <p
+          data-sentence
+          className="tag mb-6 text-[#888c94] tracking-widest uppercase text-xs sm:text-sm font-mono border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-md bg-black/50"
+        >
           [01] What we do
         </p>
-        <WordScrub
-          className="font-display text-[clamp(1.75rem,1.2rem+2.8vw,3.8rem)] font-bold uppercase tracking-tight leading-[1.14] text-white max-w-[26ch] mx-auto text-center"
-          text="Connecting everything, designing for clarity, bringing it all into one unified space. The new era of *Drava — where work flows effortlessly."
-        />
+
+        <div className="font-display text-[clamp(1.75rem,1.3rem+2.6vw,3.6rem)] font-bold uppercase tracking-tight leading-[1.2] text-white max-w-[28ch] mx-auto text-center space-y-3 sm:space-y-4">
+          {/* Sentence 1 */}
+          <div data-sentence className="block will-change-transform">
+            Connecting everything, designing for clarity,
+          </div>
+
+          {/* Sentence 2 */}
+          <div data-sentence className="block text-[#d0d4dc] will-change-transform">
+            bringing it all into one unified space.
+          </div>
+
+          {/* Sentence 3 (Green box ONLY for Drava) */}
+          <div data-sentence className="block will-change-transform">
+            The new era of{' '}
+            <span className="inline-block bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-4 py-0.5 rounded-[6px] tracking-tight mx-1 align-baseline shadow-none">
+              Drava
+            </span>{' '}
+            — where work flows effortlessly.
+          </div>
+        </div>
       </div>
     </section>
   );
