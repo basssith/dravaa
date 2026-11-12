@@ -19,20 +19,20 @@ export function Marquee({ items, label, reverse, slow, bordered, size = 'mega', 
     <span
       key={i}
       className={cn(
-        'flex items-center gap-[0.35em] pr-[0.35em] font-display font-bold whitespace-nowrap uppercase leading-none tracking-display',
+        'flex items-center gap-[0.35em] pr-[0.35em] font-display font-bold whitespace-nowrap uppercase leading-none tracking-display text-[#000000]',
         size === 'mega' ? 'text-mega' : 'text-h2',
-        i % 2 === 1 && 'text-outline'
+        i % 2 === 1 && 'text-outline [--outline-color:#000000]'
       )}
     >
       {text}
-      <Smile className={cn('h-[0.6em] w-auto', accent ? 'fill-accent' : 'fill-ink')} />
+      <Smile className={cn('h-[0.6em] w-auto', accent ? 'fill-accent' : 'fill-[#000000]')} />
     </span>
   ));
 
   return (
     <section
       aria-label={label}
-      className={cn('relative z-1 overflow-hidden bg-transparent', size === 'mega' ? 'py-block' : 'py-2', bordered && 'border-y border-line')}
+      className={cn('relative z-1 overflow-hidden bg-white text-[#000000]', size === 'mega' ? 'py-block' : 'py-2', bordered && 'border-y border-black/10')}
     >
       <div
         aria-hidden="true"
