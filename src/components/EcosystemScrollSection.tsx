@@ -36,18 +36,17 @@ export function EcosystemScrollSection() {
     const slide0Img = panels[0].querySelector<HTMLElement>('[data-flow-img]');
     const slide0Details = panels[0].querySelector<HTMLElement>('[data-flow-details]');
 
-    // Calculate initial center position of the 40% right section:
-    // With leftCol taking 60% of viewport width (vw), the 40% right section is from 0.6*vw to 1.0*vw.
-    // Center of the 40% section is at 0.8*vw (i.e. +30% of viewport width from the right stage's left edge).
-    // The slide container is centered across the whole viewport (inset-0).
-    // So to position '01' initially in the center of that 40% zone:
+    // Calculate initial position of the 01 in the 40% right section:
+    // When leftCol is 60vw wide, the right 40vw has its center at 80vw from screen left.
+    // In panels[0], the contents are inside an absolute inset-0 container with max-w-5xl centered.
+    // Using positive x offset moves 01 further to the right side so it sits clearly and prominently inside the 40% zone.
     const isDesktop = window.innerWidth >= 1024;
-    const initialCenterX = isDesktop ? window.innerWidth * 0.3 : 0;
+    const initialCenterX = isDesktop ? Math.max(340, window.innerWidth * 0.28) : 0;
 
     gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
-    if (slide0Num) gsap.set(slide0Num, { x: initialCenterX, scale: 1.15, opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { x: 400, opacity: 0 });
-    if (slide0Details) gsap.set(slide0Details, { x: 450, opacity: 0 });
+    if (slide0Num) gsap.set(slide0Num, { x: initialCenterX, scale: 1.25, opacity: 1 });
+    if (slide0Img) gsap.set(slide0Img, { x: 500, opacity: 0 });
+    if (slide0Details) gsap.set(slide0Details, { x: 550, opacity: 0 });
 
     for (let i = 1; i < panels.length; i++) {
       gsap.set(panels[i], { xPercent: 125, opacity: 0, pointerEvents: 'none' });
@@ -57,7 +56,7 @@ export function EcosystemScrollSection() {
       scrollTrigger: {
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 150}%`,
+        end: `+=${panels.length * 180}%`,
         pin: true,
         scrub: 1.2, // Continuous, buttery smooth flow linked to scrollwheel
         onUpdate: (self) => {
@@ -76,32 +75,32 @@ export function EcosystemScrollSection() {
       tl.to(
         leftCol,
         {
-          xPercent: -105,
+          xPercent: -115,
           opacity: 0,
-          duration: 1.4,
-          ease: 'power1.inOut',
+          duration: 1.6,
+          ease: 'power2.inOut',
         },
         'p0-in'
       );
     }
 
-    // Simultaneously, 01 glides from the right 40% center into its aligned product layout position,
+    // Simultaneously, 01 glides smoothly from the far right into its aligned product layout position,
     // and slide 0 terminal monitor & specs glide in from the right into the viewport!
     if (slide0Num && slide0Img && slide0Details) {
       tl.to(
         slide0Num,
-        { x: 0, scale: 1, duration: 1.4, ease: 'power1.inOut' },
+        { x: 0, scale: 1, duration: 1.6, ease: 'power2.inOut' },
         'p0-in'
       );
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 1.4, ease: 'power1.out' },
-        'p0-in+=0.15'
+        { x: 0, opacity: 1, duration: 1.5, ease: 'power2.out' },
+        'p0-in+=0.2'
       );
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 1.4, ease: 'power1.out' },
-        'p0-in+=0.25'
+        { x: 0, opacity: 1, duration: 1.5, ease: 'power2.out' },
+        'p0-in+=0.3'
       );
     }
 
@@ -250,11 +249,11 @@ export function EcosystemScrollSection() {
               {/* Product Layout: Number + Terminal Monitor Image + Details */}
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-5xl">
                 
-                {/* 1. NUMBER INDICATOR (Centered initially for 01, flows smoothly on scroll) */}
+                {/* 1. NUMBER INDICATOR (Larger size, smoothly flowing) */}
                 <div data-flow-num className="flex flex-col items-center lg:items-start select-none shrink-0 will-change-transform">
                   <span
                     style={{ color: logoGreenTheme.primary }}
-                    className="font-display font-black text-[clamp(6rem,10vw,14rem)] leading-none tracking-tighter drop-shadow-[0_0_40px_rgba(182,255,102,0.18)]"
+                    className="font-display font-black text-[clamp(7.5rem,13vw,19rem)] leading-none tracking-tighter drop-shadow-[0_0_50px_rgba(182,255,102,0.25)]"
                   >
                     0{i + 1}
                   </span>
