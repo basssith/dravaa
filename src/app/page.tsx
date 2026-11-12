@@ -1,6 +1,7 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
 import { CompanyWireframeSection } from '@/components/CompanyWireframeSection';
+import { EyeBlinkTransition } from '@/components/EyeBlinkTransition';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
@@ -22,6 +23,7 @@ const COMPANION = [
 export default function Home() {
   return (
     <>
+      <EyeBlinkTransition />
       <PageHero
         id="hero"
         full
