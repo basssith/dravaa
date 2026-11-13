@@ -66,7 +66,7 @@ export function EcosystemScrollSection() {
       scrollTrigger: {
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 150}%`,
+        end: `+=${panels.length * 180 + 100}%`,
         pin: true,
         scrub: 0.6, // Low scrub duration = snappy, immediate, zero lag
         onUpdate: (self) => {
@@ -79,8 +79,29 @@ export function EcosystemScrollSection() {
       },
     });
 
-    // STEP 1: Scroll starts ->
-    // 1. Left column content slides out to the left
+    // STEP 0: First, scrub all intro words in the left column so the user reads them completely
+    const introWords = leftCol ? leftCol.querySelectorAll<HTMLElement>('.w-scrub') : [];
+    if (introWords.length > 0) {
+      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+
+      introWords.forEach((w, idx) => {
+        const wordTime = (idx / introWords.length) * 1.5;
+        tl.to(
+          w,
+          { color: '#b6ff66', opacity: 1, duration: 0.15, ease: 'power1.inOut' },
+          wordTime
+        ).to(
+          w,
+          { color: '#ffffff', opacity: 1, duration: 0.2, ease: 'power1.out' },
+          wordTime + 0.08
+        );
+      });
+    }
+
+    // Brief pause after all text is revealed and read
+    tl.to({}, { duration: 0.6 });
+
+    // STEP 1: After text has been completely scrubbed and read, left column slides out and 01 product slides in
     if (leftCol) {
       tl.to(
         leftCol,
