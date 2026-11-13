@@ -9,10 +9,10 @@ export function Footer() {
   return (
     <footer id="contact" className="relative z-1 overflow-hidden rounded-t-panel bg-ink pt-block-lg text-paper">
       <div className="wrap">
-        <p className="tag text-paper-muted">[ Contact ]</p>
+        <p className="tag text-paper-muted">[ CONTACT ]</p>
         <a
           href={`mailto:${EMAIL}`}
-          className="group mt-4 mb-block inline-flex items-center gap-[0.2em] font-display text-mega leading-[0.9] font-bold tracking-[-0.04em] uppercase no-underline focus-visible:outline-accent"
+          className="group mt-4 mb-block inline-flex items-center gap-[0.2em] font-display text-mega leading-[0.9] font-bold tracking-[-0.04em] no-underline focus-visible:outline-accent"
         >
           <span>Let&apos;s talk</span>
           <Arrow className="size-[0.5em] stroke-accent [stroke-width:1.3] transition-transform duration-700 ease-expo group-hover:-rotate-45" />
@@ -54,7 +54,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-wrap justify-between gap-4 border-t border-line-inv py-6 text-small text-paper-muted">
-          <span>© 2026 Drava Technologies Inc.</span>
+          <span>TM 2026 Drava Technologies Inc.</span>
           <TransitionLink className={linkCls} href="/applications/nex">Labs</TransitionLink>
           <BackToTop className={linkCls} />
         </div>
