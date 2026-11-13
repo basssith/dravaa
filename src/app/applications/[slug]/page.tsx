@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { SandboxButton } from '@/components/SandboxButton';
 import { TransitionLink } from '@/components/TransitionLink';
+import { ArrowDot } from '@/components/icons';
 import { Lines } from '@/components/type';
 import { applications, findApp, pad, slugOf } from '@/lib/applications';
-import { pill } from '@/lib/ui';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -42,12 +41,12 @@ export default async function ApplicationPage({ params }: Props) {
         <Lines as="h1" hero className="t-mega mt-4 mb-6 text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]" lines={[app.name]} />
         <p className="max-w-[40ch] text-lead text-white/80">{app.tagline}</p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <SandboxButton />
           <TransitionLink
             href="/applications"
-            className="inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-medium leading-none text-white no-underline transition-colors duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000]"
+            className="group inline-flex min-h-12 cursor-pointer items-center gap-3.5 whitespace-nowrap rounded-full border border-white/20 bg-[#0d0f12] pl-6 pr-3 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#15191e]"
           >
-            ← All applications
+            <span>All applications</span>
+            <ArrowDot className="group-hover:scale-105 transition-transform duration-300" />
           </TransitionLink>
         </div>
       </header>
