@@ -147,7 +147,7 @@ export function Cursor() {
         </span>
       </div>
 
-      {/* 3. Floating "Scroll to explore" badge attached to cursor on Landing Page Hero */}
+      {/* 3. Floating "SCROLL TO EXPLORE" text attached to cursor on Landing Page Hero */}
       {isLandingPage && (
         <div
           ref={pillRef}
@@ -157,10 +157,9 @@ export function Cursor() {
             inHero && mode === 'idle' ? 'opacity-100' : 'opacity-0'
           )}
         >
-          <div className="translate-x-5 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
-            <span className="size-1.5 rounded-full bg-[#b6ff66] animate-pulse" />
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-white whitespace-nowrap">
-              Scroll to explore
+          <div className="translate-x-6 -translate-y-1/2 flex items-center">
+            <span className="font-mono text-xs sm:text-[13px] font-bold uppercase tracking-widest text-white whitespace-nowrap drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+              SCROLL TO EXPLORE
             </span>
           </div>
         </div>
