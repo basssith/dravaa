@@ -244,6 +244,7 @@
   padding: 0 0.1em;
   border-radius: 0.1em;
   background: var(--color-accent);
+  color: #000000 !important;
 }
 
 @keyframes shockTremor {
