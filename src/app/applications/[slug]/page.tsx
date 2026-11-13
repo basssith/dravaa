@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { TransitionLink } from '@/components/TransitionLink';
-import { ArrowDot } from '@/components/icons';
+import { Arrow } from '@/components/icons';
 import { Lines } from '@/components/type';
 import { applications, findApp, pad, slugOf } from '@/lib/applications';
 
@@ -43,10 +43,12 @@ export default async function ApplicationPage({ params }: Props) {
         <div className="mt-8 flex flex-wrap gap-3">
           <TransitionLink
             href="/applications"
-            className="group inline-flex min-h-12 cursor-pointer items-center gap-3.5 whitespace-nowrap rounded-full border border-white/20 bg-[#0d0f12] pl-6 pr-3 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#15191e]"
+            className="group inline-flex min-h-12 cursor-pointer items-center gap-3.5 whitespace-nowrap rounded-full border border-white/20 bg-[#0d0f12] pl-6 pr-2 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-black"
           >
             <span>All applications</span>
-            <ArrowDot className="group-hover:scale-105 transition-transform duration-300" />
+            <span className="grid size-8 place-items-center rounded-full bg-[#b6ff66] text-black transition-all duration-300 group-hover:bg-black group-hover:text-[#b6ff66] group-hover:translate-x-0.5">
+              <Arrow className="size-3.5 stroke-[2.4]" />
+            </span>
           </TransitionLink>
         </div>
       </header>
