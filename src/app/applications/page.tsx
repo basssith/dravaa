@@ -30,7 +30,7 @@ export default function ApplicationsPage() {
         <div className="wrap">
           <SectionHead
             tag=""
-            title={['All', 'products']}
+            title={['All products']}
             note={<WordScrub as="span" text="The full list at a glance. Select a row to open its page." />}
           />
           <AppList apps={applications} />
