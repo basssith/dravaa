@@ -1,5 +1,7 @@
 'use client';
 
+import { WordScrub } from './type';
+
 const COMPANION_ITEMS = [
   'Spatial telemetry & multi-modal perception',
   'Zero-latency neural automation engine',
@@ -46,11 +48,13 @@ export function CompanionSection() {
               </span>
             </h2>
 
-            {/* Refined subheading */}
-            <p className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#c8ccd6]">
-              Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges
-              applications and guides zero-friction workflows in real time.
-            </p>
+            {/* Refined subheading with scroll WordScrub */}
+            <div className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#c8ccd6]">
+              <WordScrub
+                as="p"
+                text="Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges applications and guides zero-friction workflows in real time."
+              />
+            </div>
           </div>
 
           {/* --- RIGHT SIDE: 3 NUMBERED POINTS WITH DRAVA SIGNATURE HOVER --- */}

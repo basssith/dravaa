@@ -24,26 +24,38 @@ export function Lines({ as: Tag = 'h2', className, lines, highlight, hero }: Lin
   );
 }
 
-/** Paragraph whose words light up while scrolling. Prefix a word with * to highlight it in a lime rectangle box. */
-export function WordScrub({ text, className }: { text: string; className?: string }) {
+/** Paragraph or heading whose words light up while scrolling.
+ * Starts in dim green/grey, scrubs through bright signature green, and locks into pure white.
+ */
+export function WordScrub({
+  text,
+  className,
+  as: Tag = 'p'
+}: {
+  text: string;
+  className?: string;
+  as?: 'p' | 'h2' | 'h3' | 'span';
+}) {
   return (
-    <p className={className} data-words>
+    <Tag className={cn('inline-block', className)} data-words>
       {text.split(' ').map((word, i) => {
         const em = word.startsWith('*');
         const w = em ? word.slice(1) : word;
         return (
           <Fragment key={i}>
             {em ? (
-              <span className="w highlight text-ink font-semibold not-italic [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
+              <span className="w-scrub highlight text-ink font-semibold not-italic [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
                 {w}
               </span>
             ) : (
-              <span className="w">{w}</span>
+              <span className="w-scrub inline-block will-change-[color,opacity] transition-colors duration-150">
+                {w}
+              </span>
             )}{' '}
           </Fragment>
         );
       })}
-    </p>
+    </Tag>
   );
 }
 

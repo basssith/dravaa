@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { applications, slugOf } from '@/lib/applications';
 import { TransitionLink } from './TransitionLink';
 import { Arrow } from './icons';
+import { WordScrub } from './type';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 // Unified Drava Logo Green Accent (#b6ff66)
@@ -203,17 +204,21 @@ export function EcosystemScrollSection() {
             </div>
           </div>
 
-          {/* Centered Main Content: Prominent heading in Sentence Case */}
+          {/* Centered Main Content: Prominent heading with scroll WordScrub */}
           <div className="my-auto py-6 max-w-3xl">
             <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
-              The product changes but the experience stays.
+              <WordScrub
+                as="span"
+                text="The product changes but the experience stays."
+              />
             </h2>
 
-            <p className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
-              Four intelligent systems engineered to unify every environment.
-              <br className="hidden sm:inline" />
-              One cohesive OS connecting hardware, spaces, and digital workflows.
-            </p>
+            <div className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
+              <WordScrub
+                as="p"
+                text="Four intelligent systems engineered to unify every environment. One cohesive OS connecting hardware, spaces, and digital workflows."
+              />
+            </div>
           </div>
 
           {/* Bottom Forward Arrow Button: Clicking scrolls directly to 01 product section */}

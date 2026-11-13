@@ -274,21 +274,45 @@ export function CompanyWireframeSection() {
         },
       });
 
-      // Initially all content is hidden while exploring the pure binary wireframe
-      tl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
+        // Initially all content is hidden while exploring the pure binary wireframe
+        tl.set([tag, block1, block2, block3], { opacity: 0, y: 24 });
 
-      // Step 1: Tag appears
-      tl.to(tag, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.25);
+        // Helper to animate words from dim -> green -> white
+        const animateWordsScrub = (block: HTMLElement | null, startTime: number) => {
+          if (!block) return;
+          const words = block.querySelectorAll<HTMLElement>('.w-scrub');
+          if (!words.length) return;
+          gsap.set(words, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
 
-      // Step 2: Left-side top 2 lines appear
-      tl.to(block1, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.38);
+          words.forEach((w, idx) => {
+            const wordStart = startTime + idx * 0.045;
+            tl.to(
+              w,
+              { color: '#b6ff66', opacity: 1, duration: 0.12, ease: 'power1.inOut' },
+              wordStart
+            ).to(
+              w,
+              { color: '#ffffff', opacity: 1, duration: 0.16, ease: 'power1.out' },
+              wordStart + 0.05
+            );
+          });
+        };
 
-      // Step 3: Center 2 lines appear
-      tl.to(block2, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.58);
+        // Step 1: Tag appears
+        tl.to(tag, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.25);
 
-      // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
-      tl.to(block3, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.78);
-    }
+        // Step 2: Left-side top 2 lines appear with word scrub
+        tl.to(block1, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.35);
+        animateWordsScrub(block1, 0.36);
+
+        // Step 3: Center 2 lines appear with word scrub
+        tl.to(block2, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.55);
+        animateWordsScrub(block2, 0.56);
+
+        // Step 4: Right-side bottom 2 lines appear with word scrub (with green DRAVA box)
+        tl.to(block3, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.75);
+        animateWordsScrub(block3, 0.76);
+      }
 
     const project = (
       x: number,
@@ -462,41 +486,63 @@ export function CompanyWireframeSection() {
           </div>
         </div>
 
-        {/* 1. LEFT SIDE ABOVE: First Two Lines */}
+        {/* 1. LEFT SIDE ABOVE: First Two Lines with Word Scrub */}
         <div
           data-block="1"
           className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
-            <span className="block">Connecting everything,</span>
-            <span className="block text-[#c8ccd6]">designing for clarity,</span>
+            <span className="block">
+              {'Connecting everything,'.split(' ').map((word, i) => (
+                <span key={i} className="w-scrub inline-block will-change-[color,opacity] mr-[0.25em]">{word}</span>
+              ))}
+            </span>
+            <span className="block mt-1">
+              {'designing for clarity,'.split(' ').map((word, i) => (
+                <span key={i} className="w-scrub inline-block will-change-[color,opacity] mr-[0.25em]">{word}</span>
+              ))}
+            </span>
           </h2>
         </div>
 
-        {/* 2. CENTER: Second Two Lines */}
+        {/* 2. CENTER: Second Two Lines with Word Scrub */}
         <div
           data-block="2"
           className="self-center max-w-[36ch] text-center my-auto py-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
-            <span className="block">Bringing it all</span>
-            <span className="block text-[#c8ccd6]">into one unified space.</span>
+            <span className="block">
+              {'Bringing it all'.split(' ').map((word, i) => (
+                <span key={i} className="w-scrub inline-block will-change-[color,opacity] mr-[0.25em]">{word}</span>
+              ))}
+            </span>
+            <span className="block mt-1">
+              {'into one unified space.'.split(' ').map((word, i) => (
+                <span key={i} className="w-scrub inline-block will-change-[color,opacity] mr-[0.25em]">{word}</span>
+              ))}
+            </span>
           </h2>
         </div>
 
-        {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for Drava) */}
+        {/* 3. RIGHT SIDE DOWN: Third Two Lines with Word Scrub */}
         <div
           data-block="3"
           className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block">
-              The new era of{' '}
+              {'The new era of'.split(' ').map((word, i) => (
+                <span key={i} className="w-scrub inline-block will-change-[color,opacity] mr-[0.25em]">{word}</span>
+              ))}
               <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-2.5 sm:px-3 py-0.5 rounded-[5px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1 text-[0.88em]">
                 Drava
               </span>
             </span>
-            <span className="block text-[#c8ccd6] mt-1">— where work flows effortlessly.</span>
+            <span className="block mt-1">
+              {'— where work flows effortlessly.'.split(' ').map((word, i) => (
+                <span key={i} className="w-scrub inline-block will-change-[color,opacity] mr-[0.25em]">{word}</span>
+              ))}
+            </span>
           </h2>
         </div>
       </div>

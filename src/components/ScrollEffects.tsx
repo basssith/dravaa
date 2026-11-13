@@ -65,22 +65,43 @@ export function ScrollEffects() {
       // 4th Screen Card Slide-Up Animation:
       // Removed scale/opacity shrink on #applications to avoid exposing the page background between sections.
 
+      // Scroll Text Scrubbing Effect: Words transition from dim green/grey through vibrant signature green into crisp white
       gsap.utils.toArray<HTMLElement>('[data-words]').forEach((el) => {
-        gsap.fromTo(
-          el.querySelectorAll('.w'),
-          { opacity: 0.12 },
-          {
-            opacity: 1,
-            stagger: 0.1,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 70%',
-              end: 'bottom 45%',
-              scrub: 1
+        const words = el.querySelectorAll<HTMLElement>('.w-scrub');
+        if (!words.length) return;
+
+        // Set initial state: dim subtle green-grey
+        gsap.set(words, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: el,
+            start: 'top 82%',
+            end: 'bottom 45%',
+            scrub: 0.6,
+          },
+        });
+
+        words.forEach((w) => {
+          tl.to(
+            w,
+            {
+              color: '#b6ff66',
+              opacity: 1,
+              duration: 0.25,
+              ease: 'power1.inOut',
             }
-          }
-        );
+          ).to(
+            w,
+            {
+              color: '#ffffff',
+              opacity: 1,
+              duration: 0.35,
+              ease: 'power1.out',
+            },
+            '+=0.08'
+          );
+        });
       });
 
       gsap.utils.toArray<HTMLElement>('[data-count]').forEach((el) => {
