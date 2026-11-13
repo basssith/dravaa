@@ -62,8 +62,26 @@ export function ScrollEffects() {
         );
       });
 
-      // 4th Screen Card Slide-Up Animation:
-      // Removed scale/opacity shrink on #applications to avoid exposing the page background between sections.
+      // Footer Rounded Card Pop-Up Elevation on Scroll
+      const footerCard = document.querySelector<HTMLElement>('[data-footer-card]');
+      if (footerCard) {
+        gsap.fromTo(
+          footerCard,
+          { y: 100, scale: 0.96, opacity: 0.8 },
+          {
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: footerCard,
+              start: 'top 95%',
+              end: 'top 70%',
+              scrub: 0.6,
+            },
+          }
+        );
+      }
 
       // Scroll Text Scrubbing Effect: Words transition from dim green/grey through vibrant signature green into crisp white
       gsap.utils.toArray<HTMLElement>('[data-words]').forEach((el) => {
