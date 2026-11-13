@@ -13,7 +13,7 @@ export default function ApplicationsPage() {
   return (
     <div className="text-white">
       <PageHero
-        kicker={`[ Products ] [${pad(applications.length)}]`}
+        kicker="PRODUCTS"
         lines={['Everything', "we're", 'building.']}
         highlight={2}
         sub="Every Drava product, from facility control to generative design. Pick one to dive in."
