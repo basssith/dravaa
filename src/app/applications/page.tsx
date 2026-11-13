@@ -14,7 +14,7 @@ export default function ApplicationsPage() {
     <div className="text-white">
       <PageHero
         kicker={
-          <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-3 py-1 rounded-[4px] leading-tight tracking-wider uppercase">
+          <span className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-white uppercase">
             PRODUCTS
           </span>
         }
