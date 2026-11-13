@@ -141,7 +141,7 @@
 @layer components {
   .wrap {
     width: 100%;
-    max-width: 120rem;
+    max-width: 105rem;
     margin-inline: auto;
     padding-inline: var(--spacing-gutter);
   }
