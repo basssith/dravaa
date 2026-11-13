@@ -59,13 +59,12 @@ export default async function ApplicationPage({ params }: Props) {
         className="mx-auto overflow-hidden rounded-2xl border border-white/15 bg-[#0a0c0e] shadow-[0_0_60px_rgba(0,0,0,0.6)]"
         style={{ maxWidth: 'min(920px, 100%)' }}
       >
-        <figcaption className="flex items-center gap-4 border-b border-white/10 bg-black/40 px-4 py-3 text-xs sm:text-small font-mono text-white/60">
+        <figcaption className="flex items-center gap-4 border-b border-white/10 bg-black/40 px-4 py-3">
           <span className="flex gap-1.5" aria-hidden="true">
             <i className="size-2.5 rounded-full bg-white/20" />
             <i className="size-2.5 rounded-full bg-white/20" />
             <i className="size-2.5 rounded-full bg-white/20" />
           </span>
-          drava.os/applications/{slugOf(app)}
         </figcaption>
         <div className="relative w-full overflow-hidden bg-black/40 p-2 sm:p-4">
           <Image
