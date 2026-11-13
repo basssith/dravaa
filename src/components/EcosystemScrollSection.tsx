@@ -44,13 +44,16 @@ export function EcosystemScrollSection() {
     // Panels start:
     // Panel 0 is present. In resting state, its 01 sits exactly in place on the right side.
     // We calculate the delta between the center of the right 40% column and the docked position of 01 inside max-w-6xl.
-    const isDesktop = window.innerWidth >= 1024;
-    // Desktop layout: left column is 60vw, right column is 40vw (center is at 80vw from left).
-    // In max-w-6xl (1152px) centered in viewport, 01 is at the left edge of max-w-6xl.
-    // The offset to place 01 at 80vw is approximately:
-    const initialOffset01 = isDesktop
-      ? (window.innerWidth * 0.8) - ((window.innerWidth - Math.min(window.innerWidth - 64, 1152)) / 2 + 80)
-      : 0;
+    // Dynamic calculation: Center 01 in the right 40% column area on any monitor size
+    const calculateOffset01 = () => {
+      if (window.innerWidth < 1024 || !slide0Num) return 0;
+      const targetCenter = window.innerWidth * 0.8;
+      const currentRect = slide0Num.getBoundingClientRect();
+      const currentCenter = currentRect.left + currentRect.width / 2;
+      return targetCenter - currentCenter;
+    };
+
+    const initialOffset01 = calculateOffset01();
 
     gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
     if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
@@ -363,7 +366,7 @@ export function EcosystemScrollSection() {
                   <div
                     data-flow-divider
                     style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                    className="hidden lg:block w-[1px] h-screen shrink-0 ml-20 mr-10 xl:ml-32 xl:mr-14 will-change-transform"
+                    className="hidden lg:block w-[1px] h-screen shrink-0 ml-8 mr-4 xl:ml-16 xl:mr-8 2xl:ml-24 2xl:mr-12 will-change-transform"
                   />
                 )}
 
