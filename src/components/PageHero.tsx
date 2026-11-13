@@ -67,9 +67,9 @@ export function PageHero({ id, kicker, lines, highlight, sub, cue, full, action,
       )}
     >
       {background}
-      {kicker ? <p className="tag text-white/60 relative z-10 mb-auto">{kicker}</p> : null}
-      <div className="relative z-10 mt-auto">
-        <Lines as="h1" hero className="t-h1 mb-6 lg:mb-8 text-white" lines={lines} highlight={highlight} />
+      <div className="relative z-10 mt-auto flex flex-col items-start gap-4">
+        {kicker ? <div className="tag text-white/60 mb-1">{kicker}</div> : null}
+        <Lines as="h1" hero className="t-h1 text-white" lines={lines} highlight={highlight} />
       </div>
       <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 pt-5 lg:pt-6">
         <div className="flex flex-col items-start gap-4">
