@@ -18,7 +18,7 @@ export default function ApplicationsPage() {
             PRODUCTS
           </span>
         }
-        lines={['Everything', "we're", 'building.']}
+        lines={['Everything', 'in one', 'space.']}
         highlight={2}
         sub="Every Drava product, from facility control to generative design. Pick one to dive in."
         cue="Scroll to explore"
