@@ -21,7 +21,7 @@ export default function ApplicationsPage() {
         lines={['Everything', "we're", 'building.']}
         highlight={2}
         sub="Every Drava product, from facility control to generative design. Pick one to dive in."
-        cue="Scroll down"
+        cue="Scroll to explore"
       />
 
       <section className="section" aria-label="Product gallery">
