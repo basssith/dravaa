@@ -43,21 +43,27 @@ export function ScrollEffects() {
         });
       });
 
-      // Staggered smooth parallax scrolling on application cards
-      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el, index) => {
-        const offset = index % 2 === 1 ? -40 : 40;
+      // Smooth Card Stacking & Pop-Up Elevation on Scroll:
+      // Cards stack progressively as you scroll down, lifting up and scaling gracefully
+      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el) => {
         gsap.fromTo(
           el,
-          { y: offset },
           {
-            y: -offset,
-            ease: 'none',
+            y: 80,
+            scale: 0.94,
+            opacity: 0.6,
+          },
+          {
+            y: 0,
+            scale: 1,
+            opacity: 1,
+            ease: 'power2.out',
             scrollTrigger: {
               trigger: el,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.2
-            }
+              start: 'top 92%',
+              end: 'top 55%',
+              scrub: 0.6,
+            },
           }
         );
       });
