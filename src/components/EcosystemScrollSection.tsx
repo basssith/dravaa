@@ -406,14 +406,12 @@ export function EcosystemScrollSection() {
                   </TransitionLink>
                 </div>
 
-                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (Shown for products 1, 2, 3; omitted for 4th product) */}
-                {i < apps.length - 1 && (
-                  <div
-                    data-flow-divider
-                    style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                    className="hidden lg:block w-[1px] h-screen shrink-0 ml-20 mr-10 xl:ml-32 xl:mr-14 will-change-transform"
-                  />
-                )}
+                {/* 4. FULL LENGTH VERTICAL GREEN LINE DIVIDER (Shown for all products after product details) */}
+                <div
+                  data-flow-divider
+                  style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
+                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-8 lg:ml-12 xl:ml-16 will-change-transform"
+                />
 
               </div>
             </div>
