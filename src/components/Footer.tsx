@@ -1,4 +1,4 @@
-import { EMAIL, PRESS, SOCIALS } from '@/lib/site';
+import { EMAIL, SOCIALS } from '@/lib/site';
 import { Arrow, Smile } from './icons';
 import { BackToTop, Newsletter } from './FooterActions';
 import { TransitionLink } from './TransitionLink';
@@ -10,7 +10,7 @@ export function Footer() {
     <footer
       id="contact"
       data-footer-card
-      className="relative z-40 mx-auto w-full max-w-[98vw] 2xl:max-w-[1720px] overflow-hidden rounded-[2.5rem] sm:rounded-[3.5rem] lg:rounded-[4.5rem] border border-white/10 bg-[#0a0a0a] pt-block-lg text-paper shadow-[0_-20px_80px_rgba(0,0,0,0.9)] will-change-transform"
+      className="relative z-40 mx-auto w-full max-w-[98vw] 2xl:max-w-[1720px] overflow-hidden rounded-[2.5rem] sm:rounded-[3.5rem] lg:rounded-[4.5rem] border border-white/10 bg-[#000000] pt-block-lg text-paper shadow-[0_-20px_80px_rgba(0,0,0,0.9)] will-change-transform"
     >
       <div className="wrap">
         <p className="tag text-white tracking-widest font-semibold">CONTACT</p>
@@ -37,8 +37,6 @@ export function Footer() {
             <h2 className="label mb-4 text-paper-muted">Say hello</h2>
             <p className="leading-[1.7] text-paper-2">
               <a className={linkCls} href={`mailto:${EMAIL}`}>{EMAIL}</a>
-              <br />
-              <a className={linkCls} href={`mailto:${PRESS}`}>{PRESS}</a>
             </p>
           </div>
           <div>
