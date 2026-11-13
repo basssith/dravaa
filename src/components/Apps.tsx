@@ -32,9 +32,11 @@ export function AppGrid({ apps }: { apps: Application[] }) {
               />
             </div>
 
-            <div className="mt-6 flex items-center gap-3">
-              <span className="tag text-white/60">[{app.id}]</span>
-              <span className="text-micro tracking-[0.06em] text-white/60 uppercase">
+            <div className="mt-6 flex items-center gap-2.5">
+              <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs px-2 py-0.5 rounded-[4px] leading-tight tracking-normal">
+                {app.id}
+              </span>
+              <span className="text-micro font-mono tracking-widest text-white font-semibold uppercase">
                 {[app.category, app.year, app.badge].join(' • ')}
               </span>
             </div>
@@ -63,7 +65,9 @@ export function AppList({ apps }: { apps: Application[] }) {
             href={`/applications/${slugOf(app)}`}
             className="group grid grid-cols-[3rem_1fr_2.75rem] items-center gap-4 border-b border-white/15 py-6 no-underline transition-[padding,background-color] duration-500 ease-expo hover:bg-[#b6ff66] hover:text-[#000000] hover:px-4 lg:grid-cols-[4rem_1.2fr_2fr_5rem_2.75rem]"
           >
-            <span className="tag text-white/60 group-hover:text-black">[{app.id}]</span>
+            <span className="inline-flex w-fit items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs px-2 py-0.5 rounded-[4px] leading-tight tracking-normal group-hover:bg-black group-hover:text-[#b6ff66]">
+              {app.id}
+            </span>
             <span className="font-display text-h4 leading-none font-bold tracking-[-0.02em] uppercase text-white group-hover:text-black">{app.name}</span>
             <span className="text-small text-white/80 group-hover:text-black max-lg:hidden">{app.category}</span>
             <span className="text-small text-white/80 group-hover:text-black max-lg:hidden">{app.year}</span>

@@ -31,9 +31,14 @@ export default async function ApplicationPage({ params }: Props) {
   return (
     <article className="wrap text-white">
       <header data-hero className="pt-[calc(var(--spacing-header)+var(--spacing-block))] pb-12">
-        <p className="tag text-white/60">
-          [{app.id}] {app.category}
-        </p>
+        <div className="inline-flex items-center gap-2.5">
+          <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+            {app.id}
+          </span>
+          <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold uppercase">
+            {app.category}
+          </span>
+        </div>
         <Lines as="h1" hero className="t-mega mt-4 mb-6 text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]" lines={[app.name]} />
         <p className="max-w-[40ch] text-lead text-white/80">{app.tagline}</p>
         <div className="mt-8 flex flex-wrap gap-3">
