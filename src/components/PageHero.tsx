@@ -71,7 +71,7 @@ export function PageHero({ id, kicker, lines, highlight, sub, cue, full, action,
       <div className="relative z-10 mt-auto">
         <Lines as="h1" hero className="t-h1 mb-6 lg:mb-8 text-white" lines={lines} highlight={highlight} />
       </div>
-      <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 border-t border-white/15 pt-5 lg:pt-6">
+      <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 pt-5 lg:pt-6">
         <div className="flex flex-col items-start gap-4">
           <p className="max-w-[46ch] text-[clamp(0.95rem,0.85rem+0.35vw,1.15rem)] leading-relaxed text-white/80">{sub}</p>
           {action && <div className="self-start">{action}</div>}
