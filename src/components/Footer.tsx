@@ -26,11 +26,11 @@ export function Footer() {
           <div>
             <h2 className="label mb-4 text-paper-muted">Studio</h2>
             <p className="leading-[1.7] text-paper-2">
-              Drava Technologies Inc.
+              The White Tusker Pvt Ltd.
               <br />
-              Street address
+              Indiranagar, Bengaluru,
               <br />
-              City, Country
+              Karnataka
             </p>
           </div>
           <div>
