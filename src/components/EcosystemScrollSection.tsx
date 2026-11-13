@@ -396,10 +396,10 @@ export function EcosystemScrollSection() {
                     </div>
                   </div>
 
-                  {/* EXPLORE BUTTON: SIGNATURE GREEN -> HOVER TURNS WHITE */}
+                  {/* EXPLORE BUTTON: WHITE -> HOVER TURNS SIGNATURE GREEN */}
                   <TransitionLink
                     href={`/applications/${slugOf(app)}`}
-                    className="inline-flex items-center gap-3 text-sm sm:text-base font-semibold tracking-wider text-[#b6ff66] hover:text-white transition-colors duration-300 group pt-1"
+                    className="inline-flex items-center gap-3 text-sm sm:text-base font-semibold tracking-wider text-white hover:text-[#b6ff66] transition-colors duration-300 group pt-1"
                   >
                     <span>Explore {app.name}</span>
                     <Arrow className="size-4 -rotate-45 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 text-current" />
@@ -467,8 +467,7 @@ export function EcosystemScrollSection() {
               <p className="max-w-xl text-xs sm:text-sm text-[#c8ccd6]">{fullscreenApp.description}</p>
               <TransitionLink
                 href={`/applications/${slugOf(fullscreenApp)}`}
-                style={{ color: logoGreenTheme.primary }}
-                className="inline-flex items-center gap-2 font-semibold hover:brightness-125 transition-all"
+                className="inline-flex items-center gap-2 font-semibold text-white hover:text-[#b6ff66] transition-colors"
               >
                 <span>Explore {fullscreenApp.name}</span>
                 <Arrow className="size-3.5 -rotate-45" />
