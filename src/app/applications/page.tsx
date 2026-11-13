@@ -13,7 +13,11 @@ export default function ApplicationsPage() {
   return (
     <div className="text-white">
       <PageHero
-        kicker="PRODUCTS"
+        kicker={
+          <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-3 py-1 rounded-[4px] leading-tight tracking-wider uppercase">
+            PRODUCTS
+          </span>
+        }
         lines={['Everything', "we're", 'building.']}
         highlight={2}
         sub="Every Drava product, from facility control to generative design. Pick one to dive in."
