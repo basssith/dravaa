@@ -112,17 +112,25 @@ export default async function ApplicationPage({ params }: Props) {
       </div>
 
       <nav aria-label="More products" className="grid grid-cols-2 items-center gap-4 border-t border-white/15 pt-8 pb-block sm:grid-cols-[1fr_auto_1fr]">
-        <TransitionLink href={`/applications/${slugOf(prev)}`} className="group grid justify-items-start gap-2 no-underline">
-          <span className="tag text-white/50 group-hover:text-[#b6ff66] transition-colors">← Previous</span>
-          <span className="t-h3 text-white transition-colors group-hover:text-[#b6ff66]">{prev.name}</span>
-        </TransitionLink>
+        {i > 0 ? (
+          <TransitionLink href={`/applications/${slugOf(prev)}`} className="group grid justify-items-start gap-2 no-underline">
+            <span className="tag text-white/50 group-hover:text-[#b6ff66] transition-colors">← Previous</span>
+            <span className="t-h3 text-white transition-colors group-hover:text-[#b6ff66]">{prev.name}</span>
+          </TransitionLink>
+        ) : (
+          <div />
+        )}
         <span className="tag text-white/50 font-mono max-sm:hidden">
           {app.id} / {pad(n)}
         </span>
-        <TransitionLink href={`/applications/${slugOf(next)}`} className="group grid justify-items-end gap-2 text-right no-underline">
-          <span className="tag text-white/50 group-hover:text-[#b6ff66] transition-colors">Next →</span>
-          <span className="t-h3 text-white transition-colors group-hover:text-[#b6ff66]">{next.name}</span>
-        </TransitionLink>
+        {i < n - 1 ? (
+          <TransitionLink href={`/applications/${slugOf(next)}`} className="group grid justify-items-end gap-2 text-right no-underline">
+            <span className="tag text-white/50 group-hover:text-[#b6ff66] transition-colors">Next →</span>
+            <span className="t-h3 text-white transition-colors group-hover:text-[#b6ff66]">{next.name}</span>
+          </TransitionLink>
+        ) : (
+          <div />
+        )}
       </nav>
     </article>
   );
