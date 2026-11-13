@@ -68,9 +68,9 @@ export function EcosystemScrollSection() {
         id: 'ecosystem-scroll',
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 240 + 100}%`,
+        end: `+=${panels.length * 100 + 40}%`,
         pin: true,
-        scrub: 1.0, // Smooth, natural momentum scrub
+        scrub: 0.35, // Fast, immediate, zero-lag responsive response to scroll
         onUpdate: (self) => {
           const idx = Math.min(
             panels.length - 1,
@@ -81,96 +81,96 @@ export function EcosystemScrollSection() {
       },
     });
 
-    // STEP 0: Scrub intro words in the left column
+    // STEP 0: Scrub intro words in the left column promptly
     const introWords = leftCol ? leftCol.querySelectorAll<HTMLElement>('.w-scrub') : [];
     if (introWords.length > 0) {
       gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
 
       introWords.forEach((w, idx) => {
-        const wordTime = (idx / introWords.length) * 1.8;
+        const wordTime = (idx / introWords.length) * 0.8;
         tl.to(
           w,
-          { color: '#b6ff66', opacity: 1, duration: 0.2, ease: 'power1.inOut' },
+          { color: '#b6ff66', opacity: 1, duration: 0.12, ease: 'power1.inOut' },
           wordTime
         ).to(
           w,
-          { color: '#ffffff', opacity: 1, duration: 0.25, ease: 'power1.out' },
-          wordTime + 0.1
+          { color: '#ffffff', opacity: 1, duration: 0.15, ease: 'power1.out' },
+          wordTime + 0.05
         );
       });
     }
 
-    // Comfortable reading pause after all text is revealed
-    tl.to({}, { duration: 1.2 });
+    // Brief transition gap
+    tl.to({}, { duration: 0.2 });
 
-    // STEP 1: After text has been completely scrubbed and read, left column slides out and 01 product slides in
+    // STEP 1: Left column slides out and 01 product slides in briskly
     if (leftCol) {
       tl.to(
         leftCol,
         {
           xPercent: -125,
           opacity: 0,
-          duration: 1.8,
+          duration: 0.8,
           ease: 'power2.inOut',
         },
         'p0'
       );
     }
 
-    // 2. The 01 MOVES FIRST: glides from the right side towards the left into position!
+    // 2. The 01 glides into position
     if (slide0Num) {
       tl.to(
         slide0Num,
         {
           x: 0,
-          duration: 1.8,
+          duration: 0.8,
           ease: 'power2.inOut',
         },
         'p0'
       );
     }
 
-    // 3. AFTER 01 has started moving, the product monitor image, details, and vertical line come in!
+    // 3. Product monitor image, details, and vertical line come in together
     if (slide0Img) {
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 1.4, ease: 'power2.out' },
-        'p0+=0.8'
+        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+        'p0+=0.2'
       );
     }
     if (slide0Details) {
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 1.4, ease: 'power2.out' },
-        'p0+=1.0'
+        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+        'p0+=0.25'
       );
     }
     if (slide0Divider) {
       tl.to(
         slide0Divider,
-        { x: 0, opacity: 1, duration: 1.4, ease: 'power2.out' },
-        'p0+=1.1'
+        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+        'p0+=0.3'
       );
     }
 
-    // Resting pause for Product 01 full screen so user can view it comfortably
-    tl.to({}, { duration: 1.5 });
+    // Short resting pause on Product 01
+    tl.to({}, { duration: 0.25 });
 
-    // STEP 2: Subsequent products transition seamlessly across the full screen
+    // STEP 2: Subsequent products transition smoothly and quickly with each scroll turn
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
       const prevDivider = prev.querySelector<HTMLElement>('[data-flow-divider]');
       const step = `step-${i + 1}`;
 
-      // Current slide (e.g. Product 01) glides out smoothly to the left
+      // Current slide glides out quickly
       tl.to(
         prev,
         {
           xPercent: -130,
           opacity: 0,
           pointerEvents: 'none',
-          duration: 1.8,
+          duration: 0.8,
           ease: 'power2.inOut',
         },
         step
@@ -182,14 +182,14 @@ export function EcosystemScrollSection() {
           prevDivider,
           {
             opacity: 0,
-            duration: 0.5,
+            duration: 0.25,
             ease: 'power1.out',
           },
           step
         );
       }
 
-      // Next slide (e.g. Product 02) enters smoothly from the right to the center
+      // Next slide enters briskly into the center
       tl.fromTo(
         next,
         { xPercent: 120, opacity: 0, pointerEvents: 'none' },
@@ -197,14 +197,14 @@ export function EcosystemScrollSection() {
           xPercent: 0,
           opacity: 1,
           pointerEvents: 'auto',
-          duration: 1.8,
+          duration: 0.8,
           ease: 'power2.inOut',
         },
         step
       );
 
-      // Generous resting pause on each product so scrolling isn't rushed
-      tl.to({}, { duration: 1.5 });
+      // Short pause so slide changes readily on next wheel gesture
+      tl.to({}, { duration: 0.25 });
     }
 
     return () => {
