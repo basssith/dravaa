@@ -443,6 +443,8 @@ export function CompanyWireframeSection() {
         className="pointer-events-none absolute inset-0 z-0 select-none"
       >
         <canvas ref={canvasRef} className="block h-full w-full" />
+        {/* Seamless blend gradient from Section 1 */}
+        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-transparent to-[#000000] pointer-events-none" />
       </div>
 
       {/* Content wrapper with stepped diagonal layout: Left top -> Center -> Right bottom */}

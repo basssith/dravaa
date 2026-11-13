@@ -234,9 +234,11 @@ export function MatrixFluidCanvas() {
     <div
       ref={containerRef}
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-0 overflow-hidden select-none"
+      className="pointer-events-none absolute inset-0 z-0 select-none"
     >
       <canvas ref={canvasRef} className="block h-full w-full" />
+      {/* Seamless blend gradient towards Section 2 */}
+      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#000000] pointer-events-none" />
     </div>
   );
 }

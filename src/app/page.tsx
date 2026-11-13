@@ -26,7 +26,7 @@ export default function Home() {
       <section
         id="hero"
         data-hero
-        className="relative flex min-h-svh flex-col justify-end overflow-hidden px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-4 sm:pb-6 lg:pb-8 bg-[#000000]"
+        className="relative flex min-h-svh flex-col justify-end px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 sm:pb-12 bg-[#000000]"
       >
         <MatrixFluidCanvas />
 
