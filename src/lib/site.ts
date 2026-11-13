@@ -2,7 +2,7 @@
 export const SITE_URL = process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:3000';
 
 // TODO: replace placeholder contact details with real ones.
-export const EMAIL = 'hello@example.com';
+export const EMAIL = 'experience@thewhitetusker.com';
 export const PRESS = 'press@example.com';
 
 export const NAV = [
