@@ -9,7 +9,7 @@ export function Footer() {
   return (
     <footer id="contact" className="relative z-1 overflow-hidden rounded-t-panel bg-ink pt-block-lg text-paper">
       <div className="wrap">
-        <p className="tag text-paper-muted">[ CONTACT ]</p>
+        <p className="tag text-white tracking-widest font-semibold">CONTACT</p>
         <a
           href={`mailto:${EMAIL}`}
           className="group mt-4 mb-block inline-flex items-center gap-[0.2em] font-display text-mega leading-[0.9] font-bold tracking-[-0.04em] no-underline focus-visible:outline-accent"
