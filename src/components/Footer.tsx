@@ -57,7 +57,6 @@ export function Footer() {
 
         <div className="flex flex-wrap justify-between gap-4 border-t border-line-inv py-6 text-small text-paper-muted">
           <span>TM 2026 Drava Technologies Inc.</span>
-          <TransitionLink className={linkCls} href="/applications/nex">Labs</TransitionLink>
           <BackToTop className={linkCls} />
         </div>
 
