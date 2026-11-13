@@ -7,7 +7,7 @@ const linkCls = 'no-underline transition-colors duration-300 hover:text-accent';
 
 export function Footer() {
   return (
-    <footer id="contact" className="relative z-1 overflow-hidden rounded-t-panel bg-ink pt-block-lg text-paper">
+    <footer id="contact" className="relative z-1 overflow-hidden rounded-t-panel bg-[#000000] pt-block-lg text-paper">
       <div className="wrap">
         <p className="tag text-white tracking-widest font-semibold">CONTACT</p>
         <a
