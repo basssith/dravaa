@@ -31,7 +31,11 @@ export default function AboutPage() {
   return (
     <>
       <PageHero
-        kicker="[ About Drava ]"
+        kicker={
+          <span className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-white uppercase">
+            ABOUT DRAVA
+          </span>
+        }
         lines={['Technology', 'should make', 'life feel', 'easier.']}
         highlight={3}
         sub="Drava is a product studio building one connected ecosystem for the spaces where people work, create and gather."
