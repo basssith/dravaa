@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { gsap } from '@/lib/gsap';
 import { sound } from '@/lib/sound';
 import { cn } from '@/lib/ui';
@@ -14,13 +15,18 @@ type Mode = 'idle' | 'hover' | 'view';
  * - Subtle precision reticle lines on interactive elements
  * - Expanding accented "VIEW" badge on media/cards
  * - Crisp mix-blend-difference inversion over both black and white surfaces
+ * - On landing page hero (#hero), carries a floating "Scroll to explore" badge with the cursor
  */
 export function Cursor() {
+  const pathname = usePathname();
+  const isLandingPage = pathname === '/';
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const pillRef = useRef<HTMLDivElement>(null);
   const [enabled, setEnabled] = useState(false);
   const [mode, setMode] = useState<Mode>('idle');
   const [clicking, setClicking] = useState(false);
+  const [inHero, setInHero] = useState(false);
 
   useEffect(() => {
     if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
@@ -30,6 +36,8 @@ export function Cursor() {
     let mouseY = -100;
     let ringX = -100;
     let ringY = -100;
+    let pillX = -100;
+    let pillY = -100;
     let lastElement: Element | null = null;
 
     const onPointerMove = (e: PointerEvent) => {
@@ -39,6 +47,25 @@ export function Cursor() {
       // Instant pinpoint tracking for inner dot
       if (dotRef.current) {
         dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
+      }
+
+      // Check if mouse is over landing hero section
+      if (isLandingPage) {
+        const heroEl = document.getElementById('hero');
+        if (heroEl) {
+          const rect = heroEl.getBoundingClientRect();
+          const inside = (
+            e.clientX >= rect.left &&
+            e.clientX <= rect.right &&
+            e.clientY >= rect.top &&
+            e.clientY <= rect.bottom
+          );
+          setInHero(inside);
+        } else {
+          setInHero(false);
+        }
+      } else {
+        setInHero(false);
       }
     };
 
@@ -54,12 +81,18 @@ export function Cursor() {
     const onPointerDown = () => setClicking(true);
     const onPointerUp = () => setClicking(false);
 
-    // Smooth spring physics for outer ring
+    // Smooth spring physics for outer ring and floating landing badge
     const tick = () => {
       ringX += (mouseX - ringX) * 0.16;
       ringY += (mouseY - ringY) * 0.16;
       if (ringRef.current) {
         ringRef.current.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
+      }
+
+      pillX += (mouseX - pillX) * 0.12;
+      pillY += (mouseY - pillY) * 0.12;
+      if (pillRef.current) {
+        pillRef.current.style.transform = `translate3d(${pillX}px, ${pillY}px, 0)`;
       }
     };
 
@@ -76,7 +109,7 @@ export function Cursor() {
       window.removeEventListener('pointerup', onPointerUp);
       gsap.ticker.remove(tick);
     };
-  }, []);
+  }, [isLandingPage]);
 
   if (!enabled) return null;
 
@@ -113,6 +146,25 @@ export function Cursor() {
           VIEW
         </span>
       </div>
+
+      {/* 3. Floating "Scroll to explore" badge attached to cursor on Landing Page Hero */}
+      {isLandingPage && (
+        <div
+          ref={pillRef}
+          aria-hidden="true"
+          className={cn(
+            'pointer-events-none fixed top-0 left-0 z-300 transition-opacity duration-300 select-none will-change-transform',
+            inHero && mode === 'idle' ? 'opacity-100' : 'opacity-0'
+          )}
+        >
+          <div className="translate-x-5 -translate-y-1/2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/80 backdrop-blur-md border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.6)]">
+            <span className="size-1.5 rounded-full bg-[#b6ff66] animate-pulse" />
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-white whitespace-nowrap">
+              Scroll to explore
+            </span>
+          </div>
+        </div>
+      )}
     </>
   );
 }
