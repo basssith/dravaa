@@ -47,56 +47,32 @@ export default async function ApplicationPage({ params }: Props) {
         </div>
       </header>
 
-      {/* Premium Laptop Mockup */}
-      <div data-reveal className="mx-auto w-full max-w-[960px] px-2 sm:px-4">
-        {/* Laptop Display (Lid) */}
-        <div className="relative mx-auto rounded-[20px] sm:rounded-[24px] border-[3px] sm:border-[4px] border-[#22252a] bg-[#0d0f12] p-2.5 sm:p-4 shadow-[0_20px_70px_rgba(0,0,0,0.85)]">
-          {/* Web camera notch */}
-          <div className="absolute top-1.5 sm:top-2 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
-            <span className="size-1 sm:size-1.5 rounded-full bg-[#1a1c20]" />
-            <span className="size-1.5 sm:size-2 rounded-full bg-[#111317] ring-1 ring-white/10" />
-          </div>
-
-          {/* Screen Inner Frame */}
-          <div className="overflow-hidden rounded-[12px] sm:rounded-[14px] border border-white/10 bg-[#000000]">
-            {/* Window Browser / Header Bar */}
-            <div className="flex items-center gap-3 border-b border-white/10 bg-[#0d0f13]/90 px-3.5 py-2 sm:py-2.5 text-[11px] sm:text-xs font-mono text-white/60">
-              <span className="flex gap-1.5" aria-hidden="true">
-                <i className="size-2.5 rounded-full bg-[#ff5f57]" />
-                <i className="size-2.5 rounded-full bg-[#febc2e]" />
-                <i className="size-2.5 rounded-full bg-[#28c840]" />
-              </span>
-              <span className="ml-2 truncate text-white/50">
-                drava.os/applications/{slugOf(app)}
-              </span>
-            </div>
-
-            {/* Screen Content Preview */}
-            <div className="relative aspect-[16/10] w-full bg-[#050608] overflow-hidden">
-              <Image
-                src={app.image}
-                alt={`${app.name} interface preview`}
-                priority
-                quality={95}
-                placeholder="blur"
-                sizes="(max-width: 1024px) 100vw, 920px"
-                className="object-contain object-top w-full h-full"
-              />
-            </div>
-          </div>
+      {/* Reduced size product image frame with clean browser bar */}
+      <figure
+        data-reveal
+        className="mx-auto overflow-hidden rounded-2xl border border-white/15 bg-[#0a0c0e] shadow-[0_0_60px_rgba(0,0,0,0.6)]"
+        style={{ maxWidth: 'min(920px, 100%)' }}
+      >
+        <figcaption className="flex items-center gap-4 border-b border-white/10 bg-black/40 px-4 py-3 text-xs sm:text-small font-mono text-white/60">
+          <span className="flex gap-1.5" aria-hidden="true">
+            <i className="size-2.5 rounded-full bg-white/20" />
+            <i className="size-2.5 rounded-full bg-white/20" />
+            <i className="size-2.5 rounded-full bg-white/20" />
+          </span>
+          drava.os/applications/{slugOf(app)}
+        </figcaption>
+        <div className="relative w-full overflow-hidden bg-black/40 p-2 sm:p-4">
+          <Image
+            src={app.image}
+            alt={`${app.name} interface preview`}
+            priority
+            quality={95}
+            placeholder="blur"
+            sizes="(max-width: 1024px) 100vw, 920px"
+            className="block h-auto w-full rounded-xl object-contain object-center"
+          />
         </div>
-
-        {/* Laptop Bottom Base & Hinge */}
-        <div className="relative mx-auto -mt-[1px] w-[94%] sm:w-[92%]">
-          {/* Hinge recess bar */}
-          <div className="mx-auto h-2 sm:h-2.5 w-24 sm:w-36 rounded-b-[4px] bg-[#16181c] border-x border-b border-white/10" />
-          {/* Main aluminum unibody base */}
-          <div className="h-3 sm:h-4 w-full rounded-b-[14px] sm:rounded-b-[18px] bg-gradient-to-b from-[#2a2d33] via-[#1c1e22] to-[#121417] shadow-[0_15px_30px_rgba(0,0,0,0.9)] border-t border-white/20 border-b border-black">
-            {/* Center thumb groove opening */}
-            <div className="mx-auto h-1 sm:h-1.5 w-16 sm:w-24 rounded-b-[6px] bg-[#101215]" />
-          </div>
-        </div>
-      </div>
+      </figure>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {app.metrics.map((m) => (
