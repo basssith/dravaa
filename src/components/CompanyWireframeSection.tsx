@@ -98,39 +98,62 @@ function buildInteriorWireframe(): Line3D[] {
     lines.push({ p1: [bx, backY, cz + cw], p2: [bx, seatY, cz + cw] });
 
     lines.push({ p1: [cx, seatY, cz], p2: [cx, 0.88, cz] });
-    lines.push({ p1: [cx - 0.2, 0.88, cz], p2: [cx + 0.2, 0.88, cz] });
-    lines.push({ p1: [cx, 0.88, cz - 0.2], p2: [cx, 0.88, cz + 0.2] });
+    lines.push({ p1: [cx - 0.16, 0.88, cz], p2: [cx + 0.16, 0.88, cz] });
+    lines.push({ p1: [cx, 0.88, cz - 0.16], p2: [cx, 0.88, cz + 0.16] });
   });
 
-  // Screen & Console
-  const scrX1 = -1.3;
-  const scrX2 = 1.3;
-  const scrY1 = -0.7;
-  const scrY2 = 0.05;
-  const scrZ = -0.98;
+  // Whiteboard / Display Screen on back wall
+  const wbX1 = -1.1;
+  const wbX2 = 1.1;
+  const wbY1 = -0.55;
+  const wbY2 = 0.25;
+  const wbZ = -0.96;
+  lines.push({ p1: [wbX1, wbY1, wbZ], p2: [wbX2, wbY1, wbZ] });
+  lines.push({ p1: [wbX2, wbY1, wbZ], p2: [wbX2, wbY2, wbZ] });
+  lines.push({ p1: [wbX2, wbY2, wbZ], p2: [wbX1, wbY2, wbZ] });
+  lines.push({ p1: [wbX1, wbY2, wbZ], p2: [wbX1, wbY1, wbZ] });
 
-  lines.push({ p1: [scrX1, scrY1, scrZ], p2: [scrX2, scrY1, scrZ] });
-  lines.push({ p1: [scrX2, scrY1, scrZ], p2: [scrX2, scrY2, scrZ] });
-  lines.push({ p1: [scrX2, scrY2, scrZ], p2: [scrX1, scrY2, scrZ] });
-  lines.push({ p1: [scrX1, scrY2, scrZ], p2: [scrX1, scrY1, scrZ] });
+  // Screen graph
+  lines.push({ p1: [-0.9, 0.15, wbZ], p2: [-0.5, 0.15, wbZ] });
+  lines.push({ p1: [-0.5, 0.15, wbZ], p2: [-0.1, -0.15, wbZ] });
+  lines.push({ p1: [-0.1, -0.15, wbZ], p2: [0.5, -0.15, wbZ] });
+  lines.push({ p1: [0.5, -0.15, wbZ], p2: [0.9, 0.05, wbZ] });
 
-  lines.push({ p1: [-1.5, 0.52, -0.85], p2: [1.5, 0.52, -0.85] });
-  lines.push({ p1: [1.5, 0.52, -0.85], p2: [1.5, 0.88, -0.85] });
-  lines.push({ p1: [1.5, 0.88, -0.85], p2: [-1.5, 0.88, -0.85] });
-  lines.push({ p1: [-1.5, 0.88, -0.85], p2: [-1.5, 0.52, -0.85] });
+  // Server rack / Credenza
+  const srX1 = -2.35;
+  const srX2 = -2.1;
+  const srY1 = 0.2;
+  const srY2 = 0.88;
+  const srZ1 = -0.5;
+  const srZ2 = 1.6;
+  lines.push({ p1: [srX1, srY1, srZ1], p2: [srX2, srY1, srZ1] });
+  lines.push({ p1: [srX2, srY1, srZ1], p2: [srX2, srY1, srZ2] });
+  lines.push({ p1: [srX2, srY1, srZ2], p2: [srX1, srY1, srZ2] });
+  lines.push({ p1: [srX1, srY1, srZ2], p2: [srX1, srY1, srZ1] });
+  lines.push({ p1: [srX2, srY2, srZ1], p2: [srX2, srY2, srZ2] });
+  lines.push({ p1: [srX2, srY1, 0.2], p2: [srX2, srY2, 0.2] });
+  lines.push({ p1: [srX2, srY1, 0.9], p2: [srX2, srY2, 0.9] });
 
   return lines;
 }
 
+/**
+ * CompanyWireframeSection (OPTION C):
+ * Continuous experience where the initial landing page has the fluid interactive binary numbers,
+ * and as you scroll, the camera seamlessly travels through the binary field, transforming into
+ * the 3D room wireframe and revealing the "WHAT WE DO" section without any cut.
+ */
 export function CompanyWireframeSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const textWrapperRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const whatWeDoRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
-    const textWrapper = textWrapperRef.current;
+    const hero = heroRef.current;
+    const whatWeDo = whatWeDoRef.current;
     if (!container || !canvas) return;
 
     const ctx = canvas.getContext('2d', { alpha: true });
@@ -143,25 +166,45 @@ export function CompanyWireframeSection() {
 
     const wireframeLines = buildInteriorWireframe();
 
-    interface MorphBinaryParticle {
+    // Mouse interactive fluid state
+    const mouse = {
+      x: -1000,
+      y: -1000,
+      prevX: -1000,
+      prevY: -1000,
+      vx: 0,
+      vy: 0,
+      radius: 150,
+      active: false,
+    };
+
+    interface MorphParticle {
       char: string;
-      streamX: number;
-      streamY: number;
-      speedY: number;
+      // 2D matrix stream origin and dynamic position
+      originX: number;
+      originY: number;
+      cur2dX: number;
+      cur2dY: number;
+      vx: number;
+      vy: number;
+      speed: number;
+      baseColor: string;
+      baseOpacity: number;
+      // 3D wireframe destination point
       tx3d: number;
       ty3d: number;
       tz3d: number;
       isBright: boolean;
-      flipTimer: number;
+      changeTimer: number;
     }
 
-    const particles: MorphBinaryParticle[] = [];
+    const morphParticles: MorphParticle[] = [];
 
+    // Map wireframe points to particles that start as the 2D fluid matrix stream
     wireframeLines.forEach((line) => {
       const [x1, y1, z1] = line.p1;
       const [x2, y2, z2] = line.p2;
       const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
-      // Clean, rhythmic node placement: numbers sit only at well-spaced structural joints
       const step = 0.85;
       const count = Math.max(1, Math.round(len / step));
 
@@ -171,22 +214,32 @@ export function CompanyWireframeSection() {
         const py = y1 + (y2 - y1) * t;
         const pz = z1 + (z2 - z1) * t;
 
-        particles.push({
+        const isGreen = Math.random() < 0.25;
+        const baseColor = isGreen ? 'rgba(182, 255, 102, ' : 'rgba(235, 240, 248, ';
+        const baseOpacity = isGreen ? 0.85 : 0.65;
+
+        morphParticles.push({
           char: Math.random() > 0.5 ? '1' : '0',
-          streamX: (Math.random() - 0.5) * 4.2,
-          streamY: (Math.random() - 0.5) * 3.5,
-          speedY: 0.003 + Math.random() * 0.006,
+          originX: 0, // calculated on resize
+          originY: 0,
+          cur2dX: 0,
+          cur2dY: 0,
+          vx: 0,
+          vy: 0,
+          speed: 0.35 + Math.random() * 0.7,
+          baseColor,
+          baseOpacity,
           tx3d: px,
           ty3d: py,
           tz3d: pz,
-          isBright: Math.random() < 0.25,
-          flipTimer: Math.floor(Math.random() * 120),
+          isBright: isGreen,
+          changeTimer: Math.floor(Math.random() * 200),
         });
       }
     });
 
-    // Gentle ambient floating particles count reduced to keep background peaceful and clean
-    const freeParticles: Array<{
+    // Ambient floating stream particles to keep hero rich and continuous
+    const ambientParticles: Array<{
       x: number;
       y: number;
       z: number;
@@ -194,24 +247,30 @@ export function CompanyWireframeSection() {
       char: string;
       isGreen: boolean;
       opacity: number;
+      cur2dX: number;
+      cur2dY: number;
+      vx: number;
+      vy2d: number;
     }> = [];
 
-    for (let i = 0; i < 70; i++) {
-      freeParticles.push({
+    for (let i = 0; i < 95; i++) {
+      ambientParticles.push({
         x: (Math.random() - 0.5) * 8.5,
-        y: (Math.random() - 0.5) * 5.5,
+        y: (Math.random() - 0.5) * 6.0,
         z: -1.2 + Math.random() * 4.8,
         vy: -0.0015 - Math.random() * 0.003,
         char: Math.random() > 0.5 ? '1' : '0',
-        isGreen: Math.random() < 0.2,
-        opacity: 0.2 + Math.random() * 0.35,
+        isGreen: Math.random() < 0.25,
+        opacity: 0.35 + Math.random() * 0.45,
+        cur2dX: 0,
+        cur2dY: 0,
+        vx: 0,
+        vy2d: 0,
       });
     }
 
     let scrollProgress = 0;
     let targetProgress = 0;
-    let mouseX = 0;
-    let mouseY = 0;
     let targetRotY = 0;
     let targetRotX = 0;
     let currRotY = 0;
@@ -219,14 +278,33 @@ export function CompanyWireframeSection() {
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
-      if (e.clientY < rect.top || e.clientY > rect.bottom) return;
-      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
-      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-      targetRotY = mouseX * 0.45;
-      targetRotX = -mouseY * 0.25;
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
+
+      if (mouse.prevX !== -1000) {
+        mouse.vx = (currentX - mouse.prevX) * 0.4;
+        mouse.vy = (currentY - mouse.prevY) * 0.4;
+      }
+      mouse.prevX = mouse.x = currentX;
+      mouse.prevY = mouse.y = currentY;
+      mouse.active = true;
+
+      const normX = currentX / rect.width - 0.5;
+      const normY = currentY / rect.height - 0.5;
+      targetRotY = normX * 0.4;
+      targetRotX = -normY * 0.2;
+    };
+
+    const onPointerLeave = () => {
+      mouse.active = false;
+      mouse.x = -1000;
+      mouse.y = -1000;
+      mouse.vx = 0;
+      mouse.vy = 0;
     };
 
     window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointerleave', onPointerLeave);
 
     const handleResize = () => {
       const rect = container.getBoundingClientRect();
@@ -238,20 +316,33 @@ export function CompanyWireframeSection() {
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
+
+      // Distribute morph particles evenly across viewport for the initial 2D hero fluid stream
+      morphParticles.forEach((p, idx) => {
+        p.originX = (idx * 37 + 19) % width;
+        p.originY = ((idx * 43) % height) + (Math.random() - 0.5) * 20;
+        p.cur2dX = p.originX;
+        p.cur2dY = p.originY;
+      });
+
+      ambientParticles.forEach((p, idx) => {
+        p.cur2dX = (idx * 41 + 10) % width;
+        p.cur2dY = (idx * 51 + 25) % height;
+      });
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // PINNED SCROLL TIMELINE:
-    // 0 -> 35%: Wireframe assemble & exploration
-    // 35% -> 55%: Left-side top block appears
-    // 55% -> 75%: Center block appears
-    // 75% -> 100%: Right-side bottom block appears (with DRAVA)
+    // MASTER PINNED TIMELINE FOR SEAMLESS PROGRESSION:
+    // 0% -> Hero is displayed with fluid interactive binary numbers
+    // 0% -> 22% -> Hero text smoothly fades out upward as camera dollys into stream
+    // 22% -> 55% -> Exact same binary numbers morph and lock into 3D wireframe room
+    // 55% -> 100% -> "02 WHAT WE DO" statements reveal sequentially over the constructed room
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=280%',
+      end: '+=380%',
       pin: true,
       scrub: 1.2,
       onUpdate: (self) => {
@@ -259,35 +350,41 @@ export function CompanyWireframeSection() {
       },
     });
 
-    if (textWrapper) {
-      const tag = textWrapper.querySelector<HTMLElement>('[data-tag]');
-      const block1 = textWrapper.querySelector<HTMLElement>('[data-block="1"]');
-      const block2 = textWrapper.querySelector<HTMLElement>('[data-block="2"]');
-      const block3 = textWrapper.querySelector<HTMLElement>('[data-block="3"]');
+    const masterTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container,
+        start: 'top top',
+        end: '+=380%',
+        scrub: 1.2,
+      },
+    });
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: container,
-          start: 'top top',
-          end: '+=280%',
-          scrub: 1.2,
+    if (hero) {
+      masterTl.to(
+        hero,
+        {
+          opacity: 0,
+          y: -70,
+          duration: 0.20,
+          ease: 'power2.inOut',
+          pointerEvents: 'none',
         },
-      });
+        0
+      );
+    }
 
-      // Initially all content is hidden while exploring the pure binary wireframe
-      tl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
+    if (whatWeDo) {
+      const tag = whatWeDo.querySelector<HTMLElement>('[data-tag]');
+      const block1 = whatWeDo.querySelector<HTMLElement>('[data-block="1"]');
+      const block2 = whatWeDo.querySelector<HTMLElement>('[data-block="2"]');
+      const block3 = whatWeDo.querySelector<HTMLElement>('[data-block="3"]');
 
-      // Step 1: Tag appears
-      tl.to(tag, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.25);
+      masterTl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
 
-      // Step 2: Left-side top 2 lines appear
-      tl.to(block1, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.38);
-
-      // Step 3: Center 2 lines appear
-      tl.to(block2, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.58);
-
-      // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
-      tl.to(block3, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.78);
+      masterTl.to(tag, { opacity: 1, y: 0, duration: 0.14, ease: 'power2.out' }, 0.26);
+      masterTl.to(block1, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.40);
+      masterTl.to(block2, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.60);
+      masterTl.to(block3, { opacity: 1, y: 0, duration: 0.18, ease: 'power2.out' }, 0.80);
     }
 
     const project = (
@@ -319,13 +416,19 @@ export function CompanyWireframeSection() {
     };
 
     const render = () => {
+      // Natural dampening of mouse velocity
+      mouse.vx *= 0.9;
+      mouse.vy *= 0.9;
+
       scrollProgress += (targetProgress - scrollProgress) * 0.08;
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
-      const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.0));
+      // Morph factor: 0 at landing hero, smoothly assembles into room
+      const morphProgress = Math.max(0, (scrollProgress - 0.12) / 0.58);
+      const morphFactor = Math.min(1, Math.max(0, morphProgress));
 
-      const cameraZ = 2.8 - scrollProgress * 1.5;
+      const cameraZ = 3.2 - scrollProgress * 1.9;
       const cameraPitch = currRotX - scrollProgress * 0.12;
       const cameraYaw = currRotY;
 
@@ -333,6 +436,7 @@ export function CompanyWireframeSection() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
+      // Draw wireframe structure lines when morphed enough
       if (morphFactor > 0.45) {
         const wireAlpha = Math.min(0.28, (morphFactor - 0.45) * 0.9);
         ctx.lineWidth = 0.75;
@@ -357,61 +461,98 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // Wireframe binary points:
-      // While in the free stream / transition (morphFactor < 0.65), maintain the exact same size as the landing page (~20px-24px).
-      // Only once the room wireframe forms and locks into place (morphFactor > 0.65 -> 1.0) do they transition down to small size (~9.5px).
+      const radiusSq = mouse.radius * mouse.radius;
       const roomLockFactor = Math.min(1, Math.max(0, (morphFactor - 0.65) / 0.35));
 
-      particles.forEach((pt) => {
-        if (morphFactor < 0.95) {
-          pt.flipTimer++;
-          if (pt.flipTimer > 140) {
-            pt.char = pt.char === '1' ? '0' : '1';
-            pt.flipTimer = 0;
+      // 1. Morph Particles: Start with 2D fluid interactive physics at landing, and smoothly blend into 3D wireframe room
+      for (let i = 0; i < morphParticles.length; i++) {
+        const p = morphParticles[i];
+
+        // Random digit flip
+        p.changeTimer++;
+        if (p.changeTimer > 180) {
+          p.char = p.char === '1' ? '0' : '1';
+          p.changeTimer = 0;
+        }
+
+        // Fluid downward drift in 2D mode
+        p.originY += p.speed;
+        if (p.originY > height + 20) {
+          p.originY = -20;
+          p.cur2dY = -20;
+        }
+
+        // Mouse interaction on the landing page (push & swirl)
+        if (mouse.active && morphFactor < 0.6) {
+          const dx = p.cur2dX - mouse.x;
+          const dy = p.cur2dY - mouse.y;
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < radiusSq && distSq > 0) {
+            const dist = Math.sqrt(distSq);
+            const force = 1 - dist / mouse.radius;
+            const pushX = (dx / dist) * force * 12;
+            const pushY = (dy / dist) * force * 12;
+            const swirlX = -(dy / dist) * force * (mouse.vx * 0.5 + 2);
+            const swirlY = (dx / dist) * force * (mouse.vy * 0.5 + 2);
+
+            p.vx += pushX + swirlX * 0.3;
+            p.vy += pushY + swirlY * 0.3;
           }
         }
 
-        pt.streamY += pt.speedY;
-        if (pt.streamY > 2.2) pt.streamY = -2.2;
+        // Spring force returning particle smoothly to stream position
+        const homeDx = p.originX - p.cur2dX;
+        const homeDy = p.originY - p.cur2dY;
+        p.vx += homeDx * 0.045;
+        p.vy += homeDy * 0.045;
+        p.vx *= 0.88;
+        p.vy *= 0.88;
+        p.cur2dX += p.vx;
+        p.cur2dY += p.vy;
 
-        const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
-        const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
-        const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
+        // 3D projection for this particle's target position
+        const [target3dX, target3dY, dist, visible] = project(
+          p.tx3d,
+          p.ty3d,
+          p.tz3d,
+          cameraPitch,
+          cameraYaw,
+          cameraZ
+        );
 
-        const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
-        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-          // In the beginning stream, scale is boosted slightly larger (~26px-30px) for bold visual impact,
-          // then smoothly settles into the comfortable readable size (~12.5px - 14px) after the room wireframe forms.
-          const baseSize = 27 * (1 - roomLockFactor) + 12.5 * roomLockFactor;
-          const minSize = Math.round(22 * (1 - roomLockFactor) + 10 * roomLockFactor);
-          const maxSize = Math.round(32 * (1 - roomLockFactor) + 14 * roomLockFactor);
-          const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
-          
-          ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
-          
-          // Refined contrast: clearly visible but subtle and non-congested
-          const depthAlpha = Math.max(0.35, Math.min(0.95, 2.4 / dist));
-          ctx.fillStyle = pt.isBright
-            ? `rgba(182, 255, 102, ${0.92 * depthAlpha})`
-            : `rgba(225, 235, 245, ${0.72 * depthAlpha})`;
-          ctx.fillText(pt.char, px, py);
+        if (visible || morphFactor < 0.5) {
+          // Smooth interpolation from 2D screen coordinate to 3D projected coordinate
+          const renderX = p.cur2dX * (1 - morphFactor) + target3dX * morphFactor;
+          const renderY = p.cur2dY * (1 - morphFactor) + target3dY * morphFactor;
+
+          const baseSize = 20 * (1 - roomLockFactor) + 12.5 * roomLockFactor;
+          const fontSize = Math.max(11, Math.min(22, Math.round(baseSize * (2.6 / (dist || 2.6)))));
+
+          ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+
+          const vel = Math.hypot(p.vx, p.vy);
+          const alpha = Math.min(p.baseOpacity + vel * 0.08, 0.95);
+
+          ctx.fillStyle = `${p.baseColor}${alpha})`;
+          ctx.fillText(p.char, renderX, renderY);
         }
-      });
+      }
 
-      // Full-screen ambient binary numbers: Boosted beginning size (~26px-30px)
-      if (morphFactor < 0.8) {
-        const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
-        freeParticles.forEach((fp) => {
+      // 2. Ambient stream particles in 3D depth to maintain continuous matrix ambiance
+      if (morphFactor < 0.85) {
+        const ambientAlpha = Math.max(0, 1 - morphFactor / 0.85);
+        ambientParticles.forEach((fp) => {
           fp.y += fp.vy;
           if (fp.y < -2.6) fp.y = 2.6;
 
           const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
           if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
-            const fontSize = Math.max(20, Math.min(30, Math.round(26 * (2.6 / dist))));
-            ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+            const fontSize = Math.max(16, Math.min(22, Math.round(20 * (2.6 / dist))));
+            ctx.font = `700 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
             ctx.fillStyle = fp.isGreen
               ? `rgba(182, 255, 102, ${0.85 * ambientAlpha})`
-              : `rgba(215, 225, 240, ${0.75 * ambientAlpha})`;
+              : `rgba(215, 225, 240, ${0.70 * ambientAlpha})`;
             ctx.fillText(fp.char, px, py);
           }
         });
@@ -426,7 +567,9 @@ export function CompanyWireframeSection() {
     return () => {
       cancelAnimationFrame(animId);
       pinTrigger.kill();
+      masterTl.kill();
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerleave', onPointerLeave);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
@@ -434,27 +577,49 @@ export function CompanyWireframeSection() {
   return (
     <section
       ref={containerRef}
-      id="intro"
-      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-between py-12 lg:py-16 overflow-hidden"
+      id="hero-intro"
+      className="relative z-10 h-screen w-full bg-[#000000] text-white overflow-hidden select-none"
     >
-      {/* 3D Wireframe Interior Binary Canvas */}
+      {/* --- SINGLE UNIFIED CONTINUOUS CANVAS --- */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 select-none"
       >
         <canvas ref={canvasRef} className="block h-full w-full" />
-        {/* Seamless blend gradient from Section 1 */}
-        <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-transparent to-[#000000] pointer-events-none" />
       </div>
 
-      {/* Content wrapper with stepped diagonal layout: Left top -> Center -> Right bottom */}
+      {/* --- LANDING HERO (INITIAL VIEWPORT): "01 INTRO" & "The Drava" --- */}
       <div
-        ref={textWrapperRef}
-        className="wrap relative z-10 flex flex-col justify-between min-h-[82vh] w-full px-gutter pointer-events-auto"
+        ref={heroRef}
+        className="absolute inset-0 z-10 flex flex-col justify-end px-gutter pb-4 sm:pb-6 lg:pb-8 pointer-events-none"
       >
-        {/* Top bar with Tag: Green box for 02, no brackets, uppercase WHAT WE DO */}
+        <div className="relative z-10 mt-auto flex flex-col items-start gap-2 sm:gap-3 pb-2 sm:pb-4 pointer-events-auto">
+          <div className="inline-flex items-center gap-2.5">
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+              01
+            </span>
+            <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
+              INTRO
+            </span>
+          </div>
+
+          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight text-white leading-none">
+            <span>The </span>
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
+              Drava
+            </span>
+          </h1>
+        </div>
+      </div>
+
+      {/* --- WHAT WE DO SECTION (APPEARS ON SCROLL AS WIREFRAME FORMS) --- */}
+      <div
+        ref={whatWeDoRef}
+        className="wrap absolute inset-0 z-10 flex flex-col justify-between py-12 lg:py-16 min-h-full w-full px-gutter pointer-events-none"
+      >
+        {/* Top bar with Tag: 02 WHAT WE DO */}
         <div className="flex items-center justify-between w-full pt-4">
-          <div data-tag className="inline-flex items-center gap-2.5">
+          <div data-tag className="inline-flex items-center gap-2.5 pointer-events-auto">
             <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
               02
             </span>
@@ -467,7 +632,7 @@ export function CompanyWireframeSection() {
         {/* 1. LEFT SIDE ABOVE: First Two Lines */}
         <div
           data-block="1"
-          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 will-change-transform"
+          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 pointer-events-auto will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">Connecting everything,</span>
@@ -478,7 +643,7 @@ export function CompanyWireframeSection() {
         {/* 2. CENTER: Second Two Lines */}
         <div
           data-block="2"
-          className="self-center max-w-[36ch] text-center my-auto py-4 will-change-transform"
+          className="self-center max-w-[36ch] text-center my-auto py-4 pointer-events-auto will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">Bringing it all</span>
@@ -489,7 +654,7 @@ export function CompanyWireframeSection() {
         {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for Drava) */}
         <div
           data-block="3"
-          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 will-change-transform"
+          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 pointer-events-auto will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">
