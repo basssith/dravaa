@@ -98,62 +98,39 @@ function buildInteriorWireframe(): Line3D[] {
     lines.push({ p1: [bx, backY, cz + cw], p2: [bx, seatY, cz + cw] });
 
     lines.push({ p1: [cx, seatY, cz], p2: [cx, 0.88, cz] });
-    lines.push({ p1: [cx - 0.16, 0.88, cz], p2: [cx + 0.16, 0.88, cz] });
-    lines.push({ p1: [cx, 0.88, cz - 0.16], p2: [cx, 0.88, cz + 0.16] });
+    lines.push({ p1: [cx - 0.2, 0.88, cz], p2: [cx + 0.2, 0.88, cz] });
+    lines.push({ p1: [cx, 0.88, cz - 0.2], p2: [cx, 0.88, cz + 0.2] });
   });
 
-  // Whiteboard / Display Screen on back wall
-  const wbX1 = -1.1;
-  const wbX2 = 1.1;
-  const wbY1 = -0.55;
-  const wbY2 = 0.25;
-  const wbZ = -0.96;
-  lines.push({ p1: [wbX1, wbY1, wbZ], p2: [wbX2, wbY1, wbZ] });
-  lines.push({ p1: [wbX2, wbY1, wbZ], p2: [wbX2, wbY2, wbZ] });
-  lines.push({ p1: [wbX2, wbY2, wbZ], p2: [wbX1, wbY2, wbZ] });
-  lines.push({ p1: [wbX1, wbY2, wbZ], p2: [wbX1, wbY1, wbZ] });
+  // Screen & Console
+  const scrX1 = -1.3;
+  const scrX2 = 1.3;
+  const scrY1 = -0.7;
+  const scrY2 = 0.05;
+  const scrZ = -0.98;
 
-  // Screen graph
-  lines.push({ p1: [-0.9, 0.15, wbZ], p2: [-0.5, 0.15, wbZ] });
-  lines.push({ p1: [-0.5, 0.15, wbZ], p2: [-0.1, -0.15, wbZ] });
-  lines.push({ p1: [-0.1, -0.15, wbZ], p2: [0.5, -0.15, wbZ] });
-  lines.push({ p1: [0.5, -0.15, wbZ], p2: [0.9, 0.05, wbZ] });
+  lines.push({ p1: [scrX1, scrY1, scrZ], p2: [scrX2, scrY1, scrZ] });
+  lines.push({ p1: [scrX2, scrY1, scrZ], p2: [scrX2, scrY2, scrZ] });
+  lines.push({ p1: [scrX2, scrY2, scrZ], p2: [scrX1, scrY2, scrZ] });
+  lines.push({ p1: [scrX1, scrY2, scrZ], p2: [scrX1, scrY1, scrZ] });
 
-  // Server rack / Credenza
-  const srX1 = -2.35;
-  const srX2 = -2.1;
-  const srY1 = 0.2;
-  const srY2 = 0.88;
-  const srZ1 = -0.5;
-  const srZ2 = 1.6;
-  lines.push({ p1: [srX1, srY1, srZ1], p2: [srX2, srY1, srZ1] });
-  lines.push({ p1: [srX2, srY1, srZ1], p2: [srX2, srY1, srZ2] });
-  lines.push({ p1: [srX2, srY1, srZ2], p2: [srX1, srY1, srZ2] });
-  lines.push({ p1: [srX1, srY1, srZ2], p2: [srX1, srY1, srZ1] });
-  lines.push({ p1: [srX2, srY2, srZ1], p2: [srX2, srY2, srZ2] });
-  lines.push({ p1: [srX2, srY1, 0.2], p2: [srX2, srY2, 0.2] });
-  lines.push({ p1: [srX2, srY1, 0.9], p2: [srX2, srY2, 0.9] });
+  lines.push({ p1: [-1.5, 0.52, -0.85], p2: [1.5, 0.52, -0.85] });
+  lines.push({ p1: [1.5, 0.52, -0.85], p2: [1.5, 0.88, -0.85] });
+  lines.push({ p1: [1.5, 0.88, -0.85], p2: [-1.5, 0.88, -0.85] });
+  lines.push({ p1: [-1.5, 0.88, -0.85], p2: [-1.5, 0.52, -0.85] });
 
   return lines;
 }
 
-/**
- * CompanyWireframeSection:
- * Single continuous section uniting Landing Hero ("The Drava", "01 INTRO") and
- * the 3D Wireframe Binary Room ("WHAT WE DO") into ONE uninterrupted experience.
- * There is NO page cut or boundary.
- */
 export function CompanyWireframeSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const heroContentRef = useRef<HTMLDivElement>(null);
-  const whatWeDoContentRef = useRef<HTMLDivElement>(null);
+  const textWrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
-    const heroContent = heroContentRef.current;
-    const whatWeDoContent = whatWeDoContentRef.current;
+    const textWrapper = textWrapperRef.current;
     if (!container || !canvas) return;
 
     const ctx = canvas.getContext('2d', { alpha: true });
@@ -184,6 +161,7 @@ export function CompanyWireframeSection() {
       const [x1, y1, z1] = line.p1;
       const [x2, y2, z2] = line.p2;
       const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
+      // Clean, rhythmic node placement: numbers sit only at well-spaced structural joints
       const step = 0.85;
       const count = Math.max(1, Math.round(len / step));
 
@@ -195,8 +173,8 @@ export function CompanyWireframeSection() {
 
         particles.push({
           char: Math.random() > 0.5 ? '1' : '0',
-          streamX: (Math.random() - 0.5) * 4.8,
-          streamY: (Math.random() - 0.5) * 4.0,
+          streamX: (Math.random() - 0.5) * 4.2,
+          streamY: (Math.random() - 0.5) * 3.5,
           speedY: 0.003 + Math.random() * 0.006,
           tx3d: px,
           ty3d: py,
@@ -207,6 +185,7 @@ export function CompanyWireframeSection() {
       }
     });
 
+    // Gentle ambient floating particles count reduced to keep background peaceful and clean
     const freeParticles: Array<{
       x: number;
       y: number;
@@ -217,15 +196,15 @@ export function CompanyWireframeSection() {
       opacity: number;
     }> = [];
 
-    for (let i = 0; i < 85; i++) {
+    for (let i = 0; i < 70; i++) {
       freeParticles.push({
         x: (Math.random() - 0.5) * 8.5,
-        y: (Math.random() - 0.5) * 6.0,
+        y: (Math.random() - 0.5) * 5.5,
         z: -1.2 + Math.random() * 4.8,
         vy: -0.0015 - Math.random() * 0.003,
         char: Math.random() > 0.5 ? '1' : '0',
-        isGreen: Math.random() < 0.25,
-        opacity: 0.25 + Math.random() * 0.45,
+        isGreen: Math.random() < 0.2,
+        opacity: 0.2 + Math.random() * 0.35,
       });
     }
 
@@ -264,15 +243,15 @@ export function CompanyWireframeSection() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // ONE PINNED SCROLL TIMELINE FOR THE WHOLE LANDING JOURNEY:
-    // 0% -> Hero is active (ambient falling matrix stream, "01 INTRO" + "The Drava")
-    // 0% - 20% -> Hero content smoothly fades up/out as you scroll
-    // 20% - 50% -> Binary digits smoothly morph & wireframe room constructs
-    // 50% - 100% -> "02 WHAT WE DO" and the 3 statements sequence into position
+    // PINNED SCROLL TIMELINE:
+    // 0 -> 35%: Wireframe assemble & exploration
+    // 35% -> 55%: Left-side top block appears
+    // 55% -> 75%: Center block appears
+    // 75% -> 100%: Right-side bottom block appears (with DRAVA)
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=380%',
+      end: '+=280%',
       pin: true,
       scrub: 1.2,
       onUpdate: (self) => {
@@ -280,43 +259,35 @@ export function CompanyWireframeSection() {
       },
     });
 
-    const masterTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: container,
-        start: 'top top',
-        end: '+=380%',
-        scrub: 1.2,
-      },
-    });
+    if (textWrapper) {
+      const tag = textWrapper.querySelector<HTMLElement>('[data-tag]');
+      const block1 = textWrapper.querySelector<HTMLElement>('[data-block="1"]');
+      const block2 = textWrapper.querySelector<HTMLElement>('[data-block="2"]');
+      const block3 = textWrapper.querySelector<HTMLElement>('[data-block="3"]');
 
-    // Hero content fades out smoothly right as scroll begins
-    if (heroContent) {
-      masterTl.to(
-        heroContent,
-        {
-          opacity: 0,
-          y: -60,
-          duration: 0.18,
-          ease: 'power2.inOut',
-          pointerEvents: 'none',
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: container,
+          start: 'top top',
+          end: '+=280%',
+          scrub: 1.2,
         },
-        0
-      );
-    }
+      });
 
-    // "02 WHAT WE DO" content reveals sequentially
-    if (whatWeDoContent) {
-      const tag = whatWeDoContent.querySelector<HTMLElement>('[data-tag]');
-      const block1 = whatWeDoContent.querySelector<HTMLElement>('[data-block="1"]');
-      const block2 = whatWeDoContent.querySelector<HTMLElement>('[data-block="2"]');
-      const block3 = whatWeDoContent.querySelector<HTMLElement>('[data-block="3"]');
+      // Initially all content is hidden while exploring the pure binary wireframe
+      tl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
 
-      masterTl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
+      // Step 1: Tag appears
+      tl.to(tag, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.25);
 
-      masterTl.to(tag, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.28);
-      masterTl.to(block1, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.40);
-      masterTl.to(block2, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.60);
-      masterTl.to(block3, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.80);
+      // Step 2: Left-side top 2 lines appear
+      tl.to(block1, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.38);
+
+      // Step 3: Center 2 lines appear
+      tl.to(block2, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.58);
+
+      // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
+      tl.to(block3, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.78);
     }
 
     const project = (
@@ -352,11 +323,9 @@ export function CompanyWireframeSection() {
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
-      // Morphing starts after hero text fades out
-      const morphProgress = Math.max(0, (scrollProgress - 0.12) / 0.58);
-      const morphFactor = Math.min(1, Math.max(0, morphProgress));
+      const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.0));
 
-      const cameraZ = 3.2 - scrollProgress * 1.9;
+      const cameraZ = 2.8 - scrollProgress * 1.5;
       const cameraPitch = currRotX - scrollProgress * 0.12;
       const cameraYaw = currRotY;
 
@@ -388,6 +357,9 @@ export function CompanyWireframeSection() {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
+      // Wireframe binary points:
+      // While in the free stream / transition (morphFactor < 0.65), maintain the exact same size as the landing page (~20px-24px).
+      // Only once the room wireframe forms and locks into place (morphFactor > 0.65 -> 1.0) do they transition down to small size (~9.5px).
       const roomLockFactor = Math.min(1, Math.max(0, (morphFactor - 0.65) / 0.35));
 
       particles.forEach((pt) => {
@@ -400,7 +372,7 @@ export function CompanyWireframeSection() {
         }
 
         pt.streamY += pt.speedY;
-        if (pt.streamY > 2.5) pt.streamY = -2.5;
+        if (pt.streamY > 2.2) pt.streamY = -2.2;
 
         const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
         const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
@@ -408,13 +380,16 @@ export function CompanyWireframeSection() {
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
         if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          // In the beginning stream, scale is boosted slightly larger (~26px-30px) for bold visual impact,
+          // then smoothly settles into the comfortable readable size (~12.5px - 14px) after the room wireframe forms.
           const baseSize = 27 * (1 - roomLockFactor) + 12.5 * roomLockFactor;
           const minSize = Math.round(22 * (1 - roomLockFactor) + 10 * roomLockFactor);
           const maxSize = Math.round(32 * (1 - roomLockFactor) + 14 * roomLockFactor);
           const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
-
+          
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
-
+          
+          // Refined contrast: clearly visible but subtle and non-congested
           const depthAlpha = Math.max(0.35, Math.min(0.95, 2.4 / dist));
           ctx.fillStyle = pt.isBright
             ? `rgba(182, 255, 102, ${0.92 * depthAlpha})`
@@ -423,9 +398,9 @@ export function CompanyWireframeSection() {
         }
       });
 
-      // Ambient stream particles flowing uninterrupted across the whole experience
-      if (morphFactor < 0.85) {
-        const ambientAlpha = Math.max(0, 1 - morphFactor / 0.85);
+      // Full-screen ambient binary numbers: Boosted beginning size (~26px-30px)
+      if (morphFactor < 0.8) {
+        const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
         freeParticles.forEach((fp) => {
           fp.y += fp.vy;
           if (fp.y < -2.6) fp.y = 2.6;
@@ -451,7 +426,6 @@ export function CompanyWireframeSection() {
     return () => {
       cancelAnimationFrame(animId);
       pinTrigger.kill();
-      masterTl.kill();
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
     };
@@ -460,8 +434,8 @@ export function CompanyWireframeSection() {
   return (
     <section
       ref={containerRef}
-      id="hero-intro"
-      className="relative z-10 h-screen w-full bg-[#000000] text-white overflow-hidden select-none"
+      id="intro"
+      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-between py-12 lg:py-16 overflow-hidden"
     >
       {/* 3D Wireframe Interior Binary Canvas */}
       <div
@@ -471,38 +445,14 @@ export function CompanyWireframeSection() {
         <canvas ref={canvasRef} className="block h-full w-full" />
       </div>
 
-      {/* --- HERO CONTENT: "01 INTRO" & "The Drava" (Initially Visible in Viewport) --- */}
+      {/* Content wrapper with stepped diagonal layout: Left top -> Center -> Right bottom */}
       <div
-        ref={heroContentRef}
-        className="absolute inset-0 z-10 flex flex-col justify-end px-gutter pb-4 sm:pb-6 lg:pb-8 pointer-events-none"
-      >
-        <div className="relative z-10 mt-auto flex flex-col items-start gap-2 sm:gap-3 pb-2 sm:pb-4 pointer-events-auto">
-          <div className="inline-flex items-center gap-2.5">
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
-              01
-            </span>
-            <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
-              INTRO
-            </span>
-          </div>
-
-          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight text-white leading-none">
-            <span>The </span>
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
-              Drava
-            </span>
-          </h1>
-        </div>
-      </div>
-
-      {/* --- "02 WHAT WE DO" CONTENT (Reveals as wireframe constructs) --- */}
-      <div
-        ref={whatWeDoContentRef}
-        className="wrap absolute inset-0 z-10 flex flex-col justify-between py-12 lg:py-16 min-h-full w-full px-gutter pointer-events-none"
+        ref={textWrapperRef}
+        className="wrap relative z-10 flex flex-col justify-between min-h-[82vh] w-full px-gutter pointer-events-auto"
       >
         {/* Top bar with Tag: Green box for 02, no brackets, uppercase WHAT WE DO */}
         <div className="flex items-center justify-between w-full pt-4">
-          <div data-tag className="inline-flex items-center gap-2.5 pointer-events-auto">
+          <div data-tag className="inline-flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
               02
             </span>
@@ -515,7 +465,7 @@ export function CompanyWireframeSection() {
         {/* 1. LEFT SIDE ABOVE: First Two Lines */}
         <div
           data-block="1"
-          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 pointer-events-auto will-change-transform"
+          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">Connecting everything,</span>
@@ -526,7 +476,7 @@ export function CompanyWireframeSection() {
         {/* 2. CENTER: Second Two Lines */}
         <div
           data-block="2"
-          className="self-center max-w-[36ch] text-center my-auto py-4 pointer-events-auto will-change-transform"
+          className="self-center max-w-[36ch] text-center my-auto py-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">Bringing it all</span>
@@ -537,7 +487,7 @@ export function CompanyWireframeSection() {
         {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for Drava) */}
         <div
           data-block="3"
-          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 pointer-events-auto will-change-transform"
+          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">
