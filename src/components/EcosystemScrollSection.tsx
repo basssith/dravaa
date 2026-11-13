@@ -299,29 +299,29 @@ export function EcosystemScrollSection() {
               className="absolute inset-0 flex items-center justify-center p-4 sm:p-8 lg:p-12 will-change-transform"
             >
               {/* Product Layout: Full Screen Centered Layout (Number + Horizontal Screen Image + Details + Full Height Vertical Divider) */}
-              <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full max-w-7xl">
+              <div className="flex flex-col lg:flex-row items-center justify-center gap-4 lg:gap-6 xl:gap-8 w-full max-w-[94vw] xl:max-w-7xl">
                 
                 {/* 1. NUMBER INDICATOR: Normal font 0 + Gray Slash + Product Digit */}
-                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3 pl-8 sm:pl-12 lg:pl-16 xl:pl-24 pr-6 sm:pr-8 lg:pr-10">
+                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3 pl-2 sm:pl-4 lg:pl-6 pr-2 sm:pr-4">
                   {/* Normal "0" using Syne font like before */}
-                  <span className="font-display font-black text-[clamp(5.8rem,9.2vw,14rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
+                  <span className="font-display font-black text-[clamp(4.2rem,6.8vw,10.5rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
                     0
                   </span>
 
                   {/* Gray slanted slash / */}
-                  <span className="font-display font-light text-[clamp(5.5rem,8.8vw,13.5rem)] text-[#50555e] leading-none select-none">
+                  <span className="font-display font-light text-[clamp(4rem,6.5vw,10rem)] text-[#50555e] leading-none select-none">
                     /
                   </span>
 
                   {/* Product Digit (1, 2, 3, 4) in font-display Syne */}
-                  <span className="font-display font-black text-[clamp(5.8rem,9.2vw,14rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
+                  <span className="font-display font-black text-[clamp(4.2rem,6.8vw,10.5rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
                     {i + 1}
                   </span>
                 </div>
 
                 {/* 2. CENTER: Horizontal Screen Monitor */}
-                <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform pointer-events-auto">
-                  <div className="relative aspect-[16/9] w-[340px] sm:w-[460px] md:w-[540px] lg:w-[520px] xl:w-[600px] 2xl:w-[680px] max-h-[62vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group/frame">
+                <div data-flow-img className="shrink flex justify-center items-center will-change-transform pointer-events-auto min-w-0">
+                  <div className="relative aspect-[16/9] w-[320px] sm:w-[420px] md:w-[480px] lg:w-[480px] xl:w-[560px] 2xl:w-[620px] max-h-[58vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group/frame">
                     <TransitionLink
                       href={`/applications/${slugOf(app)}`}
                       className="group/img relative w-full h-full block cursor-pointer overflow-hidden"
@@ -371,21 +371,21 @@ export function EcosystemScrollSection() {
                 </div>
 
                 {/* 3. CENTER-RIGHT: Product Details & Specifications */}
-                <div data-flow-details className="flex flex-col justify-center text-left space-y-4 max-w-[320px] lg:max-w-[340px] shrink-0 will-change-transform pointer-events-auto">
+                <div data-flow-details className="flex flex-col justify-center text-left space-y-3 max-w-[280px] sm:max-w-[300px] lg:max-w-[320px] xl:max-w-[340px] shrink-0 will-change-transform pointer-events-auto">
                   {/* Product Step Number Indicator: 01 / 04 */}
                   <div className="font-mono text-xs sm:text-sm tracking-widest text-white/60">
                     0{i + 1} / 0{apps.length}
                   </div>
 
-                  <h3 className="font-display text-[clamp(2.2rem,2rem+1.8vw,3.6rem)] font-bold leading-none tracking-tight text-white">
+                  <h3 className="font-display text-[clamp(2rem,1.8rem+1.5vw,3.2rem)] font-bold leading-none tracking-tight text-white">
                     {app.name}
                   </h3>
 
-                  <p className="text-sm sm:text-base leading-relaxed text-[#c8ccd6]">
+                  <p className="text-xs sm:text-sm lg:text-base leading-relaxed text-[#c8ccd6]">
                     {app.description}
                   </p>
 
-                  <div className="border-t border-b border-white/20 py-3.5 my-1 space-y-2.5">
+                  <div className="border-t border-b border-white/20 py-2.5 my-1 space-y-2">
                     <div className="flex justify-between text-xs sm:text-sm font-mono text-white/80">
                       <span>Category</span>
                       <span className="text-white font-medium">{app.badge}</span>
@@ -410,7 +410,7 @@ export function EcosystemScrollSection() {
                 <div
                   data-flow-divider
                   style={{ backgroundColor: 'rgba(182, 255, 102, 0.40)' }}
-                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-8 lg:ml-12 xl:ml-16 will-change-transform"
+                  className="hidden lg:block w-[1px] h-screen shrink-0 ml-4 lg:ml-6 xl:ml-8 will-change-transform"
                 />
 
               </div>
