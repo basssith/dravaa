@@ -64,10 +64,14 @@ export function SectionHead({ tag, title, note }: { tag?: string; title: string[
   return (
     <header className="section-head text-white">
       <div>
-        {tag ? <p className="tag text-white/60">{tag}</p> : null}
+        {tag ? (
+          <p className="font-mono text-xs font-semibold tracking-widest text-white uppercase mb-1">
+            {tag}
+          </p>
+        ) : null}
         <Lines className="t-h2 mt-4 text-white" lines={title} />
       </div>
-      {note && <p className="max-w-[36ch] text-white/80">{note}</p>}
+      {note && <div className="max-w-[36ch] text-white/80">{note}</div>}
     </header>
   );
 }
