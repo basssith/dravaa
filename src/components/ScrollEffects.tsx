@@ -43,25 +43,7 @@ export function ScrollEffects() {
         });
       });
 
-      // Smooth overlap transition between Section 1 (Hero) and Section 2 (Intro):
-      // The hero content gently glides up and fades, while the hero canvas stays pinned/smooth so it flows seamlessly into the wireframe section without a cut
-      const heroEl = document.querySelector<HTMLElement>('#hero');
-      if (heroEl) {
-        const heroContent = heroEl.querySelector<HTMLElement>('.relative.z-10');
-        if (heroContent) {
-          gsap.to(heroContent, {
-            y: -80,
-            opacity: 0,
-            ease: 'power1.out',
-            scrollTrigger: {
-              trigger: heroEl,
-              start: 'top top',
-              end: 'bottom 60%',
-              scrub: 0.6,
-            },
-          });
-        }
-      }
+      // Smooth Card Stacking & Pop-Up Elevation on Scroll:
       // Cards stack progressively as you scroll down, lifting up and scaling gracefully
       gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el) => {
         gsap.fromTo(
