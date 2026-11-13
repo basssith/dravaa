@@ -63,7 +63,9 @@ export function EcosystemScrollSection() {
     }
 
     const tl = gsap.timeline({
+      id: 'ecosystem-timeline',
       scrollTrigger: {
+        id: 'ecosystem-scroll',
         trigger: container,
         start: 'top top',
         end: `+=${panels.length * 180 + 100}%`,
@@ -265,8 +267,9 @@ export function EcosystemScrollSection() {
               onClick={() => {
                 const st = ScrollTrigger.getById('ecosystem-scroll') || ScrollTrigger.getAll().find(t => t.trigger === containerRef.current);
                 if (st) {
-                  // Scroll to the moment 01 Nex product settles into place
-                  const targetScroll = st.start + (st.end - st.start) * 0.16;
+                  // Calculate exact scroll position where Product 01 (Nex) has settled in place
+                  // Total scrub progress: intro scrub (0 -> ~0.26), slide 0 settle is around progress 0.28 - 0.32
+                  const targetScroll = st.start + (st.end - st.start) * 0.32;
                   window.scrollTo({ top: targetScroll, behavior: 'smooth' });
                 } else if (containerRef.current) {
                   containerRef.current.scrollIntoView({ behavior: 'smooth' });
