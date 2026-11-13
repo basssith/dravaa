@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { AppGrid, AppList } from '@/components/Apps';
 import { PageHero } from '@/components/PageHero';
-import { SectionHead } from '@/components/type';
+import { SectionHead, WordScrub } from '@/components/type';
 import { applications, pad } from '@/lib/applications';
 
 export const metadata: Metadata = {
@@ -28,7 +28,11 @@ export default function ApplicationsPage() {
 
       <section id="index" className="section">
         <div className="wrap">
-          <SectionHead tag="[ Index ]" title={['All', 'applications']} note="The full list at a glance. Select a row to open its page." />
+          <SectionHead
+            tag="[ Index ]"
+            title={['All', 'applications']}
+            note={<WordScrub as="span" text="The full list at a glance. Select a row to open its page." />}
+          />
           <AppList apps={applications} />
         </div>
       </section>

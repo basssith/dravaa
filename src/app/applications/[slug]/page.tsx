@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { TransitionLink } from '@/components/TransitionLink';
 import { Arrow } from '@/components/icons';
-import { Lines } from '@/components/type';
+import { Lines, WordScrub } from '@/components/type';
 import { applications, findApp, pad, slugOf } from '@/lib/applications';
 
 type Props = { params: Promise<{ slug: string }> };
@@ -39,7 +39,9 @@ export default async function ApplicationPage({ params }: Props) {
           </span>
         </div>
         <Lines as="h1" hero className="t-mega mt-4 mb-6 text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]" lines={[app.name]} />
-        <p className="max-w-[40ch] text-lead text-white/80">{app.tagline}</p>
+        <div className="max-w-[40ch] text-lead text-white/80">
+          <WordScrub as="p" text={app.tagline} />
+        </div>
         <div className="mt-8 flex flex-wrap gap-3">
           <TransitionLink
             href="/applications"
@@ -93,14 +95,16 @@ export default async function ApplicationPage({ params }: Props) {
       <div className="grid gap-x-gutter gap-y-12 py-block lg:grid-cols-2">
         <div>
           <h2 className="tag text-[#b6ff66] mb-4 font-mono font-semibold tracking-widest uppercase">Overview</h2>
-          <p className="text-lead text-white/80 leading-relaxed">{app.description}</p>
+          <div className="text-lead text-white/80 leading-relaxed">
+            <WordScrub as="p" text={app.description} />
+          </div>
         </div>
         <div>
           <h2 className="tag text-[#b6ff66] mb-4 font-mono font-semibold tracking-widest uppercase">Key capabilities</h2>
           <ul className="border-t border-white/15">
             {app.highlights.map((h) => (
               <li key={h} className="relative border-b border-white/15 py-4 pl-8 text-white/90 leading-relaxed before:absolute before:top-[calc(1rem+0.45em)] before:left-0 before:size-2 before:rounded-full before:bg-[#b6ff66]">
-                {h}
+                <WordScrub as="span" text={h} />
               </li>
             ))}
           </ul>
