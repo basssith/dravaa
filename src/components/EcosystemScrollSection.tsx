@@ -106,7 +106,7 @@ export function EcosystemScrollSection() {
       tl.to(
         leftCol,
         {
-          xPercent: -105,
+          xPercent: -125,
           opacity: 0,
           duration: 1.2,
           ease: 'power2.inOut',
@@ -158,13 +158,14 @@ export function EcosystemScrollSection() {
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
+      const prevDivider = prev.querySelector<HTMLElement>('[data-flow-divider]');
       const step = `step-${i + 1}`;
 
       // Current slide (e.g. Product 01) glides out smoothly to the left
       tl.to(
         prev,
         {
-          xPercent: -100,
+          xPercent: -130,
           opacity: 0,
           pointerEvents: 'none',
           duration: 1.2,
@@ -173,11 +174,24 @@ export function EcosystemScrollSection() {
         step
       );
 
+      // Fade out previous slide's vertical divider early so it never crosses over incoming product numbers
+      if (prevDivider) {
+        tl.to(
+          prevDivider,
+          {
+            opacity: 0,
+            duration: 0.35,
+            ease: 'power1.out',
+          },
+          step
+        );
+      }
+
       // Next slide (e.g. Product 02) enters smoothly from the right to the center
       // It arrives as a full cohesive unit (Number on left, Monitor center, Details right)
       tl.fromTo(
         next,
-        { xPercent: 100, opacity: 0, pointerEvents: 'none' },
+        { xPercent: 120, opacity: 0, pointerEvents: 'none' },
         {
           xPercent: 0,
           opacity: 1,
@@ -288,7 +302,7 @@ export function EcosystemScrollSection() {
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full max-w-7xl">
                 
                 {/* 1. NUMBER INDICATOR: Normal font 0 + Gray Slash + Product Digit */}
-                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3 pl-4 sm:pl-8 lg:pl-12 xl:pl-16 pr-4 sm:pr-6">
+                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3 pl-8 sm:pl-12 lg:pl-16 xl:pl-24 pr-6 sm:pr-8 lg:pr-10">
                   {/* Normal "0" using Syne font like before */}
                   <span className="font-display font-black text-[clamp(5.8rem,9.2vw,14rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
                     0
