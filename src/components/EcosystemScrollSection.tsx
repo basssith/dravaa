@@ -288,11 +288,11 @@ export function EcosystemScrollSection() {
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full max-w-7xl">
                 
                 {/* 1. NUMBER INDICATOR: Custom Graphic 0 + Gray Slash + White Digit */}
-                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3">
+                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3.5 pl-4 sm:pl-8 lg:pl-12 xl:pl-16 pr-4 sm:pr-6">
                   {/* Outer stadium outline + inner pill + center circle */}
                   <svg
                     viewBox="0 0 100 135"
-                    className="h-[clamp(4.5rem,7vw,10.5rem)] w-auto shrink-0 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                    className="h-[clamp(5.8rem,9.2vw,14rem)] w-auto shrink-0 drop-shadow-[0_0_35px_rgba(255,255,255,0.12)]"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                   >
@@ -327,12 +327,12 @@ export function EcosystemScrollSection() {
                   </svg>
 
                   {/* Gray slanted slash / */}
-                  <span className="font-display font-light text-[clamp(4.2rem,6.8vw,10rem)] text-[#50555e] leading-none select-none">
+                  <span className="font-display font-light text-[clamp(5.5rem,8.8vw,13.5rem)] text-[#50555e] leading-none select-none">
                     /
                   </span>
 
                   {/* Product Digit (1, 2, 3, 4) in font-display Syne */}
-                  <span className="font-display font-black text-[clamp(4.5rem,7vw,10.5rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]">
+                  <span className="font-display font-black text-[clamp(5.8rem,9.2vw,14rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
                     {i + 1}
                   </span>
                 </div>
