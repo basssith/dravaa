@@ -287,10 +287,53 @@ export function EcosystemScrollSection() {
               {/* Product Layout: Full Screen Centered Layout (Number + Horizontal Screen Image + Details + Full Height Vertical Divider) */}
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full max-w-7xl">
                 
-                {/* 1. NUMBER INDICATOR (White color) */}
-                <div data-flow-num className="flex flex-col items-center lg:items-start select-none shrink-0 will-change-transform">
+                {/* 1. NUMBER INDICATOR: Custom Graphic 0 + Gray Slash + White Digit */}
+                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3">
+                  {/* Outer stadium outline + inner pill + center circle */}
+                  <svg
+                    viewBox="0 0 100 135"
+                    className="h-[clamp(4.5rem,7vw,10.5rem)] w-auto shrink-0 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    {/* Outer rounded stadium pill stroke */}
+                    <rect
+                      x="4"
+                      y="4"
+                      width="92"
+                      height="127"
+                      rx="46"
+                      stroke="#ffffff"
+                      strokeWidth="6"
+                    />
+                    {/* Inner rounded pill outline */}
+                    <rect
+                      x="28"
+                      y="26"
+                      width="44"
+                      height="83"
+                      rx="22"
+                      stroke="#ffffff"
+                      strokeWidth="5"
+                    />
+                    {/* Concentric center circular target */}
+                    <circle
+                      cx="50"
+                      cy="67.5"
+                      r="14"
+                      stroke="#ffffff"
+                      strokeWidth="5"
+                    />
+                  </svg>
+
+                  {/* Gray slanted slash / */}
+                  <span className="font-display font-light text-[clamp(4.2rem,6.8vw,10rem)] text-[#50555e] leading-none select-none">
+                    /
+                  </span>
+
+                  {/* Product Digit (1, 2, 3, 4) in font-display Syne */}
                   <span className="font-display font-black text-[clamp(4.5rem,7vw,10.5rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.12)]">
-                    0{i + 1}
+                    {i + 1}
                   </span>
                 </div>
 
