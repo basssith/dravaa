@@ -18,15 +18,10 @@ export function TeamSlider() {
     <section className="section text-white" aria-label="Team">
       <div className="wrap mb-12 flex flex-wrap items-end justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2.5">
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-mono font-bold text-xs px-2 py-0.5 rounded-[4px] leading-tight tracking-normal">
-              04
-            </span>
-            <span className="font-mono text-xs font-semibold tracking-widest text-white uppercase">
-              Team
-            </span>
-          </div>
-          <Lines className="t-h2 mt-4 text-white" lines={['The people']} />
+          <span className="font-mono text-xs font-semibold tracking-widest text-white uppercase">
+            THE PEOPLE
+          </span>
+          <Lines className="t-h2 mt-4 text-white" lines={['Team']} />
         </div>
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs text-white/60 uppercase tracking-wider mr-3">Swipe or drag</span>
