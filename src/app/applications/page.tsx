@@ -39,7 +39,6 @@ export default function ApplicationsPage() {
               <div className="space-y-1.5">
                 <WordScrub as="span" text="The full portfolio across every ecosystem." />
                 <WordScrub as="span" text="Select any row to explore deep specs and live capabilities." />
-                <WordScrub as="span" text="Built for seamless scale, control, and performance." />
               </div>
             }
           />
