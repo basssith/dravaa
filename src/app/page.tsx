@@ -26,12 +26,12 @@ export default function Home() {
       <section
         id="hero"
         data-hero
-        className="relative flex min-h-svh flex-col justify-end overflow-hidden px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 lg:pb-12 bg-[#000000]"
+        className="relative flex min-h-svh flex-col justify-end overflow-hidden px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-4 sm:pb-6 lg:pb-8 bg-[#000000]"
       >
         <MatrixFluidCanvas />
 
-        {/* Bottom Left Content: 01 INTRO tag above The Drava */}
-        <div className="relative z-10 mt-auto flex flex-col items-start gap-3 sm:gap-4 pb-4">
+        {/* Bottom Left Content: 01 INTRO tag above The Drava moved slightly down */}
+        <div className="relative z-10 mt-auto flex flex-col items-start gap-2 sm:gap-3 pb-1">
           <div className="inline-flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
               01
@@ -50,7 +50,7 @@ export default function Home() {
         </div>
 
         {/* Bottom edge scroll cue */}
-        <div className="relative z-10 flex items-center justify-end pt-4 lg:pt-5">
+        <div className="relative z-10 flex items-center justify-end pt-2 lg:pt-3">
           <p className="tag flex items-center gap-3 text-[#d0d4dc]">
             <i aria-hidden="true" className="h-7 w-px animate-cue bg-white" />
             Scroll to explore
