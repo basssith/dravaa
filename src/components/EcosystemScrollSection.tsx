@@ -287,44 +287,12 @@ export function EcosystemScrollSection() {
               {/* Product Layout: Full Screen Centered Layout (Number + Horizontal Screen Image + Details + Full Height Vertical Divider) */}
               <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 xl:gap-12 w-full max-w-7xl">
                 
-                {/* 1. NUMBER INDICATOR: Custom Graphic 0 + Gray Slash + White Digit */}
-                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3.5 pl-4 sm:pl-8 lg:pl-12 xl:pl-16 pr-4 sm:pr-6">
-                  {/* Outer stadium outline + inner pill + center circle */}
-                  <svg
-                    viewBox="0 0 100 135"
-                    className="h-[clamp(5.8rem,9.2vw,14rem)] w-auto shrink-0 drop-shadow-[0_0_35px_rgba(255,255,255,0.12)]"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    {/* Outer rounded stadium pill stroke */}
-                    <rect
-                      x="4"
-                      y="4"
-                      width="92"
-                      height="127"
-                      rx="46"
-                      stroke="#ffffff"
-                      strokeWidth="6"
-                    />
-                    {/* Inner rounded pill outline */}
-                    <rect
-                      x="28"
-                      y="26"
-                      width="44"
-                      height="83"
-                      rx="22"
-                      stroke="#ffffff"
-                      strokeWidth="5"
-                    />
-                    {/* Concentric center circular target */}
-                    <circle
-                      cx="50"
-                      cy="67.5"
-                      r="14"
-                      stroke="#ffffff"
-                      strokeWidth="5"
-                    />
-                  </svg>
+                {/* 1. NUMBER INDICATOR: Normal font 0 + Gray Slash + Product Digit */}
+                <div data-flow-num className="flex items-center select-none shrink-0 will-change-transform leading-none gap-2 sm:gap-3 pl-4 sm:pl-8 lg:pl-12 xl:pl-16 pr-4 sm:pr-6">
+                  {/* Normal "0" using Syne font like before */}
+                  <span className="font-display font-black text-[clamp(5.8rem,9.2vw,14rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
+                    0
+                  </span>
 
                   {/* Gray slanted slash / */}
                   <span className="font-display font-light text-[clamp(5.5rem,8.8vw,13.5rem)] text-[#50555e] leading-none select-none">
