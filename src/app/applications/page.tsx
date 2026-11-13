@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function ApplicationsPage() {
   return (
-    <>
+    <div className="text-white">
       <PageHero
         kicker={`[ Applications ] [${pad(applications.length)}]`}
         lines={['Everything', "we're", 'building.']}
@@ -32,6 +32,6 @@ export default function ApplicationsPage() {
           <AppList apps={applications} />
         </div>
       </section>
-    </>
+    </div>
   );
 }

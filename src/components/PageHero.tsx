@@ -67,17 +67,17 @@ export function PageHero({ id, kicker, lines, highlight, sub, cue, full, action,
       )}
     >
       {background}
-      {kicker ? <p className="tag relative z-10 mb-auto">{kicker}</p> : null}
+      {kicker ? <p className="tag text-white/60 relative z-10 mb-auto">{kicker}</p> : null}
       <div className="relative z-10 mt-auto">
-        <Lines as="h1" hero className="t-h1 mb-6 lg:mb-8" lines={lines} highlight={highlight} />
+        <Lines as="h1" hero className="t-h1 mb-6 lg:mb-8 text-white" lines={lines} highlight={highlight} />
       </div>
-      <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 border-t border-line pt-5 lg:pt-6">
+      <div className="relative z-10 flex flex-wrap items-end justify-between gap-6 border-t border-white/15 pt-5 lg:pt-6">
         <div className="flex flex-col items-start gap-4">
-          <p className="max-w-[46ch] text-[clamp(0.95rem,0.85rem+0.35vw,1.15rem)] leading-relaxed text-ink-2">{sub}</p>
+          <p className="max-w-[46ch] text-[clamp(0.95rem,0.85rem+0.35vw,1.15rem)] leading-relaxed text-white/80">{sub}</p>
           {action && <div className="self-start">{action}</div>}
         </div>
-        <p className="tag flex items-center gap-3">
-          <i aria-hidden="true" className="h-7 w-px animate-cue bg-ink" />
+        <p className="tag text-white/60 flex items-center gap-3">
+          <i aria-hidden="true" className="h-7 w-px animate-cue bg-white" />
           {cue}
         </p>
       </div>

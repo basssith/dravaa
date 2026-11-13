@@ -62,12 +62,12 @@ export function WordScrub({
 /** Eyebrow tag + heading, the standard section header. */
 export function SectionHead({ tag, title, note }: { tag: string; title: string[]; note?: ReactNode }) {
   return (
-    <header className="section-head">
+    <header className="section-head text-white">
       <div>
-        <p className="tag">{tag}</p>
-        <Lines className="t-h2 mt-4" lines={title} />
+        <p className="tag text-white/60">{tag}</p>
+        <Lines className="t-h2 mt-4 text-white" lines={title} />
       </div>
-      {note && <p className="max-w-[36ch] text-ink-2">{note}</p>}
+      {note && <p className="max-w-[36ch] text-white/80">{note}</p>}
     </header>
   );
 }
