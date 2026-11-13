@@ -82,7 +82,9 @@ export default async function ApplicationPage({ params }: Props) {
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {app.metrics.map((m) => (
           <div key={m.label} data-reveal className="rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm">
-            <span className="tag text-white/60 font-mono">[{m.label}]</span>
+            <span className="font-mono text-xs sm:text-sm font-semibold tracking-widest text-white uppercase block">
+              {m.label}
+            </span>
             <span className="t-h3 mt-3 block text-white font-display font-bold">{m.value}</span>
           </div>
         ))}
