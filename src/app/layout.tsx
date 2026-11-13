@@ -20,7 +20,7 @@ const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variabl
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: 'Drava — Technology should make life feel easier', template: '%s — Drava' },
-  description: 'Drava builds a connected ecosystem of applications for spatial work, autonomous intelligence and effortless everyday workflows.',
+  description: 'Drava builds a connected ecosystem of products for spatial work, autonomous intelligence and effortless everyday workflows.',
   icons: { icon: '/assets/drava_logo_smile.png' },
   openGraph: {
     type: 'website',

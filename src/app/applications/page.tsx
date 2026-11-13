@@ -5,22 +5,22 @@ import { SectionHead, WordScrub } from '@/components/type';
 import { applications, pad } from '@/lib/applications';
 
 export const metadata: Metadata = {
-  title: 'Applications',
-  description: 'Every application in the Drava ecosystem, from facility intelligence to generative design.'
+  title: 'Products',
+  description: 'Every product in the Drava ecosystem, from facility intelligence to generative design.'
 };
 
 export default function ApplicationsPage() {
   return (
     <div className="text-white">
       <PageHero
-        kicker={`[ Applications ] [${pad(applications.length)}]`}
+        kicker={`[ Products ] [${pad(applications.length)}]`}
         lines={['Everything', "we're", 'building.']}
         highlight={2}
-        sub="Every Drava application, from facility control to generative design. Pick one to dive in."
+        sub="Every Drava product, from facility control to generative design. Pick one to dive in."
         cue="Scroll down"
       />
 
-      <section className="section" aria-label="Application gallery">
+      <section className="section" aria-label="Product gallery">
         <div className="wrap">
           <AppGrid apps={applications} />
         </div>
@@ -30,7 +30,7 @@ export default function ApplicationsPage() {
         <div className="wrap">
           <SectionHead
             tag="[ Index ]"
-            title={['All', 'applications']}
+            title={['All', 'products']}
             note={<WordScrub as="span" text="The full list at a glance. Select a row to open its page." />}
           />
           <AppList apps={applications} />

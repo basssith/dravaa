@@ -19,7 +19,7 @@ const EXPERTISE = [
 
 // Computed from the real data — no invented numbers.
 const STATS = [
-  { value: applications.length, label: 'Applications in the ecosystem' },
+  { value: applications.length, label: 'Products in the ecosystem' },
   { value: applications.reduce((s, a) => s + a.highlights.length, 0), label: 'Core capabilities' },
   { value: applications.reduce((s, a) => s + a.metrics.length, 0), label: 'Live telemetry signals' }
 ];
@@ -71,7 +71,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <div aria-label="Drava applications" role="region">
+      <div aria-label="Drava products" role="region">
         <Marquee size="h2" accent items={NAMES} />
         <Marquee size="h2" accent reverse slow items={rotate(NAMES, 1)} />
         <Marquee size="h2" accent items={rotate(NAMES, 2)} />

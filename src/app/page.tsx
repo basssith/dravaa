@@ -17,7 +17,7 @@ import { pill } from '@/lib/ui';
 const COMPANION = [
   'Spatial telemetry & multi-modal perception',
   'Zero-latency neural automation engine',
-  'Cross-application context continuity'
+  'Cross-product context continuity'
 ];
 
 export default function Home() {

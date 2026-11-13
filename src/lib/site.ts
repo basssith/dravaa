@@ -7,7 +7,7 @@ export const PRESS = 'press@example.com';
 
 export const NAV = [
   { label: 'Home', href: '/' },
-  { label: 'Applications', href: '/applications' },
+  { label: 'Products', href: '/applications' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '#contact' }
 ] as const;

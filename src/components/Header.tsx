@@ -50,7 +50,7 @@ export function Header() {
           href="/applications"
           className="max-md:hidden inline-flex min-h-11 cursor-pointer items-center gap-3 whitespace-nowrap rounded-full border border-white/20 bg-transparent px-6 text-small font-semibold tracking-wider uppercase text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000]"
         >
-          Explore all applications
+          Explore all products
         </TransitionLink>
 
         <TransitionLink

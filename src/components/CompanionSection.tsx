@@ -5,7 +5,7 @@ import { WordScrub } from './type';
 const COMPANION_ITEMS = [
   'Spatial telemetry & multi-modal perception',
   'Zero-latency neural automation engine',
-  'Cross-application context continuity'
+  'Cross-product context continuity'
 ];
 
 export function CompanionSection() {
@@ -53,7 +53,7 @@ export function CompanionSection() {
               <WordScrub
                 as="p"
                 className="leading-relaxed"
-                text="Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges applications and guides zero-friction workflows in real time."
+                text="Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges products and guides zero-friction workflows in real time."
               />
             </div>
           </div>

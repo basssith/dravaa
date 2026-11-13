@@ -47,7 +47,7 @@ export default async function ApplicationPage({ params }: Props) {
             href="/applications"
             className="group inline-flex min-h-12 cursor-pointer items-center gap-3.5 whitespace-nowrap rounded-full border border-white/20 bg-[#0d0f12] pl-6 pr-2 text-small font-semibold tracking-wider text-white no-underline transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-black"
           >
-            <span>All applications</span>
+            <span>All products</span>
             <span className="grid size-8 place-items-center rounded-full bg-[#b6ff66] text-black transition-all duration-300 group-hover:bg-black group-hover:text-[#b6ff66] group-hover:translate-x-0.5">
               <Arrow className="size-3.5 stroke-[2.4]" />
             </span>
@@ -111,7 +111,7 @@ export default async function ApplicationPage({ params }: Props) {
         </div>
       </div>
 
-      <nav aria-label="More applications" className="grid grid-cols-2 items-center gap-4 border-t border-white/15 pt-8 pb-block sm:grid-cols-[1fr_auto_1fr]">
+      <nav aria-label="More products" className="grid grid-cols-2 items-center gap-4 border-t border-white/15 pt-8 pb-block sm:grid-cols-[1fr_auto_1fr]">
         <TransitionLink href={`/applications/${slugOf(prev)}`} className="group grid justify-items-start gap-2 no-underline">
           <span className="tag text-white/50 group-hover:text-[#b6ff66] transition-colors">← Previous</span>
           <span className="t-h3 text-white transition-colors group-hover:text-[#b6ff66]">{prev.name}</span>

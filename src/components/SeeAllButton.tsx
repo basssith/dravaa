@@ -12,7 +12,7 @@ import { TransitionLink } from './TransitionLink';
  */
 export function SeeAllButton({
   href = '/applications',
-  text = 'SEE ALL APPLICATIONS'
+  text = 'SEE ALL PRODUCTS'
 }: {
   href?: string;
   text?: string;
