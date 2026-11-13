@@ -468,8 +468,8 @@ export function CompanyWireframeSection() {
           className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
-            <span className="block">Connecting everything,</span>
-            <span className="block text-[#c8ccd6]">designing for clarity,</span>
+            <span className="block text-white">Connecting everything,</span>
+            <span className="block text-white">designing for clarity,</span>
           </h2>
         </div>
 
@@ -479,8 +479,8 @@ export function CompanyWireframeSection() {
           className="self-center max-w-[36ch] text-center my-auto py-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
-            <span className="block">Bringing it all</span>
-            <span className="block text-[#c8ccd6]">into one unified space.</span>
+            <span className="block text-white">Bringing it all</span>
+            <span className="block text-white">into one unified space.</span>
           </h2>
         </div>
 
@@ -490,13 +490,13 @@ export function CompanyWireframeSection() {
           className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
-            <span className="block">
+            <span className="block text-white">
               The new era of{' '}
               <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-2.5 sm:px-3 py-0.5 rounded-[5px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1 text-[0.88em]">
                 Drava
               </span>
             </span>
-            <span className="block text-[#c8ccd6] mt-1">— where work flows effortlessly.</span>
+            <span className="block text-white mt-1">— where work flows effortlessly.</span>
           </h2>
         </div>
       </div>
