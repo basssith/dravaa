@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { Marquee } from '@/components/Marquee';
 import { PageHero } from '@/components/PageHero';
-import { TeamSlider } from '@/components/TeamSlider';
 import { SectionHead, WordScrub } from '@/components/type';
-import { applications, pad } from '@/lib/applications';
+import { applications } from '@/lib/applications';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -15,13 +14,6 @@ const EXPERTISE = [
   { title: 'Intelligence', items: ['Neural vision', 'Autonomous companion', 'Predictive telemetry'] },
   { title: 'Workflow', items: ['Unified workspaces', 'Cross-app context', 'Automation'] },
   { title: 'Hardware', items: ['Tactile controls', 'Sensors & telemetry', 'Rapid prototyping'] }
-];
-
-// Computed from the real data — no invented numbers.
-const STATS = [
-  { value: applications.length, label: 'Products in the ecosystem' },
-  { value: applications.reduce((s, a) => s + a.highlights.length, 0), label: 'Core capabilities' },
-  { value: applications.reduce((s, a) => s + a.metrics.length, 0), label: 'Live telemetry signals' }
 ];
 
 const NAMES = [...applications.map((a) => a.name), 'Companion', 'Drava OS'];
@@ -61,13 +53,8 @@ export default function AboutPage() {
       <section className="section">
         <div className="wrap">
           <SectionHead
-            tag=""
+            tag="WHAT WE DO BEST"
             title={['Expertise']}
-            note={
-              <span className="font-mono text-xs font-semibold tracking-widest text-white uppercase">
-                WHAT WE DO BEST
-              </span>
-            }
           />
           <div className="grid border-t border-white/15 sm:grid-cols-2 lg:grid-cols-4">
             {EXPERTISE.map((col) => (
@@ -92,13 +79,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <div aria-label="Drava products" role="region">
+      <div className="py-8" aria-label="Drava products" role="region">
         <Marquee size="h2" accent items={NAMES} />
         <Marquee size="h2" accent reverse slow items={rotate(NAMES, 1)} />
         <Marquee size="h2" accent items={rotate(NAMES, 2)} />
       </div>
-
-      <TeamSlider />
     </div>
   );
 }
