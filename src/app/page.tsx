@@ -30,18 +30,8 @@ export default function Home() {
       >
         <MatrixFluidCanvas />
 
-        {/* Bottom Left Content: just The Drava with Drava in green rectangle box */}
-        <div className="relative z-10 mt-auto flex flex-wrap items-baseline gap-3 sm:gap-4 pb-4">
-          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight text-white leading-none">
-            <span>The </span>
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
-              Drava
-            </span>
-          </h1>
-        </div>
-
-        {/* Bottom edge scroll cue: without border line, with green box for 01 and INTRO */}
-        <div className="relative z-10 flex items-center justify-between pt-4 lg:pt-5">
+        {/* Bottom Left Content: 01 INTRO tag above The Drava */}
+        <div className="relative z-10 mt-auto flex flex-col items-start gap-3 sm:gap-4 pb-4">
           <div className="inline-flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
               01
@@ -50,6 +40,17 @@ export default function Home() {
               INTRO
             </span>
           </div>
+
+          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight text-white leading-none">
+            <span>The </span>
+            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
+              Drava
+            </span>
+          </h1>
+        </div>
+
+        {/* Bottom edge scroll cue */}
+        <div className="relative z-10 flex items-center justify-end pt-4 lg:pt-5">
           <p className="tag flex items-center gap-3 text-[#d0d4dc]">
             <i aria-hidden="true" className="h-7 w-px animate-cue bg-white" />
             Scroll to explore
