@@ -336,9 +336,9 @@ export function EcosystemScrollSection() {
                         className="object-contain object-center w-full h-full transition-transform duration-700 group-hover/img:scale-[1.02]"
                       />
 
-                      {/* Hover Overlay with "View" Button */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[1px]">
-                        <span className="inline-flex items-center gap-2 bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-2xl transform translate-y-2 group-hover/img:translate-y-0 transition-transform duration-300">
+                      {/* Hover Overlay with "View [Product]" Button styled exactly like nav bar buttons */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[2px]">
+                        <span className="inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] transform translate-y-2 group-hover/img:translate-y-0">
                           <span>View {app.name}</span>
                           <Arrow className="size-3.5 -rotate-45" />
                         </span>
