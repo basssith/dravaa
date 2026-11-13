@@ -52,6 +52,7 @@ export function CompanionSection() {
             <div className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#c8ccd6]">
               <WordScrub
                 as="p"
+                className="leading-relaxed"
                 text="Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges applications and guides zero-friction workflows in real time."
               />
             </div>

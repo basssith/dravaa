@@ -37,7 +37,7 @@ export function WordScrub({
   as?: 'p' | 'h2' | 'h3' | 'span';
 }) {
   return (
-    <Tag className={cn('inline-block', className)} data-words>
+    <Tag className={cn('block w-full', className)} data-words>
       {text.split(' ').map((word, i) => {
         const em = word.startsWith('*');
         const w = em ? word.slice(1) : word;
@@ -48,7 +48,7 @@ export function WordScrub({
                 {w}
               </span>
             ) : (
-              <span className="w-scrub inline-block will-change-[color,opacity] transition-colors duration-150">
+              <span className="w-scrub inline will-change-[color,opacity] transition-colors duration-150">
                 {w}
               </span>
             )}{' '}

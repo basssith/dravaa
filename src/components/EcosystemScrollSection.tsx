@@ -212,6 +212,7 @@ export function EcosystemScrollSection() {
             <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
               <WordScrub
                 as="span"
+                className="leading-[1.04]"
                 text="The product changes but the experience stays."
               />
             </h2>
@@ -219,6 +220,7 @@ export function EcosystemScrollSection() {
             <div className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
               <WordScrub
                 as="p"
+                className="leading-relaxed"
                 text="Four intelligent systems engineered to unify every environment. One cohesive OS connecting hardware, spaces, and digital workflows."
               />
             </div>
