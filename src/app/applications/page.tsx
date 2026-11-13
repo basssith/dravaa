@@ -35,7 +35,13 @@ export default function ApplicationsPage() {
           <SectionHead
             tag=""
             title={['All products']}
-            note={<WordScrub as="span" text="The full list at a glance. Select a row to open its page." />}
+            note={
+              <div className="space-y-1.5">
+                <WordScrub as="span" text="The full portfolio across every ecosystem." />
+                <WordScrub as="span" text="Select any row to explore deep specs and live capabilities." />
+                <WordScrub as="span" text="Built for seamless scale, control, and performance." />
+              </div>
+            }
           />
           <AppList apps={applications} />
         </div>
