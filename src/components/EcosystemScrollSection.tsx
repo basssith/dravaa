@@ -68,9 +68,9 @@ export function EcosystemScrollSection() {
         id: 'ecosystem-scroll',
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 180 + 100}%`,
+        end: `+=${panels.length * 240 + 100}%`,
         pin: true,
-        scrub: 0.6, // Low scrub duration = snappy, immediate, zero lag
+        scrub: 1.0, // Smooth, natural momentum scrub
         onUpdate: (self) => {
           const idx = Math.min(
             panels.length - 1,
@@ -81,27 +81,27 @@ export function EcosystemScrollSection() {
       },
     });
 
-    // STEP 0: First, scrub all intro words in the left column so the user reads them completely
+    // STEP 0: Scrub intro words in the left column
     const introWords = leftCol ? leftCol.querySelectorAll<HTMLElement>('.w-scrub') : [];
     if (introWords.length > 0) {
       gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
 
       introWords.forEach((w, idx) => {
-        const wordTime = (idx / introWords.length) * 1.5;
+        const wordTime = (idx / introWords.length) * 1.8;
         tl.to(
           w,
-          { color: '#b6ff66', opacity: 1, duration: 0.15, ease: 'power1.inOut' },
+          { color: '#b6ff66', opacity: 1, duration: 0.2, ease: 'power1.inOut' },
           wordTime
         ).to(
           w,
-          { color: '#ffffff', opacity: 1, duration: 0.2, ease: 'power1.out' },
-          wordTime + 0.08
+          { color: '#ffffff', opacity: 1, duration: 0.25, ease: 'power1.out' },
+          wordTime + 0.1
         );
       });
     }
 
-    // Brief pause after all text is revealed and read
-    tl.to({}, { duration: 0.6 });
+    // Comfortable reading pause after all text is revealed
+    tl.to({}, { duration: 1.2 });
 
     // STEP 1: After text has been completely scrubbed and read, left column slides out and 01 product slides in
     if (leftCol) {
@@ -110,7 +110,7 @@ export function EcosystemScrollSection() {
         {
           xPercent: -125,
           opacity: 0,
-          duration: 1.2,
+          duration: 1.8,
           ease: 'power2.inOut',
         },
         'p0'
@@ -123,7 +123,7 @@ export function EcosystemScrollSection() {
         slide0Num,
         {
           x: 0,
-          duration: 1.2,
+          duration: 1.8,
           ease: 'power2.inOut',
         },
         'p0'
@@ -134,27 +134,27 @@ export function EcosystemScrollSection() {
     if (slide0Img) {
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 1.0, ease: 'power2.out' },
-        'p0+=0.6'
+        { x: 0, opacity: 1, duration: 1.4, ease: 'power2.out' },
+        'p0+=0.8'
       );
     }
     if (slide0Details) {
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 1.0, ease: 'power2.out' },
-        'p0+=0.75'
+        { x: 0, opacity: 1, duration: 1.4, ease: 'power2.out' },
+        'p0+=1.0'
       );
     }
     if (slide0Divider) {
       tl.to(
         slide0Divider,
-        { x: 0, opacity: 1, duration: 1.0, ease: 'power2.out' },
-        'p0+=0.85'
+        { x: 0, opacity: 1, duration: 1.4, ease: 'power2.out' },
+        'p0+=1.1'
       );
     }
 
-    // Resting pause for Product 01 full screen
-    tl.to({}, { duration: 0.5 });
+    // Resting pause for Product 01 full screen so user can view it comfortably
+    tl.to({}, { duration: 1.5 });
 
     // STEP 2: Subsequent products transition seamlessly across the full screen
     for (let i = 0; i < panels.length - 1; i++) {
@@ -170,19 +170,19 @@ export function EcosystemScrollSection() {
           xPercent: -130,
           opacity: 0,
           pointerEvents: 'none',
-          duration: 1.2,
+          duration: 1.8,
           ease: 'power2.inOut',
         },
         step
       );
 
-      // Fade out previous slide's vertical divider early so it never crosses over incoming product numbers
+      // Fade out previous slide's vertical divider early
       if (prevDivider) {
         tl.to(
           prevDivider,
           {
             opacity: 0,
-            duration: 0.35,
+            duration: 0.5,
             ease: 'power1.out',
           },
           step
@@ -190,7 +190,6 @@ export function EcosystemScrollSection() {
       }
 
       // Next slide (e.g. Product 02) enters smoothly from the right to the center
-      // It arrives as a full cohesive unit (Number on left, Monitor center, Details right)
       tl.fromTo(
         next,
         { xPercent: 120, opacity: 0, pointerEvents: 'none' },
@@ -198,14 +197,14 @@ export function EcosystemScrollSection() {
           xPercent: 0,
           opacity: 1,
           pointerEvents: 'auto',
-          duration: 1.2,
+          duration: 1.8,
           ease: 'power2.inOut',
         },
         step
       );
 
-      // Resting pause on current product
-      tl.to({}, { duration: 0.6 });
+      // Generous resting pause on each product so scrolling isn't rushed
+      tl.to({}, { duration: 1.5 });
     }
 
     return () => {
