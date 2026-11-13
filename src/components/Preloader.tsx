@@ -15,7 +15,6 @@ export function Preloader() {
   const root = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLSpanElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
   const [gone, setGone] = useState(false);
 
   useEffect(() => {
@@ -37,24 +36,11 @@ export function Preloader() {
 
     const tl = gsap.timeline({ onComplete: finish });
 
-    // Initial state: logo and text hidden with subtle scale & blur
+    // Initial state: clean logo and text without shadow/glow
     gsap.set(logoRef.current, { scale: 0.8, opacity: 0, rotate: -8 });
     gsap.set(textRef.current, { opacity: 0, x: -20, filter: 'blur(8px)' });
-    gsap.set(glowRef.current, { scale: 0.5, opacity: 0 });
 
-    // Step 1: Glow burst behind the logo
-    tl.to(
-      glowRef.current,
-      {
-        scale: 1.5,
-        opacity: 0.6,
-        duration: 1.0,
-        ease: 'power2.out',
-      },
-      0.1
-    );
-
-    // Step 2: Smile icon pops in smoothly with elastic rotation & glow
+    // Step 1: Smile icon pops in smoothly with clean elastic rotation
     tl.to(
       logoRef.current,
       {
@@ -64,10 +50,10 @@ export function Preloader() {
         duration: 0.9,
         ease: 'back.out(1.6)',
       },
-      0.2
+      0.15
     );
 
-    // Step 3: 'drava' text slides in, unblurs and illuminates
+    // Step 2: 'drava' text slides in, unblurs and aligns beside logo
     tl.to(
       textRef.current,
       {
@@ -77,15 +63,15 @@ export function Preloader() {
         duration: 0.8,
         ease: 'power3.out',
       },
-      0.45
+      0.4
     );
 
-    // Step 4: Cohesive pulse / breath before transition
+    // Step 3: Gentle pause & breath
     tl.to(
       [logoRef.current, textRef.current],
       {
-        scale: 1.06,
-        duration: 0.45,
+        scale: 1.05,
+        duration: 0.4,
         ease: 'power1.inOut',
       },
       '+=0.2'
@@ -94,12 +80,12 @@ export function Preloader() {
       [logoRef.current, textRef.current],
       {
         scale: 1,
-        duration: 0.45,
+        duration: 0.4,
         ease: 'power1.inOut',
       }
     );
 
-    // Step 5: Screen slides up gracefully to reveal the site
+    // Step 4: Screen slides up cleanly to reveal the site
     tl.to(
       root.current,
       {
@@ -123,20 +109,14 @@ export function Preloader() {
       aria-hidden="true"
       className="fixed inset-0 z-200 hidden place-items-center bg-[#000000] p-gutter text-white [html.is-first_&]:grid will-change-transform overflow-hidden select-none"
     >
-      {/* Ambient background glow behind the logo */}
-      <div
-        ref={glowRef}
-        className="pointer-events-none absolute size-[280px] rounded-full bg-[#b6ff66]/15 blur-[90px] will-change-transform"
-      />
-
-      {/* Centered Logo & Brand Name */}
+      {/* Centered Clean Logo & Brand Name */}
       <div className="relative z-10 flex items-center gap-3.5 font-display text-[clamp(2.4rem,4.5vw,4.2rem)] font-bold tracking-tight">
-        <div ref={logoRef} className="will-change-transform drop-shadow-[0_0_24px_rgba(182,255,102,0.45)]">
+        <div ref={logoRef} className="will-change-transform">
           <Smile className="w-12 sm:w-16 md:w-20 fill-[#b6ff66]" />
         </div>
         <span
           ref={textRef}
-          className="will-change-transform text-white tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.18)]"
+          className="will-change-transform text-white tracking-tighter"
         >
           drava
         </span>
