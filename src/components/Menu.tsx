@@ -45,7 +45,9 @@ export function Menu() {
           {NAV.map((item, i) => (
             <li key={item.href} className="overflow-hidden border-b border-line-inv">
               <TransitionLink href={item.href} className="group flex items-baseline gap-6 py-2 no-underline">
-                <span className="tag text-paper-muted">[0{i + 1}]</span>
+                <span className="inline-flex items-center justify-center bg-[#b6ff66] text-white font-mono font-bold text-xs px-2 py-0.5 rounded-[4px] leading-tight tracking-normal">
+                  0{i + 1}
+                </span>
                 <span
                   data-menu-label
                   className="inline-block font-display text-h2 font-bold uppercase leading-none tracking-display transition-[color,transform] duration-500 ease-expo group-hover:translate-x-4 group-hover:text-accent"
