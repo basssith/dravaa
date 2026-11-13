@@ -146,13 +146,11 @@ function buildInteriorWireframe(): Line3D[] {
 export function CompanyWireframeSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const heroContentRef = useRef<HTMLDivElement>(null);
   const whatWeDoContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const container = containerRef.current;
     const canvas = canvasRef.current;
-    const heroContent = heroContentRef.current;
     const whatWeDoContent = whatWeDoContentRef.current;
     if (!container || !canvas) return;
 
@@ -264,15 +262,13 @@ export function CompanyWireframeSection() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // ONE PINNED SCROLL TIMELINE FOR THE WHOLE LANDING JOURNEY:
-    // 0% -> Hero is active (ambient falling matrix stream, "01 INTRO" + "The Drava")
-    // 0% - 20% -> Hero content smoothly fades up/out as you scroll
-    // 20% - 50% -> Binary digits smoothly morph & wireframe room constructs
-    // 50% - 100% -> "02 WHAT WE DO" and the 3 statements sequence into position
+    // PINNED SCROLL TIMELINE:
+    // When the user scrolls into the WHAT WE DO section, the 3D Wireframe room constructs
+    // and the 3 diagonal statements reveal sequentially
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=380%',
+      end: '+=280%',
       pin: true,
       scrub: 1.2,
       onUpdate: (self) => {
@@ -284,25 +280,10 @@ export function CompanyWireframeSection() {
       scrollTrigger: {
         trigger: container,
         start: 'top top',
-        end: '+=380%',
+        end: '+=280%',
         scrub: 1.2,
       },
     });
-
-    // Hero content fades out smoothly right as scroll begins
-    if (heroContent) {
-      masterTl.to(
-        heroContent,
-        {
-          opacity: 0,
-          y: -60,
-          duration: 0.18,
-          ease: 'power2.inOut',
-          pointerEvents: 'none',
-        },
-        0
-      );
-    }
 
     // "02 WHAT WE DO" content reveals sequentially
     if (whatWeDoContent) {
@@ -313,10 +294,10 @@ export function CompanyWireframeSection() {
 
       masterTl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
 
-      masterTl.to(tag, { opacity: 1, y: 0, duration: 0.12, ease: 'power2.out' }, 0.28);
-      masterTl.to(block1, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.40);
-      masterTl.to(block2, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.60);
-      masterTl.to(block3, { opacity: 1, y: 0, duration: 0.16, ease: 'power2.out' }, 0.80);
+      masterTl.to(tag, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.25);
+      masterTl.to(block1, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.38);
+      masterTl.to(block2, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.58);
+      masterTl.to(block3, { opacity: 1, y: 0, duration: 1.2, ease: 'power2.out' }, 0.78);
     }
 
     const project = (
@@ -352,11 +333,10 @@ export function CompanyWireframeSection() {
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
-      // Morphing starts after hero text fades out
-      const morphProgress = Math.max(0, (scrollProgress - 0.12) / 0.58);
-      const morphFactor = Math.min(1, Math.max(0, morphProgress));
+      // Morph factor: smoothly transitions wireframe from 0 to 1
+      const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.0));
 
-      const cameraZ = 3.2 - scrollProgress * 1.9;
+      const cameraZ = 2.8 - scrollProgress * 1.5;
       const cameraPitch = currRotX - scrollProgress * 0.12;
       const cameraYaw = currRotY;
 
@@ -460,8 +440,8 @@ export function CompanyWireframeSection() {
   return (
     <section
       ref={containerRef}
-      id="hero-intro"
-      className="relative z-10 h-screen w-full bg-[#000000] text-white overflow-hidden select-none"
+      id="intro"
+      className="relative z-10 min-h-screen w-full bg-[#000000] text-white flex flex-col justify-between py-12 lg:py-16 overflow-hidden"
     >
       {/* 3D Wireframe Interior Binary Canvas */}
       <div
@@ -471,38 +451,14 @@ export function CompanyWireframeSection() {
         <canvas ref={canvasRef} className="block h-full w-full" />
       </div>
 
-      {/* --- HERO CONTENT: "01 INTRO" & "The Drava" (Initially Visible in Viewport) --- */}
-      <div
-        ref={heroContentRef}
-        className="absolute inset-0 z-10 flex flex-col justify-end px-gutter pb-4 sm:pb-6 lg:pb-8 pointer-events-none"
-      >
-        <div className="relative z-10 mt-auto flex flex-col items-start gap-2 sm:gap-3 pb-2 sm:pb-4 pointer-events-auto">
-          <div className="inline-flex items-center gap-2.5">
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
-              01
-            </span>
-            <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
-              INTRO
-            </span>
-          </div>
-
-          <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight text-white leading-none">
-            <span>The </span>
-            <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
-              Drava
-            </span>
-          </h1>
-        </div>
-      </div>
-
-      {/* --- "02 WHAT WE DO" CONTENT (Reveals as wireframe constructs) --- */}
+      {/* Content wrapper with stepped diagonal layout: Left top -> Center -> Right bottom */}
       <div
         ref={whatWeDoContentRef}
-        className="wrap absolute inset-0 z-10 flex flex-col justify-between py-12 lg:py-16 min-h-full w-full px-gutter pointer-events-none"
+        className="wrap relative z-10 flex flex-col justify-between min-h-[82vh] w-full px-gutter pointer-events-auto"
       >
         {/* Top bar with Tag: Green box for 02, no brackets, uppercase WHAT WE DO */}
         <div className="flex items-center justify-between w-full pt-4">
-          <div data-tag className="inline-flex items-center gap-2.5 pointer-events-auto">
+          <div data-tag className="inline-flex items-center gap-2.5">
             <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
               02
             </span>
@@ -515,7 +471,7 @@ export function CompanyWireframeSection() {
         {/* 1. LEFT SIDE ABOVE: First Two Lines */}
         <div
           data-block="1"
-          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 pointer-events-auto will-change-transform"
+          className="self-start max-w-[34ch] text-left pt-2 lg:pt-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">Connecting everything,</span>
@@ -526,7 +482,7 @@ export function CompanyWireframeSection() {
         {/* 2. CENTER: Second Two Lines */}
         <div
           data-block="2"
-          className="self-center max-w-[36ch] text-center my-auto py-4 pointer-events-auto will-change-transform"
+          className="self-center max-w-[36ch] text-center my-auto py-4 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">Bringing it all</span>
@@ -537,7 +493,7 @@ export function CompanyWireframeSection() {
         {/* 3. RIGHT SIDE DOWN: Third Two Lines (with Green Rectangle for Drava) */}
         <div
           data-block="3"
-          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 pointer-events-auto will-change-transform"
+          className="self-end max-w-[36ch] text-right pb-4 lg:pb-6 will-change-transform"
         >
           <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
             <span className="block text-white">
