@@ -155,35 +155,55 @@ export function CompanyWireframeSection() {
       flipTimer: number;
     }
 
-    const particles: MorphBinaryParticle[] = [];
+    const rawCandidatePoints: [number, number, number][] = [];
 
+    // Step 1: Sample points along wireframe lines with consistent rhythmic step
     wireframeLines.forEach((line) => {
       const [x1, y1, z1] = line.p1;
       const [x2, y2, z2] = line.p2;
       const len = Math.hypot(x2 - x1, y2 - y1, z2 - z1);
-      // Clean, rhythmic node placement: numbers sit only at well-spaced structural joints
-      const step = 0.85;
+      const step = 0.55;
       const count = Math.max(1, Math.round(len / step));
 
       for (let i = 0; i <= count; i++) {
         const t = i / count;
-        const px = x1 + (x2 - x1) * t;
-        const py = y1 + (y2 - y1) * t;
-        const pz = z1 + (z2 - z1) * t;
-
-        particles.push({
-          char: Math.random() > 0.5 ? '1' : '0',
-          streamX: (Math.random() - 0.5) * 4.2,
-          streamY: (Math.random() - 0.5) * 3.5,
-          speedY: 0.003 + Math.random() * 0.006,
-          tx3d: px,
-          ty3d: py,
-          tz3d: pz,
-          isBright: Math.random() < 0.25,
-          flipTimer: Math.floor(Math.random() * 120),
-        });
+        rawCandidatePoints.push([
+          x1 + (x2 - x1) * t,
+          y1 + (y2 - y1) * t,
+          z1 + (z2 - z1) * t,
+        ]);
       }
     });
+
+    // Step 2: Strict spatial distance filter to eliminate duplicates, overlapping vertices, and clusters
+    const MIN_NODE_DISTANCE = 0.48;
+    const uniqueWireframeNodes: [number, number, number][] = [];
+
+    for (const pt of rawCandidatePoints) {
+      const [x, y, z] = pt;
+      const isTooClose = uniqueWireframeNodes.some(([vx, vy, vz]) => {
+        const dx = x - vx;
+        const dy = y - vy;
+        const dz = z - vz;
+        return dx * dx + dy * dy + dz * dz < MIN_NODE_DISTANCE * MIN_NODE_DISTANCE;
+      });
+
+      if (!isTooClose) {
+        uniqueWireframeNodes.push(pt);
+      }
+    }
+
+    const particles: MorphBinaryParticle[] = uniqueWireframeNodes.map((node3d, idx) => ({
+      char: idx % 2 === 0 ? '1' : '0',
+      streamX: (Math.random() - 0.5) * 4.2,
+      streamY: (Math.random() - 0.5) * 3.5,
+      speedY: 0.003 + Math.random() * 0.006,
+      tx3d: node3d[0],
+      ty3d: node3d[1],
+      tz3d: node3d[2],
+      isBright: idx % 4 === 0, // Clean, balanced green accent rhythm
+      flipTimer: Math.floor(Math.random() * 120),
+    }));
 
     // Gentle ambient floating particles count reduced to keep background peaceful and clean
     const freeParticles: Array<{
@@ -333,10 +353,11 @@ export function CompanyWireframeSection() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      if (morphFactor > 0.45) {
-        const wireAlpha = Math.min(0.28, (morphFactor - 0.45) * 0.9);
-        ctx.lineWidth = 0.75;
-        ctx.strokeStyle = `rgba(160, 180, 200, ${wireAlpha})`;
+      if (morphFactor > 0.35) {
+        // Brighter wireframe lines with crisp, vivid contrast
+        const wireAlpha = Math.min(0.88, (morphFactor - 0.35) * 1.6);
+        ctx.lineWidth = 1.15;
+        ctx.strokeStyle = `rgba(220, 238, 255, ${wireAlpha})`;
 
         wireframeLines.forEach((line) => {
           const [x1, y1, z1] = line.p1;
@@ -389,16 +410,24 @@ export function CompanyWireframeSection() {
           
           ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
-          // Refined contrast: clearly visible but subtle and non-congested
-          const depthAlpha = Math.max(0.35, Math.min(0.95, 2.4 / dist));
+          // Clean node knockout: prevent wireframe lines from slicing through character glyphs
+          if (roomLockFactor > 0.3) {
+            ctx.fillStyle = `rgba(0, 0, 0, ${0.9 * roomLockFactor})`;
+            ctx.beginPath();
+            ctx.arc(px, py, fontSize * 0.55, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          // Full solid brightness for binary numbers on the wireframe
+          const depthAlpha = Math.max(0.68, Math.min(1.0, 2.8 / dist));
           ctx.fillStyle = pt.isBright
-            ? `rgba(182, 255, 102, ${0.92 * depthAlpha})`
-            : `rgba(225, 235, 245, ${0.72 * depthAlpha})`;
+            ? `rgba(182, 255, 102, ${Math.min(1, 0.98 * depthAlpha)})`
+            : `rgba(240, 248, 255, ${Math.min(1, 0.92 * depthAlpha)})`;
           ctx.fillText(pt.char, px, py);
         }
       });
 
-      // Full-screen ambient binary numbers: Boosted beginning size (~26px-30px)
+      // Full-screen ambient binary numbers: Enhanced opacity
       if (morphFactor < 0.8) {
         const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
         freeParticles.forEach((fp) => {
@@ -410,8 +439,8 @@ export function CompanyWireframeSection() {
             const fontSize = Math.max(20, Math.min(30, Math.round(26 * (2.6 / dist))));
             ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
             ctx.fillStyle = fp.isGreen
-              ? `rgba(182, 255, 102, ${0.85 * ambientAlpha})`
-              : `rgba(215, 225, 240, ${0.75 * ambientAlpha})`;
+              ? `rgba(182, 255, 102, ${0.80 * ambientAlpha})`
+              : `rgba(215, 230, 245, ${0.68 * ambientAlpha})`;
             ctx.fillText(fp.char, px, py);
           }
         });

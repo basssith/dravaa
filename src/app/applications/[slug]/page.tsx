@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
+import { NexExperienceWireframe } from '@/components/NexExperienceWireframe';
 import { TransitionLink } from '@/components/TransitionLink';
 import { Arrow } from '@/components/icons';
 import { Lines, WordScrub } from '@/components/type';
@@ -20,12 +21,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ApplicationPage({ params }: Props) {
-  const i = findApp((await params).slug);
+  const slug = (await params).slug;
+  const i = findApp(slug);
   if (i < 0) notFound();
   const app = applications[i];
   const n = applications.length;
   const prev = applications[(i - 1 + n) % n];
   const next = applications[(i + 1) % n];
+
+  // For Nex, render the 3D wireframe room of the Experience Centre image without extra text or fonts
+  if (slug === 'nex') {
+    return <NexExperienceWireframe />;
+  }
 
   return (
     <article className="wrap text-white">

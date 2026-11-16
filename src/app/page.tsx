@@ -58,8 +58,30 @@ export default function Home() {
 
       <Marquee
         bordered
+        size="small"
         label="Let's make technology feel effortless"
-        items={["Let's make technology feel effortless", "Let's make technology feel effortless"]}
+        rows={[
+          {
+            items: [
+              "Let's make technology",
+              "Let's make technology",
+              "Let's make technology",
+              "Let's make technology",
+            ],
+            reverse: false,
+          },
+          {
+            items: [
+              "Feel effortless",
+              "Feel effortless",
+              "Feel effortless",
+              "Feel effortless",
+            ],
+            reverse: true,
+            slow: true,
+            outlineFirst: true,
+          },
+        ]}
       />
     </>
   );

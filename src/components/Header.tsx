@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { sound } from '@/lib/sound';
 import { cn, iconBtn, pill } from '@/lib/ui';
 import { Smile } from './icons';
@@ -8,6 +9,7 @@ import { TransitionLink } from './TransitionLink';
 import { useUI } from './UIProvider';
 
 export function Header() {
+  const pathname = usePathname();
   const { menuOpen, setMenuOpen } = useUI();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -24,6 +26,11 @@ export function Header() {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // When inside the Nex Experience Centre simulator, let the Experience Centre's dedicated top bar take full control
+  if (pathname === '/applications/nex') {
+    return null;
+  }
 
   const onDark = menuOpen;
 

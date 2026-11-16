@@ -1,3 +1,6 @@
+'use client';
+
+import { usePathname } from 'next/navigation';
 import { EMAIL, SOCIALS } from '@/lib/site';
 import { Arrow, Smile } from './icons';
 import { BackToTop, Newsletter } from './FooterActions';
@@ -6,11 +9,17 @@ import { TransitionLink } from './TransitionLink';
 const linkCls = 'no-underline transition-colors duration-300 hover:text-accent';
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // On the Nex Experience Centre simulator, the dedicated simulator controls take the full viewport
+  if (pathname === '/applications/nex') {
+    return null;
+  }
+
   return (
     <footer
       id="contact"
-      data-footer-card
-      className="relative z-40 mx-auto w-full max-w-[98vw] 2xl:max-w-[1720px] overflow-hidden rounded-[2.5rem] sm:rounded-[3.5rem] lg:rounded-[4.5rem] border border-white/10 bg-[#000000] pt-block-lg text-paper shadow-[0_-20px_80px_rgba(0,0,0,0.9)] will-change-transform"
+      className="relative z-40 w-full bg-[#000000] pt-block-lg text-paper"
     >
       <div className="wrap">
         <p className="tag text-white tracking-widest font-semibold">CONTACT</p>

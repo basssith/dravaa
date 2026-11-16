@@ -398,13 +398,13 @@ export function EcosystemScrollSection() {
                     </div>
                   </div>
 
-                  {/* EXPLORE BUTTON: WHITE -> HOVER TURNS SIGNATURE GREEN */}
+                  {/* EXPLORE BUTTON: STYLED EXACTLY LIKE THE VIEW BUTTON */}
                   <TransitionLink
                     href={`/applications/${slugOf(app)}`}
-                    className="inline-flex items-center gap-3 text-sm sm:text-base font-semibold tracking-wider text-white hover:text-[#b6ff66] transition-colors duration-300 group pt-1"
+                    className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group mt-1"
                   >
                     <span>Explore {app.name}</span>
-                    <Arrow className="size-4 -rotate-45 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 text-current" />
+                    <Arrow className="size-3.5 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
                   </TransitionLink>
                 </div>
 
@@ -469,10 +469,10 @@ export function EcosystemScrollSection() {
               <p className="max-w-xl text-xs sm:text-sm text-[#c8ccd6]">{fullscreenApp.description}</p>
               <TransitionLink
                 href={`/applications/${slugOf(fullscreenApp)}`}
-                className="inline-flex items-center gap-2 font-semibold text-white hover:text-[#b6ff66] transition-colors"
+                className="inline-flex min-h-10 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-5 text-xs font-semibold tracking-wider uppercase text-white shadow-xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group"
               >
                 <span>Explore {fullscreenApp.name}</span>
-                <Arrow className="size-3.5 -rotate-45" />
+                <Arrow className="size-3 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
               </TransitionLink>
             </div>
           </div>
