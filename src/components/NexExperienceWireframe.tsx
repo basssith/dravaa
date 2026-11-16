@@ -433,8 +433,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 0.95;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+          ctx.lineWidth = 1.0;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
           ctx.stroke();
         }
       });
@@ -451,8 +451,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 1.1;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.lineWidth = 1.3;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
           ctx.stroke();
         }
       });
@@ -464,17 +464,79 @@ export function NexExperienceWireframe() {
 
         // Presentation screens (Lower 3 screens + Upper Right screen) attached static to back wall without animation
         wallScreenFaces.forEach((corners) => {
+          const x1 = Math.min(corners[0][0], corners[1][0]);
+          const x2 = Math.max(corners[0][0], corners[1][0]);
+          const y1 = Math.min(corners[0][1], corners[2][1]);
+          const y2 = Math.max(corners[0][1], corners[2][1]);
+          const z = corners[0][2];
+          const bz = 0.022; // Physical monitor bezel width
+
+          // 3D Outer Monitor Bezel Frame
+          const pb0 = project(x1 - bz, y1 - bz, z, 0, 0, cameraZ);
+          const pb1 = project(x2 + bz, y1 - bz, z, 0, 0, cameraZ);
+          const pb2 = project(x2 + bz, y2 + bz, z, 0, 0, cameraZ);
+          const pb3 = project(x1 - bz, y2 + bz, z, 0, 0, cameraZ);
+
           const projected = corners.map((p) =>
             project(p[0], p[1], p[2], 0, 0, cameraZ)
           );
 
-          if (projected.every((p) => p[3])) {
+          if (projected.every((p) => p[3]) && pb0[3] && pb1[3] && pb2[3] && pb3[3]) {
             const p0: [number, number] = [projected[0][0], projected[0][1]];
             const p1: [number, number] = [projected[1][0], projected[1][1]];
             const p2: [number, number] = [projected[2][0], projected[2][1]];
             const p3: [number, number] = [projected[3][0], projected[3][1]];
 
-            // Solid pure black backing
+            const b0: [number, number] = [pb0[0], pb0[1]];
+            const b1: [number, number] = [pb1[0], pb1[1]];
+            const b2: [number, number] = [pb2[0], pb2[1]];
+            const b3: [number, number] = [pb3[0], pb3[1]];
+
+            // 1. Sleek Wall Mount Bracket below screen
+            const cx = (x1 + x2) / 2;
+            const brW = 0.09;
+            const brH = 0.035;
+            const pbr1 = project(cx - brW / 2, y2 + bz, z, 0, 0, cameraZ);
+            const pbr2 = project(cx + brW / 2, y2 + bz, z, 0, 0, cameraZ);
+            const pbr3 = project(cx + brW / 2, y2 + bz + brH, z, 0, 0, cameraZ);
+            const pbr4 = project(cx - brW / 2, y2 + bz + brH, z, 0, 0, cameraZ);
+            if (pbr1[3] && pbr2[3] && pbr3[3] && pbr4[3]) {
+              ctx.beginPath();
+              ctx.moveTo(pbr1[0], pbr1[1]);
+              ctx.lineTo(pbr2[0], pbr2[1]);
+              ctx.lineTo(pbr3[0], pbr3[1]);
+              ctx.lineTo(pbr4[0], pbr4[1]);
+              ctx.closePath();
+              ctx.lineWidth = 1.0;
+              ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+              ctx.stroke();
+            }
+
+            // 2. Outer Monitor Bezel Housing Fill & Wireframe Border
+            ctx.fillStyle = '#080808';
+            ctx.beginPath();
+            ctx.moveTo(b0[0], b0[1]);
+            ctx.lineTo(b1[0], b1[1]);
+            ctx.lineTo(b2[0], b2[1]);
+            ctx.lineTo(b3[0], b3[1]);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.lineWidth = 1.4;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.stroke();
+
+            // 3. Bezel Chamfer lines connecting outer frame to inner display
+            ctx.beginPath();
+            ctx.moveTo(b0[0], b0[1]); ctx.lineTo(p0[0], p0[1]);
+            ctx.moveTo(b1[0], b1[1]); ctx.lineTo(p1[0], p1[1]);
+            ctx.moveTo(b2[0], b2[1]); ctx.lineTo(p2[0], p2[1]);
+            ctx.moveTo(b3[0], b3[1]); ctx.lineTo(p3[0], p3[1]);
+            ctx.lineWidth = 0.9;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.stroke();
+
+            // 4. Solid pure black display screen backing
             ctx.fillStyle = '#000000';
             ctx.beginPath();
             ctx.moveTo(p0[0], p0[1]);
@@ -484,7 +546,7 @@ export function NexExperienceWireframe() {
             ctx.closePath();
             ctx.fill();
 
-            // Inset UVs slightly (3%) to ensure clean pure black outer borders
+            // 5. Render White Tusker Image inside the wireframe screen frame
             const u0 = wiw * 0.03;
             const u1 = wiw * 0.97;
             const v0 = wih * 0.04;
@@ -492,6 +554,17 @@ export function NexExperienceWireframe() {
 
             drawTri(wallScreenImg, p0, p1, p2, u0, v0, u1, v0, u1, v1);
             drawTri(wallScreenImg, p0, p2, p3, u0, v0, u1, v1, u0, v1);
+
+            // 6. Crisp Inner Screen Bezel Wireframe Border
+            ctx.beginPath();
+            ctx.moveTo(p0[0], p0[1]);
+            ctx.lineTo(p1[0], p1[1]);
+            ctx.lineTo(p2[0], p2[1]);
+            ctx.lineTo(p3[0], p3[1]);
+            ctx.closePath();
+            ctx.lineWidth = 1.0;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+            ctx.stroke();
           }
         });
 
@@ -533,8 +606,8 @@ export function NexExperienceWireframe() {
             ctx.lineTo(p2[0], p2[1]);
             ctx.lineTo(p3[0], p3[1]);
             ctx.closePath();
-            ctx.lineWidth = 1.0;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.lineWidth = 1.2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
             ctx.stroke();
           }
         }
@@ -552,13 +625,13 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 1.3;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+          ctx.lineWidth = 1.4;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
           ctx.stroke();
         }
       });
 
-      // 4. OPAQUE DEPTH OCCLUSION MASK: Blocks any lines behind the front monitor
+      // 5. OPAQUE DEPTH OCCLUSION MASK: Blocks any lines behind the front monitor
       const facePts = monitorFaceCorners.map((p) =>
         project(p[0], p[1], p[2], cameraPitch, cameraYaw, cameraZ)
       );
@@ -589,6 +662,17 @@ export function NexExperienceWireframe() {
 
           drawTri(dashboardImg, p0, p1, p2, 0, 0, iw, 0, iw, ih);
           drawTri(dashboardImg, p0, p2, p3, 0, 0, iw, ih, 0, ih);
+
+          // Crisp Wireframe border around the front monitor screen
+          ctx.beginPath();
+          ctx.moveTo(p0[0], p0[1]);
+          ctx.lineTo(p1[0], p1[1]);
+          ctx.lineTo(p2[0], p2[1]);
+          ctx.lineTo(p3[0], p3[1]);
+          ctx.closePath();
+          ctx.lineWidth = 1.5;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+          ctx.stroke();
         }
       }
 
