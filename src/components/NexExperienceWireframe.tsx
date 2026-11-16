@@ -492,27 +492,7 @@ export function NexExperienceWireframe() {
             const b2: [number, number] = [pb2[0], pb2[1]];
             const b3: [number, number] = [pb3[0], pb3[1]];
 
-            // 1. Sleek Wall Mount Bracket below screen
-            const cx = (x1 + x2) / 2;
-            const brW = 0.09;
-            const brH = 0.035;
-            const pbr1 = project(cx - brW / 2, y2 + bz, z, 0, 0, cameraZ);
-            const pbr2 = project(cx + brW / 2, y2 + bz, z, 0, 0, cameraZ);
-            const pbr3 = project(cx + brW / 2, y2 + bz + brH, z, 0, 0, cameraZ);
-            const pbr4 = project(cx - brW / 2, y2 + bz + brH, z, 0, 0, cameraZ);
-            if (pbr1[3] && pbr2[3] && pbr3[3] && pbr4[3]) {
-              ctx.beginPath();
-              ctx.moveTo(pbr1[0], pbr1[1]);
-              ctx.lineTo(pbr2[0], pbr2[1]);
-              ctx.lineTo(pbr3[0], pbr3[1]);
-              ctx.lineTo(pbr4[0], pbr4[1]);
-              ctx.closePath();
-              ctx.lineWidth = 1.0;
-              ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
-              ctx.stroke();
-            }
-
-            // 2. Outer Monitor Bezel Housing Fill & Wireframe Border
+            // 1. Outer Monitor Bezel Housing Fill & Wireframe Border
             ctx.fillStyle = '#080808';
             ctx.beginPath();
             ctx.moveTo(b0[0], b0[1]);
