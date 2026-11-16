@@ -35,41 +35,39 @@ function buildNexExperienceWireframe(): WireframeScene {
   const roomZ_back = -0.2; // Back Wall
   const roomZ_front = 3.6; // Front plane
 
-  // Back Wall rectangle
+  // Back Wall rectangle (Outer Architectural Boundary)
   backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back] });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back] });
 
-  // 4 Main Perspective Corner Lines (connecting back wall to front plane)
+  // 4 Clean Perspective Room Edges (Wall/Ceiling and Wall/Floor junctions)
   backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [-roomW, roomH_top, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_front] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [roomW, roomH_bot, roomZ_front] });
 
-  // Front Outer Boundary Frame
+  // Front Aperture Frame
   backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_front], p2: [roomW, roomH_top, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_front], p2: [roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_front], p2: [-roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_front], p2: [-roomW, roomH_top, roomZ_front] });
 
-  // Side Wall Vertical Columns (contained cleanly from floor to ceiling)
-  for (let z = 0.8; z <= 2.8; z += 1.0) {
-    backgroundLines.push({ p1: [-roomW, roomH_top, z], p2: [-roomW, roomH_bot, z] });
-    backgroundLines.push({ p1: [roomW, roomH_top, z], p2: [roomW, roomH_bot, z] });
-  }
+  // Clean Side Columns (1 structural portal per side)
+  backgroundLines.push({ p1: [-roomW, roomH_top, 1.6], p2: [-roomW, roomH_bot, 1.6] });
+  backgroundLines.push({ p1: [roomW, roomH_top, 1.6], p2: [roomW, roomH_bot, 1.6] });
 
   // ==========================================
-  // 2. CEILING DOME COVE
+  // 2. CEILING DOME COVE (Sleek Minimal Architectural Ring)
   // ==========================================
   const domeCenterY = roomH_top - 0.05;
   const domeCenterZ = 1.6;
-  const numRings = 4;
-  const ringSegments = 32;
+  const numRings = 3;
+  const ringSegments = 36;
 
   for (let r = 1; r <= numRings; r++) {
-    const radiusX = (r / numRings) * 2.4;
-    const radiusZ = (r / numRings) * 1.4;
+    const radiusX = (r / numRings) * 2.2;
+    const radiusZ = (r / numRings) * 1.3;
     for (let s = 0; s < ringSegments; s++) {
       const a1 = (s / ringSegments) * Math.PI * 2;
       const a2 = ((s + 1) / ringSegments) * Math.PI * 2;
@@ -80,12 +78,12 @@ function buildNexExperienceWireframe(): WireframeScene {
     }
   }
 
-  // Radial spokes for dome
-  for (let s = 0; s < 8; s++) {
-    const a = (s / 8) * Math.PI * 2;
+  // 4 Elegant Axis Spokes for Dome
+  for (let s = 0; s < 4; s++) {
+    const a = (s / 4) * Math.PI * 2;
     backgroundLines.push({
       p1: [0, domeCenterY, domeCenterZ],
-      p2: [Math.cos(a) * 2.4, domeCenterY, domeCenterZ + Math.sin(a) * 1.4],
+      p2: [Math.cos(a) * 2.2, domeCenterY, domeCenterZ + Math.sin(a) * 1.3],
     });
   }
 
@@ -130,8 +128,8 @@ function buildNexExperienceWireframe(): WireframeScene {
   backgroundLines.push({ p1: [-roomW, upperFloorY, roomZ_back], p2: [-roomW, upperFloorY, upperFloorZ_front] });
   backgroundLines.push({ p1: [roomW, upperFloorY, roomZ_back], p2: [roomW, upperFloorY, upperFloorZ_front] });
 
-  // Upper floor walkway floor slats
-  for (let uz = 0.25; uz < upperFloorZ_front; uz += 0.35) {
+  // Minimal Mezzanine Walkway Slats (clean spacing)
+  for (let uz = 0.45; uz < upperFloorZ_front; uz += 0.45) {
     backgroundLines.push({ p1: [-roomW, upperFloorY, uz], p2: [roomW, upperFloorY, uz] });
   }
 
@@ -191,13 +189,13 @@ function buildNexExperienceWireframe(): WireframeScene {
   ]);
 
   // ==========================================
-  // 6. MAIN GROUND FLOOR PERSPECTIVE GRID (Strictly bounded inside room walls)
-  for (let z = 0.6; z <= roomZ_front; z += 0.75) {
+  // 6. MAIN GROUND FLOOR PERSPECTIVE GRID (Clean, minimal architectural lines)
+  for (let z = 0.8; z <= roomZ_front; z += 0.9) {
     backgroundLines.push({ p1: [-roomW, roomH_bot, z], p2: [roomW, roomH_bot, z] });
   }
 
-  // Longitudinal floor grid lines
-  for (let x = -roomW + 0.8; x <= roomW - 0.8; x += 0.8) {
+  // Longitudinal floor perspective lines
+  for (let x = -roomW + 1.2; x <= roomW - 1.2; x += 1.2) {
     backgroundLines.push({ p1: [x, roomH_bot, roomZ_back], p2: [x, roomH_bot, roomZ_front] });
   }
 
@@ -205,11 +203,11 @@ function buildNexExperienceWireframe(): WireframeScene {
   // 7. THE MONITOR IN FRONT OF THE VIEWER
   // Grounded prominently at the first floor horizontal line right before me
   // ==========================================
-  const tabW = 2.10;
-  const tabH = 0.974; // Exact ratio for white_tusker_kiosk_current.png
+  const tabW = 2.05;
+  const tabH = 0.951; // Exact ratio for white_tusker_kiosk_current.png
   const tabCenterZ = 0.58; // Grounded right at the starting first floor horizontal line
-  const tabCenterY = 0.66; // Set comfortably low so it sits right in front of the viewer
-  const tiltAngle = 0.42;  // Upright drafting perspective tilt
+  const tabCenterY = 0.64; // Comfortably grounded in the foreground
+  const tiltAngle = 0.40;  // Natural drafting perspective tilt
 
   const getTabPoint = (localX: number, localY: number, localZ: number = 0): [number, number, number] => {
     const yRot = localY * Math.cos(tiltAngle) - localZ * Math.sin(tiltAngle);
@@ -220,49 +218,34 @@ function buildNexExperienceWireframe(): WireframeScene {
   const hw = tabW / 2;
   const hh = tabH / 2;
 
-  // Monitor Stand / Leg / Pedestal Assembly anchored at the first floor line:
+  // Clean, Sleek Pedestal Stand (Clean single-column structural design)
   const hingeY = tabCenterY;
   const hingeZ = tabCenterZ + 0.04;
-  const hingeW = 0.16;
-  const hingeH = 0.12;
+  const hingeW = 0.14;
+  const hingeH = 0.08;
 
   monitorStandLines.push({ p1: [-hingeW, hingeY - hingeH / 2, hingeZ], p2: [hingeW, hingeY - hingeH / 2, hingeZ] });
   monitorStandLines.push({ p1: [hingeW, hingeY - hingeH / 2, hingeZ], p2: [hingeW, hingeY + hingeH / 2, hingeZ] });
   monitorStandLines.push({ p1: [hingeW, hingeY + hingeH / 2, hingeZ], p2: [-hingeW, hingeY + hingeH / 2, hingeZ] });
   monitorStandLines.push({ p1: [-hingeW, hingeY + hingeH / 2, hingeZ], p2: [-hingeW, hingeY - hingeH / 2, hingeZ] });
 
-  // Main stand column leg angled to floor
-  const neckTopY = hingeY;
-  const neckTopZ = hingeZ;
-  const neckMidY = tabCenterY + 0.28;
-  const neckMidZ = tabCenterZ + 0.10;
+  // Main Stand Column
   const baseCenterY = roomH_bot;
-  const baseCenterZ = tabCenterZ + 0.06;
+  const baseCenterZ = tabCenterZ + 0.08;
+  const neckW_top = 0.06;
+  const neckW_bot = 0.12;
 
-  const neckW_top = 0.07;
-  const neckW_mid = 0.11;
-  const neckW_bot = 0.15;
+  monitorStandLines.push({ p1: [-neckW_top, hingeY, hingeZ], p2: [-neckW_bot, baseCenterY, baseCenterZ] });
+  monitorStandLines.push({ p1: [neckW_top, hingeY, hingeZ], p2: [neckW_bot, baseCenterY, baseCenterZ] });
 
-  monitorStandLines.push({ p1: [-neckW_top, neckTopY, neckTopZ], p2: [-neckW_mid, neckMidY, neckMidZ] });
-  monitorStandLines.push({ p1: [-neckW_mid, neckMidY, neckMidZ], p2: [-neckW_bot, baseCenterY, baseCenterZ] });
-  monitorStandLines.push({ p1: [neckW_top, neckTopY, neckTopZ], p2: [neckW_mid, neckMidY, neckMidZ] });
-  monitorStandLines.push({ p1: [neckW_mid, neckMidY, neckMidZ], p2: [neckW_bot, baseCenterY, baseCenterZ] });
-
-  // Stand depth struts
-  const legDepth = 0.05;
-  monitorStandLines.push({ p1: [-neckW_top, neckTopY, neckTopZ + legDepth], p2: [-neckW_mid, neckMidY, neckMidZ + legDepth] });
-  monitorStandLines.push({ p1: [-neckW_mid, neckMidY, neckMidZ + legDepth], p2: [-neckW_bot, baseCenterY, baseCenterZ + legDepth] });
-  monitorStandLines.push({ p1: [neckW_top, neckTopY, neckTopZ + legDepth], p2: [neckW_mid, neckMidY, neckMidZ + legDepth] });
-  monitorStandLines.push({ p1: [neckW_mid, neckMidY, neckMidZ + legDepth], p2: [neckW_bot, baseCenterY, baseCenterZ + legDepth] });
-
-  // Floor pedestal base foot resting right on the first floor line
-  const footW = 0.44;
-  const footFrontZ = baseCenterZ - 0.15;
-  const footBackZ = baseCenterZ + 0.15;
+  // Floor Base Plinth
+  const footW = 0.38;
+  const footFrontZ = baseCenterZ - 0.12;
+  const footBackZ = baseCenterZ + 0.12;
   monitorStandLines.push({ p1: [-footW / 2, baseCenterY, footFrontZ], p2: [footW / 2, baseCenterY, footFrontZ] });
-  monitorStandLines.push({ p1: [footW / 2, baseCenterY, footFrontZ], p2: [footW * 0.35, baseCenterY, footBackZ] });
-  monitorStandLines.push({ p1: [footW * 0.35, baseCenterY, footBackZ], p2: [-footW * 0.35, baseCenterY, footBackZ] });
-  monitorStandLines.push({ p1: [-footW * 0.35, baseCenterY, footBackZ], p2: [-footW / 2, baseCenterY, footFrontZ] });
+  monitorStandLines.push({ p1: [footW / 2, baseCenterY, footFrontZ], p2: [footW * 0.4, baseCenterY, footBackZ] });
+  monitorStandLines.push({ p1: [footW * 0.4, baseCenterY, footBackZ], p2: [-footW * 0.4, baseCenterY, footBackZ] });
+  monitorStandLines.push({ p1: [-footW * 0.4, baseCenterY, footBackZ], p2: [-footW / 2, baseCenterY, footFrontZ] });
 
   // 4 Corners of Monitor Face for Texture Mapping & Solid Occlusion Mask
   const monitorFaceCorners: [number, number, number][] = [
@@ -421,7 +404,7 @@ export function NexExperienceWireframe() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // 1. Draw Architectural Room Wireframe (Subtle, crisp blueprint lines)
+      // 1. Draw Architectural Room Wireframe (Clean, minimal blueprint lines)
       backgroundLines.forEach((line) => {
         const [x1, y1, z1] = line.p1;
         const [x2, y2, z2] = line.p2;
@@ -433,8 +416,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 1.0;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+          ctx.lineWidth = 0.85;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
           ctx.stroke();
         }
       });
@@ -451,8 +434,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 1.3;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+          ctx.lineWidth = 1.0;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
           ctx.stroke();
         }
       });
@@ -469,9 +452,9 @@ export function NexExperienceWireframe() {
           const y1 = Math.min(corners[0][1], corners[2][1]);
           const y2 = Math.max(corners[0][1], corners[2][1]);
           const z = corners[0][2];
-          const bz = 0.022; // Physical monitor bezel width
+          const bz = 0.015; // Clean slim bezel
 
-          // 3D Outer Monitor Bezel Frame
+          // 3D Clean Outer Bezel Frame
           const pb0 = project(x1 - bz, y1 - bz, z, 0, 0, cameraZ);
           const pb1 = project(x2 + bz, y1 - bz, z, 0, 0, cameraZ);
           const pb2 = project(x2 + bz, y2 + bz, z, 0, 0, cameraZ);
@@ -492,8 +475,8 @@ export function NexExperienceWireframe() {
             const b2: [number, number] = [pb2[0], pb2[1]];
             const b3: [number, number] = [pb3[0], pb3[1]];
 
-            // 1. Outer Monitor Bezel Housing Fill & Wireframe Border
-            ctx.fillStyle = '#080808';
+            // Solid black backing
+            ctx.fillStyle = '#000000';
             ctx.beginPath();
             ctx.moveTo(b0[0], b0[1]);
             ctx.lineTo(b1[0], b1[1]);
@@ -502,31 +485,7 @@ export function NexExperienceWireframe() {
             ctx.closePath();
             ctx.fill();
 
-            ctx.lineWidth = 1.4;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.stroke();
-
-            // 3. Bezel Chamfer lines connecting outer frame to inner display
-            ctx.beginPath();
-            ctx.moveTo(b0[0], b0[1]); ctx.lineTo(p0[0], p0[1]);
-            ctx.moveTo(b1[0], b1[1]); ctx.lineTo(p1[0], p1[1]);
-            ctx.moveTo(b2[0], b2[1]); ctx.lineTo(p2[0], p2[1]);
-            ctx.moveTo(b3[0], b3[1]); ctx.lineTo(p3[0], p3[1]);
-            ctx.lineWidth = 0.9;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.stroke();
-
-            // 4. Solid pure black display screen backing
-            ctx.fillStyle = '#000000';
-            ctx.beginPath();
-            ctx.moveTo(p0[0], p0[1]);
-            ctx.lineTo(p1[0], p1[1]);
-            ctx.lineTo(p2[0], p2[1]);
-            ctx.lineTo(p3[0], p3[1]);
-            ctx.closePath();
-            ctx.fill();
-
-            // 5. Render White Tusker Image inside the wireframe screen frame
+            // Render White Tusker Image inside the screen
             const u0 = wiw * 0.03;
             const u1 = wiw * 0.97;
             const v0 = wih * 0.04;
@@ -535,15 +494,15 @@ export function NexExperienceWireframe() {
             drawTri(wallScreenImg, p0, p1, p2, u0, v0, u1, v0, u1, v1);
             drawTri(wallScreenImg, p0, p2, p3, u0, v0, u1, v1, u0, v1);
 
-            // 6. Crisp Inner Screen Bezel Wireframe Border
+            // Clean crisp outer frame outline
             ctx.beginPath();
-            ctx.moveTo(p0[0], p0[1]);
-            ctx.lineTo(p1[0], p1[1]);
-            ctx.lineTo(p2[0], p2[1]);
-            ctx.lineTo(p3[0], p3[1]);
+            ctx.moveTo(b0[0], b0[1]);
+            ctx.lineTo(b1[0], b1[1]);
+            ctx.lineTo(b2[0], b2[1]);
+            ctx.lineTo(b3[0], b3[1]);
             ctx.closePath();
             ctx.lineWidth = 1.0;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
             ctx.stroke();
           }
         });
