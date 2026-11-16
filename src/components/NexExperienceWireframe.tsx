@@ -306,7 +306,7 @@ export function NexExperienceWireframe() {
     dashboardImg.onload = () => { imgLoaded = true; };
 
     const wallScreenImg = new Image();
-    wallScreenImg.src = "/images/white_tusker_wall_screen.png";
+    wallScreenImg.src = "/images/white_tusker_wall_screen.png?v=black";
     let wallImgLoaded = false;
     wallScreenImg.onload = () => { wallImgLoaded = true; };
 
@@ -434,7 +434,7 @@ export function NexExperienceWireframe() {
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
           ctx.lineWidth = 0.95;
-          ctx.strokeStyle = 'rgba(155, 185, 215, 0.45)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
           ctx.stroke();
         }
       });
@@ -452,7 +452,7 @@ export function NexExperienceWireframe() {
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
           ctx.lineWidth = 1.1;
-          ctx.strokeStyle = 'rgba(180, 205, 230, 0.85)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
           ctx.stroke();
         }
       });
@@ -534,7 +534,7 @@ export function NexExperienceWireframe() {
             ctx.lineTo(p3[0], p3[1]);
             ctx.closePath();
             ctx.lineWidth = 1.0;
-            ctx.strokeStyle = 'rgba(180, 205, 230, 0.9)';
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
             ctx.stroke();
           }
         }
@@ -553,7 +553,7 @@ export function NexExperienceWireframe() {
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
           ctx.lineWidth = 1.3;
-          ctx.strokeStyle = 'rgba(180, 205, 230, 0.75)';
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
           ctx.stroke();
         }
       });
