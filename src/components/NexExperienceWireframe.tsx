@@ -141,16 +141,17 @@ function buildNexExperienceWireframe(): WireframeScene {
   // 5. UPPER LEVEL SCREENS:
   // LEFT SIDE: Digital Signage Totem (Portrait 9:16) with Red Logo & White Tusker
   // RIGHT SIDE: 1 Screen like the 3 screens (Landscape 16:9)
+  // Attached directly into the back wall plane behind the upper mezzanine platform
   // ==========================================
 
   // A) LEFT SIDE DIGITAL SIGNAGE TOTEM (Sleek Modern Digital Kiosk Stand)
-  // Attached back into the back wall plane:
-  const totemW = 0.38;
-  const totemH = 0.68;
-  const totemX = -1.65;
+  // Flush mounted directly onto the back wall:
+  const totemW = 0.36;
+  const totemH = 0.64;
+  const totemX = -1.60;
   const totemBaseY = upperFloorY;
   const totemTopY = totemBaseY - totemH;
-  const totemZ = roomZ_back + 0.02; // Placed at the back wall plane
+  const totemZ = roomZ_back; // Attached to backside wall
   const hw_t = totemW / 2;
 
   // 1. Sleek Floor Base Plinth:
@@ -170,17 +171,17 @@ function buildNexExperienceWireframe(): WireframeScene {
   // 3. Screen Face (Inner display area):
   const bIn = 0.02;
   const totemScreenFace: [number, number, number][] = [
-    [totemX - hw_t + bIn, totemTopY + bIn, totemZ + 0.001],
-    [totemX + hw_t - bIn, totemTopY + bIn, totemZ + 0.001],
-    [totemX + hw_t - bIn, totemBaseY - bH - bIn, totemZ + 0.001],
-    [totemX - hw_t + bIn, totemBaseY - bH - bIn, totemZ + 0.001],
+    [totemX - hw_t + bIn, totemTopY + bIn, totemZ],
+    [totemX + hw_t - bIn, totemTopY + bIn, totemZ],
+    [totemX + hw_t - bIn, totemBaseY - bH - bIn, totemZ],
+    [totemX - hw_t + bIn, totemBaseY - bH - bIn, totemZ],
   ];
 
   // B) RIGHT SIDE: 1 Screen like the 3 screens (Landscape 16:9) on the Upper Wall
-  // Attached into the back wall plane:
-  const upperRightScreenW = 0.70;
-  const upperRightScreenH = 0.394;
-  const upperRightCX = 1.35; // Moved back and right aligned with wall
+  // Attached directly onto the back wall:
+  const upperRightScreenW = 0.68;
+  const upperRightScreenH = 0.3825; // Exact 16:9 ratio
+  const upperRightCX = 1.60; // Clean symmetric positioning on the upper back wall
   const upperRightCY = upperFloorY - upperRightScreenH / 2 - 0.08;
   const urY1 = upperRightCY - upperRightScreenH / 2;
   const urY2 = upperRightCY + upperRightScreenH / 2;
