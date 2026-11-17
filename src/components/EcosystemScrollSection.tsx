@@ -68,44 +68,68 @@ export function EcosystemScrollSection() {
         id: 'ecosystem-scroll',
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 100}%`,
+        end: `+=${(panels.length + 1) * 100}%`,
         pin: true,
-        scrub: 0.25,
+        scrub: 0.35,
         snap: {
           // Snap points:
-          // 0 = Intro state (left column visible, 01 on right)
-          // 1/4 (0.25) = Product 01 (Nex) settled
-          // 2/4 (0.50) = Product 02 (HMS) settled
-          // 3/4 (0.75) = Product 03 (Vision) settled
-          // 4/4 (1.00) = Product 04 (Simulator) settled
-          snapTo: [0, 0.25, 0.5, 0.75, 1],
+          // 0 = Initial state before reading text
+          // 0.20 = Text fully scrubbed / read (All text illuminated)
+          // 0.40 = Product 01 (Nex)
+          // 0.60 = Product 02 (HMS)
+          // 0.80 = Product 03 (Vision)
+          // 1.00 = Product 04 (Simulator)
+          snapTo: [0, 0.20, 0.40, 0.60, 0.80, 1.0],
           duration: { min: 0.25, max: 0.5 },
           delay: 0.05,
           ease: 'power2.out',
         },
         onUpdate: (self) => {
-          // Progress mapping:
-          // 0 to 0.125 = Intro / 0
-          // 0.125 to 0.375 = Product 01 (index 0)
-          // 0.375 to 0.625 = Product 02 (index 1)
-          // 0.625 to 0.875 = Product 03 (index 2)
-          // 0.875 to 1.000 = Product 04 (index 3)
           const p = self.progress;
-          const idx = p < 0.125 ? 0 : Math.min(panels.length - 1, Math.floor((p - 0.125) / 0.25));
-          setActiveIdx(idx);
+          // When p >= 0.30, user has moved past text scrub into the products:
+          if (p < 0.30) {
+            setActiveIdx(0);
+          } else {
+            const prodIdx = Math.min(
+              panels.length - 1,
+              Math.floor((p - 0.30) / (0.70 / panels.length))
+            );
+            setActiveIdx(prodIdx);
+          }
         },
       },
     });
 
-    // Segment 1 (Progress 0 -> 0.25): 1 scroll advances from Intro to Product 01
-    // Left column slides out
+    // STEP 0: First, as user scrolls, reveal all words cleanly (WordScrub)
+    const introWords = leftCol ? leftCol.querySelectorAll<HTMLElement>('.w-scrub') : [];
+    if (introWords.length > 0) {
+      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+
+      introWords.forEach((w, idx) => {
+        const wordTime = (idx / introWords.length) * 0.9;
+        tl.to(
+          w,
+          { color: '#b6ff66', opacity: 1, duration: 0.12, ease: 'power1.inOut' },
+          wordTime
+        ).to(
+          w,
+          { color: '#ffffff', opacity: 1, duration: 0.15, ease: 'power1.out' },
+          wordTime + 0.06
+        );
+      });
+    }
+
+    // Brief rest where all text is fully read and lit before moving to products
+    tl.to({}, { duration: 0.35 });
+
+    // STEP 1: After all text has come in, the next scroll moves into Product 01
     if (leftCol) {
       tl.to(
         leftCol,
         {
           xPercent: -125,
           opacity: 0,
-          duration: 0.8,
+          duration: 0.9,
           ease: 'power2.inOut',
         },
         'p0'
@@ -118,7 +142,7 @@ export function EcosystemScrollSection() {
         slide0Num,
         {
           x: 0,
-          duration: 0.8,
+          duration: 0.9,
           ease: 'power2.inOut',
         },
         'p0'
@@ -129,30 +153,29 @@ export function EcosystemScrollSection() {
     if (slide0Img) {
       tl.to(
         slide0Img,
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+        { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
         'p0+=0.15'
       );
     }
     if (slide0Details) {
       tl.to(
         slide0Details,
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+        { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
         'p0+=0.2'
       );
     }
     if (slide0Divider) {
       tl.to(
         slide0Divider,
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
+        { x: 0, opacity: 1, duration: 0.8, ease: 'power2.out' },
         'p0+=0.25'
       );
     }
 
-    // Rest at Product 01 (at progress ~0.25)
-    tl.to({}, { duration: 0.2 });
+    // Rest at Product 01
+    tl.to({}, { duration: 0.25 });
 
-    // Segments 2, 3, 4 (Progress 0.25 -> 0.50 -> 0.75 -> 1.00):
-    // 1 scroll per product transition
+    // STEP 2: Subsequent products (02, 03, 04) glide in with 1 scroll each
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
@@ -200,7 +223,7 @@ export function EcosystemScrollSection() {
       );
 
       // Rest on the active product
-      tl.to({}, { duration: 0.2 });
+      tl.to({}, { duration: 0.25 });
     }
 
     return () => {
