@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Marquee } from '@/components/Marquee';
 import { PageHero } from '@/components/PageHero';
 import { SectionHead, WordScrub } from '@/components/type';
 import { applications } from '@/lib/applications';
@@ -78,12 +77,6 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-
-      <div className="py-8" aria-label="Drava products" role="region">
-        <Marquee size="h2" accent items={NAMES} />
-        <Marquee size="h2" accent reverse slow items={rotate(NAMES, 1)} />
-        <Marquee size="h2" accent items={rotate(NAMES, 2)} />
-      </div>
     </div>
   );
 }
