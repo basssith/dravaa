@@ -123,19 +123,61 @@ function buildNexExperienceWireframe(): WireframeScene {
 
   // ==========================================
   // 4. UPPER FLOOR MEZZANINE (ABOVE THE 3 SCREENS)
-  const upperFloorY = -0.32; // Floor level right above lower screens
+  // Modeled as a true 3D architectural floor structure:
+  // - Top walking deck slab & front bullnose edge
+  // - Structural fascia / soffit beam with architectural depth
+  // - Perspective longitudinal joints connecting back wall to front edge
+  // - Sleek minimalist safety glass / balustrade rail with vertical posts
+  // ==========================================
+  const upperFloorY = -0.32; // Deck surface right above lower screens
   const upperFloorZ_front = 1.35; // Walkway front edge
+  const fasciaDepth = 0.08; // Thickness of the floor structural slab
+  const fasciaBottomY = upperFloorY + fasciaDepth;
+  const railHeight = 0.22; // Architectural safety balustrade height
+  const railTopY = upperFloorY - railHeight;
 
-  // Mezzanine structural beam & border
+  // A) Top Deck Perimeter:
   backgroundLines.push({ p1: [-roomW, upperFloorY, roomZ_back], p2: [roomW, upperFloorY, roomZ_back] });
   backgroundLines.push({ p1: [-roomW, upperFloorY, upperFloorZ_front], p2: [roomW, upperFloorY, upperFloorZ_front] });
   backgroundLines.push({ p1: [-roomW, upperFloorY, roomZ_back], p2: [-roomW, upperFloorY, upperFloorZ_front] });
   backgroundLines.push({ p1: [roomW, upperFloorY, roomZ_back], p2: [roomW, upperFloorY, upperFloorZ_front] });
 
-  // Minimal Mezzanine Walkway Slats (clean spacing)
-  for (let uz = 0.45; uz < upperFloorZ_front; uz += 0.45) {
-    backgroundLines.push({ p1: [-roomW, upperFloorY, uz], p2: [roomW, upperFloorY, uz] });
-  }
+  // B) Front Structural Fascia Beam (gives the floor slab realistic architectural thickness):
+  backgroundLines.push({ p1: [-roomW, fasciaBottomY, upperFloorZ_front], p2: [roomW, fasciaBottomY, upperFloorZ_front] });
+  backgroundLines.push({ p1: [-roomW, upperFloorY, upperFloorZ_front], p2: [-roomW, fasciaBottomY, upperFloorZ_front] });
+  backgroundLines.push({ p1: [roomW, upperFloorY, upperFloorZ_front], p2: [roomW, fasciaBottomY, upperFloorZ_front] });
+
+  // C) Structural Soffit / Under-slab ceiling line running back into walls:
+  backgroundLines.push({ p1: [-roomW, fasciaBottomY, roomZ_back], p2: [-roomW, fasciaBottomY, upperFloorZ_front] });
+  backgroundLines.push({ p1: [roomW, fasciaBottomY, roomZ_back], p2: [roomW, fasciaBottomY, upperFloorZ_front] });
+
+  // D) Architectural Floor Deck Perspective Grid (Clean perspective joints without clutter):
+  const mezzanineXSteps = [-2.6, -1.8, -1.0, 0.0, 1.0, 1.8, 2.6];
+  mezzanineXSteps.forEach((mx) => {
+    backgroundLines.push({ p1: [mx, upperFloorY, roomZ_back], p2: [mx, upperFloorY, upperFloorZ_front] });
+  });
+
+  // Transverse deck expansion joint:
+  const midZ = (roomZ_back + upperFloorZ_front) / 2;
+  backgroundLines.push({ p1: [-roomW, upperFloorY, midZ], p2: [roomW, upperFloorY, midZ] });
+
+  // E) Modern Architectural Balustrade / Guardrail along front edge:
+  // Continuous top handrail:
+  backgroundLines.push({ p1: [-roomW, railTopY, upperFloorZ_front], p2: [roomW, railTopY, upperFloorZ_front] });
+  // Mid-safety cable / glass clamp line:
+  backgroundLines.push({ p1: [-roomW, railTopY + railHeight * 0.5, upperFloorZ_front], p2: [roomW, railTopY + railHeight * 0.5, upperFloorZ_front] });
+
+  // Structural vertical balustrade stanchions/posts spaced across the walkway:
+  const stanchionXs = [-3.0, -2.1, -1.2, -0.4, 0.4, 1.2, 2.1, 3.0];
+  stanchionXs.forEach((sx) => {
+    backgroundLines.push({ p1: [sx, upperFloorY, upperFloorZ_front], p2: [sx, railTopY, upperFloorZ_front] });
+    // Balustrade post mounting bracket on fascia face:
+    backgroundLines.push({ p1: [sx, upperFloorY, upperFloorZ_front], p2: [sx, fasciaBottomY, upperFloorZ_front] });
+  });
+
+  // Side return balustrades into side walls:
+  backgroundLines.push({ p1: [-roomW, railTopY, roomZ_back], p2: [-roomW, railTopY, upperFloorZ_front] });
+  backgroundLines.push({ p1: [roomW, railTopY, roomZ_back], p2: [roomW, railTopY, upperFloorZ_front] });
 
   // ==========================================
   // 5. UPPER LEVEL SCREENS:
