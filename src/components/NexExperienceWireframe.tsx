@@ -36,7 +36,8 @@ function buildNexExperienceWireframe(): WireframeScene {
   const roomZ_front = 3.6; // Front plane
 
   // Back Wall rectangle (Outer Architectural Boundary)
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back] });
+  // Ceiling transverse line connecting top-left and top-right: accented in White Tusker red
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back], color: 'rgba(235, 45, 55, 0.9)' });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back] });
@@ -49,7 +50,8 @@ function buildNexExperienceWireframe(): WireframeScene {
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [roomW, roomH_bot, roomZ_front] });
 
   // Front Aperture Frame
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_front], p2: [roomW, roomH_top, roomZ_front] });
+  // Front ceiling transverse line connecting top-left and top-right: accented in White Tusker red
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_front], p2: [roomW, roomH_top, roomZ_front], color: 'rgba(235, 45, 55, 0.9)' });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_front], p2: [roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_front], p2: [-roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_front], p2: [-roomW, roomH_top, roomZ_front] });
