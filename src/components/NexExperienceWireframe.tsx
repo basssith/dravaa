@@ -35,11 +35,11 @@ function buildNexExperienceWireframe(): WireframeScene {
   const roomZ_back = -0.2; // Back Wall
   const roomZ_front = 3.6; // Front plane
 
-  // Back Wall rectangle (Outer Architectural Boundary)
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back] });
-  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back] });
-  backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back] });
-  backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back] });
+  // Back Wall rectangle (Outer Architectural Boundary - accented with White Tusker brand red)
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
+  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
+  backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
+  backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
 
   // 4 Clean Perspective Room Edges (Wall/Ceiling and Wall/Floor junctions)
   backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [-roomW, roomH_top, roomZ_front] });
@@ -411,8 +411,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 0.85;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = line.color ? 1.4 : 0.85;
+          ctx.strokeStyle = line.color || 'rgba(255, 255, 255, 0.45)';
           ctx.stroke();
         }
       });
