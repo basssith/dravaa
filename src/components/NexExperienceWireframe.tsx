@@ -627,12 +627,6 @@ export function NexExperienceWireframe() {
 
           drawTri(dashboardImg, p0, p1, p2, 0, 0, iw, 0, iw, ih);
           drawTri(dashboardImg, p0, p2, p3, 0, 0, iw, ih, 0, ih);
-
-          // Sleek, perfectly aligned rounded wireframe bezel contour hugging the physical monitor
-          traceMonitorOutline();
-          ctx.lineWidth = 1.2;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-          ctx.stroke();
         }
       }
 
