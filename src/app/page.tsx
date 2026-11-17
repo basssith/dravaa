@@ -5,7 +5,6 @@ import { EcosystemScrollSection } from '@/components/EcosystemScrollSection';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
-import { Marquee } from '@/components/Marquee';
 import { PageHero } from '@/components/PageHero';
 import { ReelButton } from '@/components/Reel';
 import { TransitionLink } from '@/components/TransitionLink';
@@ -55,34 +54,6 @@ export default function Home() {
       <EcosystemScrollSection />
 
       <CompanionSection />
-
-      <Marquee
-        bordered
-        size="small"
-        label="Let's make technology feel effortless"
-        rows={[
-          {
-            items: [
-              "Let's make technology",
-              "Let's make technology",
-              "Let's make technology",
-              "Let's make technology",
-            ],
-            reverse: false,
-          },
-          {
-            items: [
-              "Feel effortless",
-              "Feel effortless",
-              "Feel effortless",
-              "Feel effortless",
-            ],
-            reverse: true,
-            slow: true,
-            outlineFirst: true,
-          },
-        ]}
-      />
     </>
   );
 }
