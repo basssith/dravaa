@@ -416,8 +416,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = line.color ? 1.4 : 0.85;
-          ctx.strokeStyle = line.color || 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = line.color ? 1.6 : 1.1;
+          ctx.strokeStyle = line.color || 'rgba(255, 255, 255, 0.85)';
           ctx.stroke();
         }
       });
@@ -434,8 +434,8 @@ export function NexExperienceWireframe() {
           ctx.beginPath();
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
-          ctx.lineWidth = 1.0;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
           ctx.stroke();
         }
       });
