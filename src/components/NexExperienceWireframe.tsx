@@ -194,11 +194,6 @@ function buildNexExperienceWireframe(): WireframeScene {
     backgroundLines.push({ p1: [-roomW, roomH_bot, z], p2: [roomW, roomH_bot, z] });
   }
 
-  // Longitudinal floor perspective lines
-  for (let x = -roomW + 1.2; x <= roomW - 1.2; x += 1.2) {
-    backgroundLines.push({ p1: [x, roomH_bot, roomZ_back], p2: [x, roomH_bot, roomZ_front] });
-  }
-
   // ==========================================
   // 7. THE MONITOR IN FRONT OF THE VIEWER
   // Grounded prominently at the first floor horizontal line right before me
