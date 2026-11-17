@@ -391,7 +391,7 @@ export function CompanyWireframeSection() {
           const maxSize = Math.round(32 * (1 - roomLockFactor) + 14 * roomLockFactor);
           const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
           
-          ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+          ctx.font = `300 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
           
           // Clean node knockout: prevent wireframe lines from slicing through character glyphs
           if (roomLockFactor > 0.3) {
@@ -420,7 +420,7 @@ export function CompanyWireframeSection() {
           const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
           if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
             const fontSize = Math.max(20, Math.min(30, Math.round(26 * (2.6 / dist))));
-            ctx.font = `600 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
+            ctx.font = `300 ${fontSize}px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace`;
             ctx.fillStyle = fp.isGreen
               ? `rgba(182, 255, 102, ${0.80 * ambientAlpha})`
               : `rgba(215, 230, 245, ${0.68 * ambientAlpha})`;
