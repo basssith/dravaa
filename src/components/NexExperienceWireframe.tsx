@@ -81,12 +81,13 @@ function buildNexExperienceWireframe(): WireframeScene {
     }
   }
 
-  // 4 Elegant Axis Spokes for Dome
+  // 4 Elegant Axis Spokes for Dome (Horizontal and Vertical cross lines) accented in White Tusker red
   for (let s = 0; s < 4; s++) {
     const a = (s / 4) * Math.PI * 2;
     backgroundLines.push({
       p1: [0, domeCenterY, domeCenterZ],
       p2: [Math.cos(a) * 2.2, domeCenterY, domeCenterZ + Math.sin(a) * 1.3],
+      color: 'rgba(235, 45, 55, 0.9)',
     });
   }
 
