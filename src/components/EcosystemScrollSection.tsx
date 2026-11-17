@@ -68,42 +68,37 @@ export function EcosystemScrollSection() {
         id: 'ecosystem-scroll',
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 100 + 40}%`,
+        end: `+=${panels.length * 100}%`,
         pin: true,
-        scrub: 0.35, // Fast, immediate, zero-lag responsive response to scroll
+        scrub: 0.25,
+        snap: {
+          // Snap points:
+          // 0 = Intro state (left column visible, 01 on right)
+          // 1/4 (0.25) = Product 01 (Nex) settled
+          // 2/4 (0.50) = Product 02 (HMS) settled
+          // 3/4 (0.75) = Product 03 (Vision) settled
+          // 4/4 (1.00) = Product 04 (Simulator) settled
+          snapTo: [0, 0.25, 0.5, 0.75, 1],
+          duration: { min: 0.25, max: 0.5 },
+          delay: 0.05,
+          ease: 'power2.out',
+        },
         onUpdate: (self) => {
-          const idx = Math.min(
-            panels.length - 1,
-            Math.floor(self.progress * panels.length)
-          );
+          // Progress mapping:
+          // 0 to 0.125 = Intro / 0
+          // 0.125 to 0.375 = Product 01 (index 0)
+          // 0.375 to 0.625 = Product 02 (index 1)
+          // 0.625 to 0.875 = Product 03 (index 2)
+          // 0.875 to 1.000 = Product 04 (index 3)
+          const p = self.progress;
+          const idx = p < 0.125 ? 0 : Math.min(panels.length - 1, Math.floor((p - 0.125) / 0.25));
           setActiveIdx(idx);
         },
       },
     });
 
-    // STEP 0: Scrub intro words in the left column promptly
-    const introWords = leftCol ? leftCol.querySelectorAll<HTMLElement>('.w-scrub') : [];
-    if (introWords.length > 0) {
-      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
-
-      introWords.forEach((w, idx) => {
-        const wordTime = (idx / introWords.length) * 0.8;
-        tl.to(
-          w,
-          { color: '#b6ff66', opacity: 1, duration: 0.12, ease: 'power1.inOut' },
-          wordTime
-        ).to(
-          w,
-          { color: '#ffffff', opacity: 1, duration: 0.15, ease: 'power1.out' },
-          wordTime + 0.05
-        );
-      });
-    }
-
-    // Brief transition gap
-    tl.to({}, { duration: 0.2 });
-
-    // STEP 1: Left column slides out and 01 product slides in briskly
+    // Segment 1 (Progress 0 -> 0.25): 1 scroll advances from Intro to Product 01
+    // Left column slides out
     if (leftCol) {
       tl.to(
         leftCol,
@@ -117,7 +112,7 @@ export function EcosystemScrollSection() {
       );
     }
 
-    // 2. The 01 glides into position
+    // 01 glides into centered position
     if (slide0Num) {
       tl.to(
         slide0Num,
@@ -130,40 +125,41 @@ export function EcosystemScrollSection() {
       );
     }
 
-    // 3. Product monitor image, details, and vertical line come in together
+    // Product monitor image, details, and vertical line glide in
     if (slide0Img) {
       tl.to(
         slide0Img,
         { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-        'p0+=0.2'
+        'p0+=0.15'
       );
     }
     if (slide0Details) {
       tl.to(
         slide0Details,
         { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-        'p0+=0.25'
+        'p0+=0.2'
       );
     }
     if (slide0Divider) {
       tl.to(
         slide0Divider,
         { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-        'p0+=0.3'
+        'p0+=0.25'
       );
     }
 
-    // Short resting pause on Product 01
-    tl.to({}, { duration: 0.25 });
+    // Rest at Product 01 (at progress ~0.25)
+    tl.to({}, { duration: 0.2 });
 
-    // STEP 2: Subsequent products transition smoothly and quickly with each scroll turn
+    // Segments 2, 3, 4 (Progress 0.25 -> 0.50 -> 0.75 -> 1.00):
+    // 1 scroll per product transition
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
       const prevDivider = prev.querySelector<HTMLElement>('[data-flow-divider]');
       const step = `step-${i + 1}`;
 
-      // Current slide glides out quickly
+      // Current slide glides out to the left
       tl.to(
         prev,
         {
@@ -176,7 +172,7 @@ export function EcosystemScrollSection() {
         step
       );
 
-      // Fade out previous slide's vertical divider early
+      // Fade out previous slide divider early
       if (prevDivider) {
         tl.to(
           prevDivider,
@@ -189,7 +185,7 @@ export function EcosystemScrollSection() {
         );
       }
 
-      // Next slide enters briskly into the center
+      // Next slide enters smoothly from the right
       tl.fromTo(
         next,
         { xPercent: 120, opacity: 0, pointerEvents: 'none' },
@@ -203,8 +199,8 @@ export function EcosystemScrollSection() {
         step
       );
 
-      // Short pause so slide changes readily on next wheel gesture
-      tl.to({}, { duration: 0.25 });
+      // Rest on the active product
+      tl.to({}, { duration: 0.2 });
     }
 
     return () => {
@@ -266,9 +262,8 @@ export function EcosystemScrollSection() {
               onClick={() => {
                 const st = ScrollTrigger.getById('ecosystem-scroll') || ScrollTrigger.getAll().find(t => t.trigger === containerRef.current);
                 if (st) {
-                  // Calculate exact scroll position where Product 01 (Nex) has settled in place
-                  // Total scrub progress: intro scrub (0 -> ~0.26), slide 0 settle is around progress 0.28 - 0.32
-                  const targetScroll = st.start + (st.end - st.start) * 0.32;
+                  // Advance directly to Product 01 (Nex)
+                  const targetScroll = st.start + (st.end - st.start) * 0.25;
                   window.scrollTo({ top: targetScroll, behavior: 'smooth' });
                 } else if (containerRef.current) {
                   containerRef.current.scrollIntoView({ behavior: 'smooth' });
