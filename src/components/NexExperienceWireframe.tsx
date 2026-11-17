@@ -203,11 +203,11 @@ function buildNexExperienceWireframe(): WireframeScene {
   // 7. THE MONITOR IN FRONT OF THE VIEWER
   // Grounded prominently at the first floor horizontal line right before me
   // ==========================================
-  const tabW = 2.05;
-  const tabH = 0.951; // Exact ratio for white_tusker_kiosk_current.png
+  const tabW = 2.00;
+  const tabH = 2.00 / (790 / 376); // Exact 790x376 ratio (2.10106) => 0.9519
   const tabCenterZ = 0.58; // Grounded right at the starting first floor horizontal line
   const tabCenterY = 0.64; // Comfortably grounded in the foreground
-  const tiltAngle = 0.40;  // Natural drafting perspective tilt
+  const tiltAngle = 0.0;   // Upright monitor aligned with 3D camera and UI
 
   const getTabPoint = (localX: number, localY: number, localZ: number = 0): [number, number, number] => {
     const yRot = localY * Math.cos(tiltAngle) - localZ * Math.sin(tiltAngle);
@@ -219,7 +219,7 @@ function buildNexExperienceWireframe(): WireframeScene {
   const hh = tabH / 2;
 
   // Clean, Sleek Pedestal Stand (Clean single-column structural design)
-  const hingeY = tabCenterY;
+  const hingeY = tabCenterY + hh * 0.45;
   const hingeZ = tabCenterZ + 0.04;
   const hingeW = 0.14;
   const hingeH = 0.08;
@@ -284,7 +284,7 @@ export function NexExperienceWireframe() {
     let animId = 0;
 
     const dashboardImg = new Image();
-    dashboardImg.src = "/images/white_tusker_kiosk_current.png";
+    dashboardImg.src = "/images/white_tusker_kiosk_current.png?v=clean";
     let imgLoaded = false;
     dashboardImg.onload = () => { imgLoaded = true; };
 
@@ -576,13 +576,44 @@ export function NexExperienceWireframe() {
       );
 
       if (facePts.every((p) => p[3])) {
+        const p0: [number, number] = [facePts[0][0], facePts[0][1]];
+        const p1: [number, number] = [facePts[1][0], facePts[1][1]];
+        const p2: [number, number] = [facePts[2][0], facePts[2][1]];
+        const p3: [number, number] = [facePts[3][0], facePts[3][1]];
+
+        // Helper to trace the smooth rounded monitor chassis contour matching the UI bezel
+        const traceMonitorOutline = () => {
+          const rX = 0.023;
+          const rY = 0.048;
+
+          const p01_a: [number, number] = [p0[0] + (p1[0] - p0[0]) * rX, p0[1] + (p1[1] - p0[1]) * rX];
+          const p01_b: [number, number] = [p1[0] - (p1[0] - p0[0]) * rX, p1[1] - (p1[1] - p0[1]) * rX];
+
+          const p12_a: [number, number] = [p1[0] + (p2[0] - p1[0]) * rY, p1[1] + (p2[1] - p1[1]) * rY];
+          const p12_b: [number, number] = [p2[0] - (p2[0] - p1[0]) * rY, p2[1] - (p2[1] - p1[1]) * rY];
+
+          const p23_a: [number, number] = [p2[0] + (p3[0] - p2[0]) * rX, p2[1] + (p3[1] - p2[0]) * rX];
+          const p23_b: [number, number] = [p3[0] - (p3[0] - p2[0]) * rX, p3[1] - (p3[1] - p2[0]) * rX];
+
+          const p30_a: [number, number] = [p3[0] + (p0[0] - p3[0]) * rY, p3[1] + (p0[1] - p3[1]) * rY];
+          const p30_b: [number, number] = [p0[0] - (p0[0] - p3[0]) * rY, p0[1] - (p0[1] - p3[1]) * rY];
+
+          ctx.beginPath();
+          ctx.moveTo(p01_a[0], p01_a[1]);
+          ctx.lineTo(p01_b[0], p01_b[1]);
+          ctx.quadraticCurveTo(p1[0], p1[1], p12_a[0], p12_a[1]);
+          ctx.lineTo(p12_b[0], p12_b[1]);
+          ctx.quadraticCurveTo(p2[0], p2[1], p23_a[0], p23_a[1]);
+          ctx.lineTo(p23_b[0], p23_b[1]);
+          ctx.quadraticCurveTo(p3[0], p3[1], p30_a[0], p30_a[1]);
+          ctx.lineTo(p30_b[0], p30_b[1]);
+          ctx.quadraticCurveTo(p0[0], p0[1], p01_a[0], p01_a[1]);
+          ctx.closePath();
+        };
+
+        // Solid rounded occlusion mask
         ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(facePts[0][0], facePts[0][1]);
-        for (let i = 1; i < facePts.length; i++) {
-          ctx.lineTo(facePts[i][0], facePts[i][1]);
-        }
-        ctx.closePath();
+        traceMonitorOutline();
         ctx.fillStyle = '#000000';
         ctx.shadowColor = 'rgba(0, 0, 0, 1)';
         ctx.shadowBlur = 35;
@@ -594,23 +625,14 @@ export function NexExperienceWireframe() {
         if (imgLoaded && dashboardImg.naturalWidth > 0) {
           const iw = dashboardImg.naturalWidth;
           const ih = dashboardImg.naturalHeight;
-          const p0: [number, number] = [facePts[0][0], facePts[0][1]];
-          const p1: [number, number] = [facePts[1][0], facePts[1][1]];
-          const p2: [number, number] = [facePts[2][0], facePts[2][1]];
-          const p3: [number, number] = [facePts[3][0], facePts[3][1]];
 
           drawTri(dashboardImg, p0, p1, p2, 0, 0, iw, 0, iw, ih);
           drawTri(dashboardImg, p0, p2, p3, 0, 0, iw, ih, 0, ih);
 
-          // Crisp Wireframe border around the front monitor screen
-          ctx.beginPath();
-          ctx.moveTo(p0[0], p0[1]);
-          ctx.lineTo(p1[0], p1[1]);
-          ctx.lineTo(p2[0], p2[1]);
-          ctx.lineTo(p3[0], p3[1]);
-          ctx.closePath();
-          ctx.lineWidth = 1.5;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.95)';
+          // Sleek, perfectly aligned rounded wireframe bezel contour hugging the physical monitor
+          traceMonitorOutline();
+          ctx.lineWidth = 1.2;
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
           ctx.stroke();
         }
       }
