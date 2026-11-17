@@ -144,7 +144,7 @@ export function MatrixFluidCanvas() {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      ctx.font = 'normal 15px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace';
+      ctx.font = '400 15px var(--font-inter), system-ui, -apple-system, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
