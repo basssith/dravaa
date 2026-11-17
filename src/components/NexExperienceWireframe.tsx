@@ -35,15 +35,16 @@ function buildNexExperienceWireframe(): WireframeScene {
   const roomZ_back = -0.2; // Back Wall
   const roomZ_front = 3.6; // Front plane
 
-  // Back Wall rectangle (Outer Architectural Boundary - accented with White Tusker brand red)
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
-  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
-  backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
-  backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back], color: 'rgba(235, 45, 55, 0.85)' });
+  // Back Wall rectangle (Outer Architectural Boundary)
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back] });
+  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back] });
+  backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back] });
+  backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back] });
 
   // 4 Clean Perspective Room Edges (Wall/Ceiling and Wall/Floor junctions)
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [-roomW, roomH_top, roomZ_front] });
-  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_front] });
+  // Left and right side above: accented in White Tusker red
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [-roomW, roomH_top, roomZ_front], color: 'rgba(235, 45, 55, 0.9)' });
+  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_front], color: 'rgba(235, 45, 55, 0.9)' });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [roomW, roomH_bot, roomZ_front] });
 
