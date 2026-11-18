@@ -41,22 +41,12 @@ export function EcosystemScrollSection() {
     const slide0Details = panels[0].querySelector<HTMLElement>('[data-flow-details]');
     const slide0Divider = panels[0].querySelector<HTMLElement>('[data-flow-divider]');
 
-    // Panels start:
-    // Panel 0 is present. In resting state, its 01 sits exactly in place on the right side.
-    // We calculate the delta between the center of the right 40% column and the docked position of 01 inside max-w-6xl.
-    const isDesktop = window.innerWidth >= 1024;
-    // Desktop layout: left column is 60vw, right column is 40vw (center is at 80vw from left).
-    // In max-w-6xl (1152px) centered in viewport, 01 is at the left edge of max-w-6xl.
-    // The offset to place 01 at 80vw is approximately:
-    const initialOffset01 = isDesktop
-      ? (window.innerWidth * 0.8) - ((window.innerWidth - Math.min(window.innerWidth - 64, 1152)) / 2 + 80)
-      : 0;
-
+    // Product 01 starts centered and ready immediately upon entering section
     gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
-    if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
-    if (slide0Details) gsap.set(slide0Details, { x: 420, opacity: 0 });
-    if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
+    if (slide0Num) gsap.set(slide0Num, { x: 0, opacity: 1 });
+    if (slide0Img) gsap.set(slide0Img, { x: 0, opacity: 1 });
+    if (slide0Details) gsap.set(slide0Details, { x: 0, opacity: 1 });
+    if (slide0Divider) gsap.set(slide0Divider, { x: 0, opacity: 1 });
 
     for (let i = 1; i < panels.length; i++) {
       gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
@@ -68,84 +58,24 @@ export function EcosystemScrollSection() {
         id: 'ecosystem-scroll',
         trigger: container,
         start: 'top top',
-        end: `+=${panels.length * 100}%`,
+        end: `+=${(panels.length - 1) * 100}%`,
         pin: true,
-        scrub: 0.25,
+        scrub: 0.35,
         snap: {
-          // Clean, predictable snap points for each product:
-          // 0 = Intro state (Left column & resting 01)
-          // 0.25 = Product 01 (Nex)
-          // 0.50 = Product 02 (HMS)
-          // 0.75 = Product 03 (Vision)
-          // 1.00 = Product 04 (Simulator)
-          snapTo: [0, 0.25, 0.5, 0.75, 1],
+          snapTo: panels.length > 1 ? 1 / (panels.length - 1) : 0,
           duration: { min: 0.25, max: 0.5 },
           delay: 0.05,
           ease: 'power2.out',
         },
         onUpdate: (self) => {
           const p = self.progress;
-          const idx = p < 0.125 ? 0 : Math.min(panels.length - 1, Math.floor((p - 0.125) / 0.25));
+          const idx = Math.min(panels.length - 1, Math.round(p * (panels.length - 1)));
           setActiveIdx(idx);
         },
       },
     });
 
-    // Segment 1 (Progress 0 -> 0.25): 1 scroll moves smoothly from Intro to Product 01
-    if (leftCol) {
-      tl.to(
-        leftCol,
-        {
-          xPercent: -125,
-          opacity: 0,
-          duration: 0.8,
-          ease: 'power2.inOut',
-        },
-        'p0'
-      );
-    }
-
-    // 01 glides into centered position
-    if (slide0Num) {
-      tl.to(
-        slide0Num,
-        {
-          x: 0,
-          duration: 0.8,
-          ease: 'power2.inOut',
-        },
-        'p0'
-      );
-    }
-
-    // Product monitor image, details, and vertical line glide in
-    if (slide0Img) {
-      tl.to(
-        slide0Img,
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-        'p0+=0.12'
-      );
-    }
-    if (slide0Details) {
-      tl.to(
-        slide0Details,
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-        'p0+=0.16'
-      );
-    }
-    if (slide0Divider) {
-      tl.to(
-        slide0Divider,
-        { x: 0, opacity: 1, duration: 0.7, ease: 'power2.out' },
-        'p0+=0.20'
-      );
-    }
-
-    // Rest at Product 01
-    tl.to({}, { duration: 0.2 });
-
-    // Segments 2, 3, 4 (Progress 0.25 -> 0.50 -> 0.75 -> 1.00):
-    // 1 clean scroll per product transition
+    // Clean product carousel: As you scroll, product slides transition cleanly into view
     for (let i = 0; i < panels.length - 1; i++) {
       const prev = panels[i];
       const next = panels[i + 1];
@@ -212,71 +142,6 @@ export function EcosystemScrollSection() {
     >
       <div className="relative flex-1 flex flex-col lg:flex-row w-full h-screen">
         
-        {/* LEFT COLUMN: 60% Width Intro Content with single vertical green line that glides out left on scroll */}
-        <div
-          data-left-col
-          className="w-full lg:w-[60%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none will-change-transform"
-        >
-          {/* Top Tag: Green Box for 03 & White Text PRODUCTS without rounded pill stroke */}
-          <div className="pt-2">
-            <div className="inline-flex items-center gap-2.5">
-              <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
-                03
-              </span>
-              <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
-                PRODUCTS
-              </span>
-            </div>
-          </div>
-
-          {/* Centered Main Content: Prominent heading with scroll WordScrub */}
-          <div className="my-auto py-6 max-w-3xl">
-            <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
-              <WordScrub
-                as="span"
-                className="leading-[1.04]"
-                text="The product changes but the experience stays."
-              />
-            </h2>
-
-            <div className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
-              <WordScrub
-                as="p"
-                className="leading-relaxed"
-                text="Four intelligent systems engineered to unify every environment. One cohesive OS connecting hardware, spaces, and digital workflows."
-              />
-            </div>
-          </div>
-
-          {/* Bottom Forward Arrow Button: Clicking scrolls directly to 01 product section */}
-          <div className="pb-2">
-            <button
-              type="button"
-              onClick={() => {
-                const st = ScrollTrigger.getById('ecosystem-scroll') || ScrollTrigger.getAll().find(t => t.trigger === containerRef.current);
-                if (st) {
-                  // Advance directly to Product 01 (Nex)
-                  const targetScroll = st.start + (st.end - st.start) * 0.25;
-                  window.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                } else if (containerRef.current) {
-                  containerRef.current.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              aria-label="Advance to first product (01 Nex)"
-              className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2 cursor-pointer focus:outline-none"
-            >
-              <Arrow className="size-8 sm:size-10 text-white group-hover:text-[#b6ff66] transition-all duration-300 group-hover:translate-x-2" />
-            </button>
-          </div>
-        </div>
-
-        {/* RIGHT COLUMN: 40% Width Area in Initial State, Houses the Resting 01 Centered */}
-        <div
-          data-right-resting
-          className="hidden"
-        >
-        </div>
-
         {/* FULL-SCREEN PRODUCT STAGE: Active Products on Scroll */}
         <div
           data-product-stage

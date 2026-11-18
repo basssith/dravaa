@@ -261,13 +261,13 @@ export function CompanyWireframeSection() {
     // 28% -> 44%: Left-side top block appears
     // 44% -> 60%: Center block appears
     // 60% -> 76%: Right-side bottom block appears (with DRAVA)
-    // 76% -> 100%: Camera zooms deeply into the room portal / black screen to transition into 03 Products
+    // 76% -> 100%: Camera zooms deeply into the room portal / black screen, and smoothly brings the next section into view
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=350%',
+      end: '+=240%',
       pin: true,
-      scrub: 1.2,
+      scrub: 1.0,
       onUpdate: (self) => {
         targetProgress = self.progress;
       },
@@ -283,8 +283,8 @@ export function CompanyWireframeSection() {
         scrollTrigger: {
           trigger: container,
           start: 'top top',
-          end: '+=350%',
-          scrub: 1.2,
+          end: '+=240%',
+          scrub: 1.0,
         },
       });
 
@@ -303,8 +303,8 @@ export function CompanyWireframeSection() {
       // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
       tl.to(block3, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.60);
 
-      // Step 5: As the camera plunges into the black screen (0.75 -> 1.0), fade out all text blocks cleanly
-      tl.to([tag, block1, block2, block3], { opacity: 0, y: -40, duration: 0.8, ease: 'power2.in' }, 0.76);
+      // Step 5: As camera plunges into the black screen (0.75 -> 0.95), fade out all 02 text blocks cleanly
+      tl.to([tag, block1, block2, block3], { opacity: 0, y: -40, duration: 0.8, ease: 'power2.in' }, 0.75);
     }
 
     const project = (
@@ -343,18 +343,18 @@ export function CompanyWireframeSection() {
       // Morph factor: completes earlier so room wireframe is fully visible while text reads
       const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.5));
 
-      // Dive animation into the black screen (0.74 -> 1.0)
+      // Dive animation into the black screen (0.72 -> 0.95)
       // Camera plunges deeply through the room portal into the black screen, accelerating forward
-      let cameraZ = 2.8 - scrollProgress * 1.5;
-      let cameraPitch = currRotX - scrollProgress * 0.12;
+      let cameraZ = 2.8 - Math.min(0.72, scrollProgress) * 1.5;
+      let cameraPitch = currRotX - Math.min(0.72, scrollProgress) * 0.12;
       let diveFade = 1;
 
-      if (scrollProgress > 0.74) {
-        const diveProgress = (scrollProgress - 0.74) / 0.26; // 0 -> 1
+      if (scrollProgress > 0.72) {
+        const diveProgress = Math.min(1, (scrollProgress - 0.72) / 0.23); // 0 -> 1
         // Rapid exponential zoom forward into the black screen
-        cameraZ -= diveProgress * diveProgress * 4.2;
+        cameraZ -= diveProgress * diveProgress * 4.8;
         // Fade lines out as camera goes beyond the front portal into darkness
-        diveFade = Math.max(0, 1 - diveProgress * 1.5);
+        diveFade = Math.max(0, 1 - diveProgress * 1.8);
       }
 
       const cameraYaw = currRotY * diveFade;
