@@ -405,7 +405,7 @@ export function CompanyWireframeSection() {
           const depthAlpha = Math.max(0.68, Math.min(1.0, 2.8 / dist));
           ctx.fillStyle = pt.isBright
             ? `rgba(182, 255, 102, ${Math.min(1, 0.98 * depthAlpha)})`
-            : `rgba(240, 248, 255, ${Math.min(1, 0.92 * depthAlpha)})`;
+            : `rgba(150, 155, 165, ${Math.min(1, 0.92 * depthAlpha)})`;
           ctx.fillText(pt.char, px, py);
         }
       });
@@ -423,7 +423,7 @@ export function CompanyWireframeSection() {
             ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
             ctx.fillStyle = fp.isGreen
               ? `rgba(182, 255, 102, ${0.80 * ambientAlpha})`
-              : `rgba(215, 230, 245, ${0.68 * ambientAlpha})`;
+              : `rgba(150, 155, 165, ${0.72 * ambientAlpha})`;
             ctx.fillText(fp.char, px, py);
           }
         });

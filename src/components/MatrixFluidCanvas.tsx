@@ -69,9 +69,9 @@ export function MatrixFluidCanvas() {
           const y = r * rowSpacing + (Math.random() - 0.5) * 8;
           const char = Math.random() > 0.5 ? '1' : '0';
           
-          // Green accent (~25% of digits like in second page) & White/Silver
+          // Green accent (~25% of digits) & Refined Neutral Grey (~140, 145, 155)
           const isGreen = Math.random() < 0.25;
-          const baseColor = isGreen ? 'rgba(182, 255, 102, ' : 'rgba(235, 240, 248, ';
+          const baseColor = isGreen ? 'rgba(182, 255, 102, ' : 'rgba(150, 155, 165, ';
           const baseOpacity = isGreen ? 0.75 + Math.random() * 0.25 : 0.45 + Math.random() * 0.45;
 
           particles.push({
