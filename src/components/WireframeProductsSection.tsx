@@ -181,7 +181,8 @@ export function WireframeProductsSection() {
 
     const wireframeLines = buildInteriorWireframe();
 
-    // 1. POPULATE BINARY POINTS PROPERLY ALONG ALL WIREFRAME LINES
+    // 1. POPULATE TASTEFUL, WELL-SPACED BINARY POINTS ON WIREFRAME
+    // Balanced count: ~100 to 115 points so the wireframe remains clean, elegant and uncluttered
     const particles: BinaryPoint[] = [];
 
     wireframeLines.forEach((line) => {
@@ -190,11 +191,14 @@ export function WireframeProductsSection() {
       const dz = line.p2[2] - line.p1[2];
       const length = Math.hypot(dx, dy, dz);
 
-      // Even spacing along physical lines: every ~0.28 to 0.32 units
-      const count = Math.max(2, Math.round(length / 0.30));
+      // Skip tiny line segments (<0.32) to prevent crowding on chair spokes and joints
+      if (length < 0.32) return;
+
+      // Elegant spacing: approximately 1 point per 0.85 unit of line length
+      const count = Math.max(1, Math.round(length / 0.85));
 
       for (let s = 0; s < count; s++) {
-        const t = count === 1 ? 0.5 : (s + 0.5) / count;
+        const t = (s + 0.5) / count;
         const tx = line.p1[0] + dx * t;
         const ty = line.p1[1] + dy * t;
         const tz = line.p1[2] + dz * t;
@@ -209,15 +213,15 @@ export function WireframeProductsSection() {
           tz3d: tz,
           char: Math.random() > 0.5 ? '1' : '0',
           flipTimer: Math.floor(Math.random() * 90),
-          flipInterval: 45 + Math.floor(Math.random() * 110),
-          isBright: Math.random() < 0.28,
+          flipInterval: 50 + Math.floor(Math.random() * 120),
+          isBright: Math.random() < 0.32,
         });
       }
     });
 
-    // 2. FILL FULL SCREEN WITH RICH AMBIENT BINARY NUMBERS (280 PARTICLES COVERING ENTIRE VIEWPORT)
+    // 2. FILL FULL SCREEN WITH RICH AMBIENT BINARY NUMBERS (240 PARTICLES COVERING ENTIRE VIEWPORT)
     const freeParticles: FreeParticle[] = [];
-    const totalFree = 280;
+    const totalFree = 240;
     for (let i = 0; i < totalFree; i++) {
       freeParticles.push({
         x: (Math.random() - 0.5) * 7.6,
