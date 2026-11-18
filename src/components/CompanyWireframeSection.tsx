@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import { applications, slugOf } from '@/lib/applications';
+import { TransitionLink } from './TransitionLink';
+import { Arrow } from './icons';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 interface Line3D {
@@ -118,6 +122,9 @@ export function CompanyWireframeSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textWrapperRef = useRef<HTMLDivElement>(null);
+  const [fullscreenApp, setFullscreenApp] = useState<(typeof applications)[number] | null>(null);
+  const [activeProductIdx, setActiveProductIdx] = useState(0);
+  const apps = applications.slice(0, 4);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -257,17 +264,17 @@ export function CompanyWireframeSection() {
     window.addEventListener('resize', handleResize);
 
     // PINNED SCROLL TIMELINE:
-    // 0 -> 28%: Wireframe assemble & exploration
-    // 28% -> 44%: Left-side top block appears
-    // 44% -> 60%: Center block appears
-    // 60% -> 76%: Right-side bottom block appears (with DRAVA)
-    // 76% -> 100%: Camera zooms deeply into the room portal / black screen to transition into 03 Products
+    // 0 -> 24%: Wireframe assemble & exploration
+    // 24% -> 38%: Left-side top block appears
+    // 38% -> 52%: Center block appears
+    // 52% -> 66%: Right-side bottom block appears (with DRAVA)
+    // 66% -> 100%: Camera zooms deeply into the room portal / black screen, text disappears, and 03 Products showcase appears immediately in the exact same pinned scroll
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=350%',
+      end: '+=450%',
       pin: true,
-      scrub: 1.2,
+      scrub: 1.0,
       onUpdate: (self) => {
         targetProgress = self.progress;
       },
@@ -278,33 +285,71 @@ export function CompanyWireframeSection() {
       const block1 = textWrapper.querySelector<HTMLElement>('[data-block="1"]');
       const block2 = textWrapper.querySelector<HTMLElement>('[data-block="2"]');
       const block3 = textWrapper.querySelector<HTMLElement>('[data-block="3"]');
+      const productsStage = container.querySelector<HTMLElement>('[data-embedded-products]');
 
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: container,
           start: 'top top',
-          end: '+=350%',
-          scrub: 1.2,
+          end: '+=450%',
+          scrub: 1.0,
         },
       });
 
       // Initially all content is hidden while exploring the pure binary wireframe
       tl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
+      if (productsStage) {
+        tl.set(productsStage, { opacity: 0, scale: 0.9, pointerEvents: 'none', y: 50 });
+      }
 
       // Step 1: Tag appears
-      tl.to(tag, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.20);
+      tl.to(tag, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.16);
 
       // Step 2: Left-side top 2 lines appear
-      tl.to(block1, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.30);
+      tl.to(block1, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.25);
 
       // Step 3: Center 2 lines appear
-      tl.to(block2, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.45);
+      tl.to(block2, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.38);
 
       // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
-      tl.to(block3, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.60);
+      tl.to(block3, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.52);
 
-      // Step 5: As the camera plunges into the black screen (0.75 -> 1.0), fade out all text blocks cleanly
-      tl.to([tag, block1, block2, block3], { opacity: 0, y: -40, duration: 0.8, ease: 'power2.in' }, 0.76);
+      // Step 5: As the camera plunges into the black screen (0.64 -> 0.72), fade out all 02 text blocks cleanly
+      tl.to([tag, block1, block2, block3], { opacity: 0, y: -40, duration: 0.5, ease: 'power2.in' }, 0.64);
+
+      // Step 6: In that SAME pinned scroll, as wireframe dives into black screen, product section appears!
+      if (productsStage) {
+        const slides = productsStage.querySelectorAll<HTMLElement>('[data-embedded-slide]');
+
+        // Stage entrance
+        tl.to(
+          productsStage,
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            pointerEvents: 'auto',
+            duration: 0.6,
+            ease: 'power3.out',
+          },
+          0.72
+        );
+
+        // Slide 0 is visible immediately
+        if (slides[0]) {
+          tl.to(slides[0], { opacity: 1, xPercent: 0, pointerEvents: 'auto', duration: 0.5 }, 0.72);
+        }
+
+        // Product slides transitions within the remaining scroll (0.76 -> 1.0)
+        for (let i = 0; i < slides.length - 1; i++) {
+          const curSlide = slides[i];
+          const nextSlide = slides[i + 1];
+          const time = 0.78 + i * 0.08;
+
+          tl.to(curSlide, { xPercent: -120, opacity: 0, pointerEvents: 'none', duration: 0.5, ease: 'power2.inOut' }, time);
+          tl.to(nextSlide, { xPercent: 0, opacity: 1, pointerEvents: 'auto', duration: 0.5, ease: 'power2.inOut' }, time + 0.02);
+        }
+      }
     }
 
     const project = (
@@ -341,20 +386,20 @@ export function CompanyWireframeSection() {
       currRotX += (targetRotX - currRotX) * 0.05;
 
       // Morph factor: completes earlier so room wireframe is fully visible while text reads
-      const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.5));
+      const morphFactor = Math.min(1, Math.max(0, scrollProgress * 4.0));
 
-      // Dive animation into the black screen (0.74 -> 1.0)
+      // Dive animation into the black screen (0.64 -> 0.85)
       // Camera plunges deeply through the room portal into the black screen, accelerating forward
-      let cameraZ = 2.8 - scrollProgress * 1.5;
-      let cameraPitch = currRotX - scrollProgress * 0.12;
+      let cameraZ = 2.8 - Math.min(0.64, scrollProgress) * 1.5;
+      let cameraPitch = currRotX - Math.min(0.64, scrollProgress) * 0.12;
       let diveFade = 1;
 
-      if (scrollProgress > 0.74) {
-        const diveProgress = (scrollProgress - 0.74) / 0.26; // 0 -> 1
+      if (scrollProgress > 0.64) {
+        const diveProgress = Math.min(1, (scrollProgress - 0.64) / 0.20); // 0 -> 1
         // Rapid exponential zoom forward into the black screen
-        cameraZ -= diveProgress * diveProgress * 4.2;
-        // Fade lines out as camera goes beyond the front portal into darkness
-        diveFade = Math.max(0, 1 - diveProgress * 1.5);
+        cameraZ -= diveProgress * diveProgress * 5.0;
+        // Fade lines out as camera goes beyond the front portal into pure black darkness
+        diveFade = Math.max(0, 1 - diveProgress * 1.6);
       }
 
       const cameraYaw = currRotY * diveFade;
@@ -541,6 +586,178 @@ export function CompanyWireframeSection() {
           </h2>
         </div>
       </div>
+
+      {/* EMBEDDED PRODUCTS STAGE: Appears directly inside the black screen in the exact same pinned scroll */}
+      <div
+        data-embedded-products
+        className="absolute inset-0 z-30 flex items-center justify-center p-4 sm:p-6 lg:p-10 pointer-events-none will-change-transform"
+      >
+        {apps.map((app, i) => (
+          <div
+            key={app.id}
+            data-embedded-slide
+            style={{
+              transform: i === 0 ? 'translateX(0%)' : 'translateX(120%)',
+              opacity: i === 0 ? 1 : 0,
+            }}
+            className="absolute inset-0 flex items-center justify-center p-4 sm:p-6 lg:p-10 will-change-transform"
+          >
+            <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-10 xl:gap-14 w-full max-w-6xl">
+              
+              {/* Product Number Indicator */}
+              <div className="flex items-center select-none shrink-0 leading-none gap-2 pl-2">
+                <span className="font-display font-black text-[clamp(4.5rem,7vw,11rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
+                  0
+                </span>
+                <span className="font-display font-light text-[clamp(4rem,6.5vw,10rem)] text-[#50555e] leading-none">
+                  /
+                </span>
+                <span className="font-display font-black text-[clamp(4.5rem,7vw,11rem)] leading-none tracking-tighter text-white drop-shadow-[0_0_40px_rgba(255,255,255,0.14)]">
+                  {i + 1}
+                </span>
+              </div>
+
+              {/* Monitor Screen Image */}
+              <div className="shrink-0 flex justify-center items-center pointer-events-auto">
+                <div className="relative aspect-[16/9] w-[320px] sm:w-[440px] md:w-[500px] lg:w-[540px] xl:w-[620px] max-h-[58vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.08)] group/frame">
+                  <TransitionLink
+                    href={`/applications/${slugOf(app)}`}
+                    className="group/img relative w-full h-full block cursor-pointer overflow-hidden"
+                    aria-label={`View ${app.name} details`}
+                  >
+                    <Image
+                      src={app.image}
+                      alt={app.name}
+                      fill
+                      quality={100}
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 680px"
+                      className="object-contain object-center w-full h-full transition-transform duration-700 group-hover/img:scale-[1.02]"
+                    />
+
+                    {/* Hover Overlay Button */}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[2px]">
+                      <span className="inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/70 px-6 text-xs sm:text-sm font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-black transform translate-y-2 group-hover/img:translate-y-0">
+                        <span>View {app.name}</span>
+                        <Arrow className="size-3.5 -rotate-45" />
+                      </span>
+                    </div>
+
+                    {/* Fullscreen Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setFullscreenApp(app);
+                      }}
+                      className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1.5 text-xs font-[family-name:var(--font-manrope)] px-3 py-1.5 rounded-md bg-black/75 hover:bg-black/90 border border-white/20 text-white/80 hover:text-[#b6ff66] transition-all cursor-pointer backdrop-blur-sm"
+                      aria-label={`View ${app.name} in fullscreen modal`}
+                    >
+                      <svg
+                        className="size-3.5 fill-none stroke-current"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                      </svg>
+                      <span>Fullscreen</span>
+                    </button>
+                  </TransitionLink>
+                </div>
+              </div>
+
+              {/* Product Details & Specifications */}
+              <div className="flex flex-col justify-center text-left space-y-3.5 w-full sm:w-[280px] lg:w-[320px] shrink-0 pointer-events-auto">
+                <div className="font-[family-name:var(--font-manrope)] text-xs sm:text-sm tracking-widest text-white/60">
+                  0{i + 1} / 0{apps.length}
+                </div>
+
+                <h3 className="font-display text-[clamp(2.2rem,1.9rem+1.6vw,3.3rem)] font-bold leading-none tracking-tight text-white">
+                  {app.name}
+                </h3>
+
+                <p className="text-xs sm:text-sm lg:text-base leading-relaxed text-[#c8ccd6]">
+                  {app.description}
+                </p>
+
+                <div className="border-t border-b border-white/20 py-3 my-1 space-y-2">
+                  <div className="flex justify-between text-xs sm:text-sm font-[family-name:var(--font-manrope)] text-white/80">
+                    <span>Category</span>
+                    <span className="text-white font-medium">{app.badge}</span>
+                  </div>
+                  <div className="flex justify-between text-xs sm:text-sm font-[family-name:var(--font-manrope)] text-white/80">
+                    <span>System</span>
+                    <span className="text-white font-medium">Drava OS</span>
+                  </div>
+                </div>
+
+                <TransitionLink
+                  href={`/applications/${slugOf(app)}`}
+                  className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-xs sm:text-sm font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-black group mt-1"
+                >
+                  <span>Explore {app.name}</span>
+                  <Arrow className="size-3.5 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
+                </TransitionLink>
+              </div>
+
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* FULLSCREEN POPUP MODAL */}
+      {fullscreenApp && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-200 pointer-events-auto"
+          onClick={() => setFullscreenApp(null)}
+        >
+          <div
+            className="relative max-w-5xl w-full max-h-[90vh] bg-[#0a0c0e] border-2 border-white/20 rounded-2xl overflow-hidden p-4 sm:p-6 flex flex-col justify-between shadow-[0_0_80px_rgba(0,0,0,0.8)]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center pb-3 border-b border-white/10 text-xs sm:text-sm font-[family-name:var(--font-manrope)]">
+              <div className="flex items-center gap-3">
+                <span className="text-[#b6ff66] font-bold">Product {fullscreenApp.id}</span>
+                <span className="text-white/40">/</span>
+                <span className="text-white font-semibold">{fullscreenApp.name}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFullscreenApp(null)}
+                aria-label="Close fullscreen modal"
+                className="size-8 rounded-full border border-white/20 bg-white/5 hover:bg-[#b6ff66] hover:text-black flex items-center justify-center transition-colors cursor-pointer text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[68vh] my-4 rounded-xl overflow-hidden bg-black/80">
+              <Image
+                src={fullscreenApp.image}
+                alt={fullscreenApp.name}
+                fill
+                quality={100}
+                className="object-contain"
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-3 border-t border-white/10 text-xs sm:text-sm font-[family-name:var(--font-manrope)] text-white/70">
+              <p className="max-w-xl text-xs sm:text-sm text-[#c8ccd6]">{fullscreenApp.description}</p>
+              <TransitionLink
+                href={`/applications/${slugOf(fullscreenApp)}`}
+                className="inline-flex min-h-10 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-5 text-xs font-semibold tracking-wider uppercase text-white shadow-xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-black group"
+              >
+                <span>Explore {fullscreenApp.name}</span>
+                <Arrow className="size-3 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
+              </TransitionLink>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
