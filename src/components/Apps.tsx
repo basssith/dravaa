@@ -120,7 +120,7 @@ export function AppGrid({ apps }: { apps: Application[] }) {
                         {app.id}
                       </span>
                       <span className="text-xs sm:text-sm font-mono tracking-widest text-white/80 font-semibold uppercase">
-                        {[app.category, app.year, app.badge].join(' • ')}
+                        {app.category}
                       </span>
                     </div>
 
