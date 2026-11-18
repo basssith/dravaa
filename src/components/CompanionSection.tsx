@@ -25,31 +25,40 @@ export function CompanionSection() {
     const leftWords = leftCol.querySelectorAll<HTMLElement>('.w-scrub');
     const rightWords = rightCol.querySelectorAll<HTMLElement>('.w-scrub');
 
-    // Initially hide the right points and their individual separator lines
-    gsap.set(listItems, { y: 35, opacity: 0 });
+    // 4 divider lines (top border of item 1, bottom border of 1, 2, 3)
+    const dividers = rightCol.querySelectorAll<HTMLElement>('[data-point-divider]');
+
+    // Initially hide the right points and all 4 horizontal divider lines
+    gsap.set(listItems, { y: 25, opacity: 0 });
+    gsap.set(dividers, { scaleX: 0, transformOrigin: 'left center' });
 
     if (leftWords.length > 0) {
       // 1. Initial state of all text (left & right): dim subtle green-grey
       gsap.set([leftWords, rightWords], { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
 
       // 2. Timeline synchronized with scroll:
-      // STEP 1: Left subheading words scrub through brand green to pure white
+      // Pinned or extended scroll scrub so every stage plays clearly in sequence:
+      // STAGE 1: Left subheading text animation scrubs through green to white
+      // STAGE 2: Top line 0 draws across, then Point 01 appears & its words scrub, then bottom line 1 draws
+      // STAGE 3: Point 02 appears & its words scrub, then bottom line 2 draws
+      // STAGE 4: Point 03 appears & its words scrub, then bottom line 3 draws
       const tl = gsap.timeline({
         scrollTrigger: {
-          trigger: leftCol,
-          start: 'top 70%',
-          end: 'bottom 25%',
-          scrub: 0.5,
+          trigger: section,
+          start: 'top 35%',
+          end: 'bottom bottom',
+          scrub: 0.6,
         },
       });
 
+      // STAGE 1: Left subheading words scrub from brand green to white
       leftWords.forEach((w) => {
         tl.to(
           w,
           {
             color: '#b6ff66',
             opacity: 1,
-            duration: 0.12,
+            duration: 0.15,
             ease: 'power1.inOut',
           }
         ).to(
@@ -57,29 +66,40 @@ export function CompanionSection() {
           {
             color: '#ffffff',
             opacity: 1,
-            duration: 0.16,
+            duration: 0.18,
             ease: 'power1.out',
           },
           '+=0.03'
         );
       });
 
-      // STEP 2: Animate point-by-point sequentially (Point 1, then Point 2, then Point 3):
-      // Each point and its dividing border line appear ONLY after the left text completes
-      listItems.forEach((li) => {
-        // Line & point appear
+      // Pause before right points start
+      tl.to({}, { duration: 0.3 });
+
+      // Reveal top divider line (Line 0 of 4)
+      if (dividers[0]) {
+        tl.to(dividers[0], {
+          scaleX: 1,
+          duration: 0.35,
+          ease: 'power2.out',
+        });
+      }
+
+      // STAGES 2, 3, 4: Sequentially reveal each point and its following bottom border line
+      listItems.forEach((li, idx) => {
+        // Point item slides up & fades in
         tl.to(
           li,
           {
             y: 0,
             opacity: 1,
-            duration: 0.45,
+            duration: 0.4,
             ease: 'power2.out',
           },
-          '+=0.1'
+          '+=0.08'
         );
 
-        // Words inside this point scrub sequentially
+        // Words inside this point scrub from green to pure white
         const itemWords = li.querySelectorAll<HTMLElement>('.w-scrub');
         itemWords.forEach((rw) => {
           tl.to(
@@ -87,7 +107,7 @@ export function CompanionSection() {
             {
               color: '#b6ff66',
               opacity: 1,
-              duration: 0.12,
+              duration: 0.14,
               ease: 'power1.inOut',
             }
           ).to(
@@ -95,15 +115,29 @@ export function CompanionSection() {
             {
               color: '#ffffff',
               opacity: 1,
-              duration: 0.16,
+              duration: 0.18,
               ease: 'power1.out',
             },
             '+=0.03'
           );
         });
 
-        // Small pause between each point
-        tl.to({}, { duration: 0.1 });
+        // The dividing line below this point draws across (Lines 1, 2, 3)
+        const bottomLine = dividers[idx + 1];
+        if (bottomLine) {
+          tl.to(
+            bottomLine,
+            {
+              scaleX: 1,
+              duration: 0.35,
+              ease: 'power2.out',
+            },
+            '+=0.05'
+          );
+        }
+
+        // Distinct spacing pause before the next point begins
+        tl.to({}, { duration: 0.25 });
       });
 
       return () => {
@@ -168,19 +202,32 @@ export function CompanionSection() {
             className="lg:col-span-5 flex flex-col justify-center lg:pt-60 xl:pt-72"
           >
             <ol className="border-none">
+              {/* Divider Line 0 (top line above Point 01) */}
+              <div
+                data-point-divider
+                className="w-full h-[1px] bg-white/10 origin-left"
+              />
+
               {COMPANION_ITEMS.map((item, i) => (
-                <li
-                  key={item}
-                  data-point-item
-                  className="py-6 sm:py-7 flex items-baseline gap-5 sm:gap-6 group transition-colors duration-300 cursor-default will-change-transform border-b border-white/10 first:border-t"
-                >
-                  <span className="inline-flex items-center justify-center font-mono text-xs font-bold tracking-wider px-2 py-0.5 rounded-[4px] bg-white/10 text-white/80 group-hover:bg-[#b6ff66] group-hover:text-black transition-all duration-300 select-none">
-                    0{i + 1}
-                  </span>
-                  <div className="font-display text-[clamp(1.1rem,1rem+0.45vw,1.4rem)] font-semibold tracking-tight text-[#f0f2f5] leading-snug group-hover:text-[#b6ff66] transition-colors duration-300">
-                    <WordScrub as="span" text={item} />
-                  </div>
-                </li>
+                <div key={item}>
+                  <li
+                    data-point-item
+                    className="py-6 sm:py-7 flex items-baseline gap-5 sm:gap-6 group transition-colors duration-300 cursor-default will-change-transform"
+                  >
+                    <span className="inline-flex items-center justify-center font-mono text-xs font-bold tracking-wider px-2 py-0.5 rounded-[4px] bg-white/10 text-white/80 group-hover:bg-[#b6ff66] group-hover:text-black transition-all duration-300 select-none">
+                      0{i + 1}
+                    </span>
+                    <div className="font-display text-[clamp(1.1rem,1rem+0.45vw,1.4rem)] font-semibold tracking-tight text-[#f0f2f5] leading-snug group-hover:text-[#b6ff66] transition-colors duration-300">
+                      <WordScrub as="span" text={item} />
+                    </div>
+                  </li>
+
+                  {/* Divider Line below this point (Lines 1, 2, 3) */}
+                  <div
+                    data-point-divider
+                    className="w-full h-[1px] bg-white/10 origin-left"
+                  />
+                </div>
               ))}
             </ol>
           </div>
