@@ -1,0 +1,4 @@
+#!/bin/sh
+# Mandatory React Doctor gate (see AGENTS.md). Blocks commits that add error-level findings.
+# Enabled on every clone by `pnpm install` (package.json "prepare" sets core.hooksPath).
+exec pnpm exec react-doctor --staged --blocking error
