@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import { WordScrub } from './type';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const COMPANION_ITEMS = [
   'Spatial telemetry & multi-modal perception',
@@ -9,8 +11,43 @@ const COMPANION_ITEMS = [
 ];
 
 export function CompanionSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const rightColRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const rightCol = rightColRef.current;
+    if (!section || !rightCol) return;
+
+    const listItems = rightCol.querySelectorAll('li');
+
+    // Staggered aesthetic entrance: After left content is visible, right points cascade in with smooth upward drift
+    gsap.set(listItems, { y: 40, opacity: 0 });
+
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: 'top 55%',
+      once: true,
+      onEnter: () => {
+        gsap.to(listItems, {
+          y: 0,
+          opacity: 1,
+          duration: 1.0,
+          stagger: 0.16,
+          ease: 'power3.out',
+        });
+      },
+    });
+
+    return () => {
+      st.kill();
+    };
+  }, []);
+
   return (
     <section
+      ref={sectionRef}
       id="approach"
       data-companion-card
       className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-28 overflow-hidden flex flex-col justify-between"
@@ -32,10 +69,10 @@ export function CompanionSection() {
 
       {/* --- MAIN CONTENT GRID --- */}
       <div className="wrap relative z-20 flex min-h-[65vh] flex-col justify-center my-auto">
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+        <div className="grid items-start gap-12 lg:grid-cols-12 lg:gap-16">
           
           {/* --- LEFT SIDE: TWO-LINE HEADLINE & SUBHEADING --- */}
-          <div className="lg:col-span-7 flex flex-col justify-center">
+          <div ref={leftColRef} className="lg:col-span-7 flex flex-col justify-center">
             <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.6rem)] font-bold tracking-tight leading-[1.15] text-white">
               <span className="block text-white">
                 Meet the{' '}
@@ -58,13 +95,16 @@ export function CompanionSection() {
             </div>
           </div>
 
-          {/* --- RIGHT SIDE: 3 NUMBERED POINTS WITH DRAVA SIGNATURE HOVER --- */}
-          <div className="lg:col-span-5 flex flex-col justify-center">
+          {/* --- RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL AESTHETIC BALANCE --- */}
+          <div
+            ref={rightColRef}
+            className="lg:col-span-5 flex flex-col justify-center lg:pt-20 xl:pt-24"
+          >
             <ol className="divide-y divide-white/10 border-t border-b border-white/10">
               {COMPANION_ITEMS.map((item, i) => (
                 <li
                   key={item}
-                  className="py-6 sm:py-7 flex items-baseline gap-5 sm:gap-6 group transition-colors duration-300 cursor-default"
+                  className="py-6 sm:py-7 flex items-baseline gap-5 sm:gap-6 group transition-colors duration-300 cursor-default will-change-transform"
                 >
                   <span className="inline-flex items-center justify-center font-mono text-xs font-bold tracking-wider px-2 py-0.5 rounded-[4px] bg-white/10 text-white/80 group-hover:bg-[#b6ff66] group-hover:text-black transition-all duration-300 select-none">
                     0{i + 1}
