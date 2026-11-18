@@ -178,8 +178,9 @@ export function CompanyWireframeSection() {
 
     const particles: MorphBinaryParticle[] = uniqueWireframeNodes.map((node3d, idx) => ({
       char: idx % 2 === 0 ? '1' : '0',
-      streamX: (Math.random() - 0.5) * 4.2,
-      streamY: (Math.random() - 0.5) * 3.5,
+      // Distributed across the entire full page width and height during the initial stream:
+      streamX: (Math.random() - 0.5) * 11.0,
+      streamY: (Math.random() - 0.5) * 7.5,
       speedY: 0.003 + Math.random() * 0.006,
       tx3d: node3d[0],
       ty3d: node3d[1],
@@ -188,7 +189,7 @@ export function CompanyWireframeSection() {
       flipTimer: Math.floor(Math.random() * 120),
     }));
 
-    // Gentle ambient floating particles count reduced to keep background peaceful and clean
+    // Ambient floating particles distributed across full page width and height
     const freeParticles: Array<{
       x: number;
       y: number;
@@ -199,15 +200,15 @@ export function CompanyWireframeSection() {
       opacity: number;
     }> = [];
 
-    for (let i = 0; i < 70; i++) {
+    for (let i = 0; i < 220; i++) {
       freeParticles.push({
-        x: (Math.random() - 0.5) * 8.5,
-        y: (Math.random() - 0.5) * 5.5,
-        z: -1.2 + Math.random() * 4.8,
+        x: (Math.random() - 0.5) * 12.0,
+        y: (Math.random() - 0.5) * 8.0,
+        z: -1.5 + Math.random() * 5.0,
         vy: -0.0015 - Math.random() * 0.003,
         char: Math.random() > 0.5 ? '1' : '0',
-        isGreen: Math.random() < 0.2,
-        opacity: 0.2 + Math.random() * 0.35,
+        isGreen: Math.random() < 0.22,
+        opacity: 0.3 + Math.random() * 0.45,
       });
     }
 
@@ -376,14 +377,14 @@ export function CompanyWireframeSection() {
         }
 
         pt.streamY += pt.speedY;
-        if (pt.streamY > 2.2) pt.streamY = -2.2;
+        if (pt.streamY > 3.8) pt.streamY = -3.8;
 
         const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
         const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
         const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
 
         const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
-        if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+        if (visible && px >= -80 && px <= width + 80 && py >= -80 && py <= height + 80) {
           // In the beginning stream, size is kept normal (~18px-20px),
           // then smoothly settles into the comfortable readable size (~12px) after the room wireframe forms.
           const baseSize = 19 * (1 - roomLockFactor) + 12 * roomLockFactor;
@@ -410,15 +411,15 @@ export function CompanyWireframeSection() {
         }
       });
 
-      // Full-screen ambient binary numbers: Normal font weight and comfortable scale
+      // Full-screen ambient binary numbers: Normal font weight and comfortable scale across full viewport
       if (morphFactor < 0.8) {
         const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
         freeParticles.forEach((fp) => {
           fp.y += fp.vy;
-          if (fp.y < -2.6) fp.y = 2.6;
+          if (fp.y < -4.0) fp.y = 4.0;
 
           const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
-          if (visible && px >= -30 && px <= width + 30 && py >= -30 && py <= height + 30) {
+          if (visible && px >= -80 && px <= width + 80 && py >= -80 && py <= height + 80) {
             const fontSize = Math.max(15, Math.min(22, Math.round(18 * (2.6 / dist))));
             ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
             ctx.fillStyle = fp.isGreen
