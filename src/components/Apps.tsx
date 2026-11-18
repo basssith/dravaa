@@ -1,55 +1,140 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { slugOf, type Application } from '@/lib/applications';
 import { Arrow } from './icons';
 import { TransitionLink } from './TransitionLink';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
-/** Two-column grid with cards side-by-side: card 1 on left, card 2 on right in same horizontal row. */
+/**
+ * Centered Sticky Stacking Product Cards:
+ * 1 product card sits centered in the viewport.
+ * As you scroll down, the 2nd (and subsequent) product cards slide up from the bottom
+ * and smoothly cover/stack over the previous card.
+ */
 export function AppGrid({ apps }: { apps: Application[] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const cards = container.querySelectorAll<HTMLElement>('[data-stack-card]');
+    if (cards.length === 0) return;
+
+    const triggers: ScrollTrigger[] = [];
+
+    // For cards after the first one, animate them sliding up from below and stacking
+    cards.forEach((card, index) => {
+      if (index === 0) return; // First card is resting centered
+
+      const prevCard = cards[index - 1];
+
+      const st = ScrollTrigger.create({
+        trigger: card,
+        start: 'top bottom',
+        end: 'top 12%',
+        scrub: 0.5,
+        onUpdate: (self) => {
+          const p = self.progress;
+          // Scale down and slightly dim previous card to give depth
+          if (prevCard) {
+            gsap.set(prevCard, {
+              scale: 1 - p * 0.05,
+              opacity: 1 - p * 0.35,
+              filter: `blur(${p * 4}px)`,
+            });
+          }
+        },
+      });
+
+      triggers.push(st);
+    });
+
+    return () => {
+      triggers.forEach((t) => t.kill());
+    };
+  }, [apps.length]);
+
   return (
-    <div className="grid gap-x-12 gap-y-16 md:grid-cols-2 md:gap-y-24">
-      {apps.map((app) => (
-        <article
-          key={app.id}
-          data-app-card
-          className="w-full"
-        >
-          <TransitionLink
-            href={`/applications/${slugOf(app)}`}
-            aria-label={`Open ${app.name}`}
-            className="group block no-underline"
+    <div ref={containerRef} className="relative w-full pb-24 space-y-24 sm:space-y-32">
+      {apps.map((app, index) => {
+        // Sticky offset so cards stack cleanly near top of viewport
+        const topOffset = 80 + index * 10;
+
+        return (
+          <div
+            key={app.id}
+            data-stack-card
+            style={{
+              top: `clamp(70px, ${topOffset}px, 110px)`,
+              zIndex: 10 + index,
+            }}
+            className="sticky w-full max-w-4xl mx-auto will-change-transform transition-shadow"
           >
-            {/* Same aspect-video and dimensions for all cards with 3D perspective container */}
-            <div className="relative aspect-video w-full overflow-hidden rounded-card bg-bg-2 [perspective:1000px]">
-              <Image
-                src={app.image}
-                alt=""
-                fill
-                quality={100}
-                placeholder="blur"
-                sizes="(min-width: 760px) 50vw, 100vw"
-                className="hover-blur-shake app-card-img object-cover will-change-transform"
-              />
-            </div>
+            <article className="w-full rounded-3xl border border-white/15 bg-[#090b0e]/95 backdrop-blur-xl p-5 sm:p-8 md:p-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] hover:border-white/30 transition-colors">
+              <TransitionLink
+                href={`/applications/${slugOf(app)}`}
+                aria-label={`Open ${app.name}`}
+                className="group block no-underline"
+              >
+                {/* 1 Product Image in Center with high quality frame */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-inner [perspective:1000px]">
+                  <Image
+                    src={app.image}
+                    alt={app.name}
+                    fill
+                    quality={100}
+                    placeholder="blur"
+                    sizes="(min-width: 1024px) 896px, 100vw"
+                    className="hover-blur-shake app-card-img object-contain sm:object-cover w-full h-full transition-transform duration-700 group-hover:scale-[1.02]"
+                  />
 
-            <div className="mt-6 flex items-center gap-2.5">
-              <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs px-2 py-0.5 rounded-[4px] leading-tight tracking-normal">
-                {app.id}
-              </span>
-              <span className="text-micro font-mono tracking-widest text-white font-semibold uppercase">
-                {[app.category, app.year, app.badge].join(' • ')}
-              </span>
-            </div>
+                  {/* Hover Overlay with "View Product" Button */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[2px]">
+                    <span className="inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/70 px-6 text-xs sm:text-sm font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 group-hover:border-[#b6ff66] group-hover:bg-[#b6ff66] group-hover:text-black transform translate-y-2 group-hover:translate-y-0">
+                      <span>View {app.name}</span>
+                      <Arrow className="size-3.5 -rotate-45" />
+                    </span>
+                  </div>
+                </div>
 
-            <h3 className="t-h3 mt-3 flex items-center gap-3 text-white">
-              <span>{app.name}</span>
-              {/* Arrow mark that illuminates on hover */}
-              <span className="inline-flex items-center text-[#b6ff66] opacity-0 -translate-x-2 transition-all duration-300 ease-expo group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0">
-                <Arrow className="size-5 stroke-[2.2] -rotate-45" />
-              </span>
-            </h3>
-          </TransitionLink>
-        </article>
-      ))}
+                {/* Meta details & title row */}
+                <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+                      {app.id}
+                    </span>
+                    <span className="text-xs sm:text-sm font-mono tracking-widest text-white/80 font-semibold uppercase">
+                      {[app.category, app.year, app.badge].join(' • ')}
+                    </span>
+                  </div>
+
+                  <span className="text-xs sm:text-sm font-mono text-white/50 tracking-wider">
+                    0{index + 1} / 0{apps.length}
+                  </span>
+                </div>
+
+                <div className="mt-4 flex items-center justify-between">
+                  <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white flex items-center gap-3">
+                    <span>{app.name}</span>
+                    <span className="inline-flex items-center text-[#b6ff66] opacity-0 -translate-x-2 transition-all duration-300 ease-expo group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0">
+                      <Arrow className="size-6 stroke-[2.2] -rotate-45" />
+                    </span>
+                  </h3>
+                </div>
+
+                {app.description && (
+                  <p className="mt-3 text-xs sm:text-sm md:text-base text-white/70 max-w-2xl leading-relaxed">
+                    {app.description}
+                  </p>
+                )}
+              </TransitionLink>
+            </article>
+          </div>
+        );
+      })}
     </div>
   );
 }

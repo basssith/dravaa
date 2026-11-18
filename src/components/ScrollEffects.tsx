@@ -43,32 +43,7 @@ export function ScrollEffects() {
         });
       });
 
-      // Clean One-by-One Staggered Card Slide-Up Animation:
-      // When scrolling into product rows, each card slides up sequentially one after the other
-      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el, i) => {
-        const isOddInRow = i % 2 === 1;
-        gsap.fromTo(
-          el,
-          {
-            y: 85,
-            opacity: 0,
-            scale: 0.94,
-          },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 1.1,
-            delay: isOddInRow ? 0.22 : 0,
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: el,
-              start: 'top 88%',
-              once: true,
-            },
-          }
-        );
-      });
+      // Note: Product cards in AppGrid are animated via sticky stacking scroll or custom presentation
 
 
 
