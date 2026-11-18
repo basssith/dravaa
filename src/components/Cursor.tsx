@@ -124,8 +124,8 @@ export function Cursor() {
             inHero && mode === 'idle' ? 'opacity-100' : 'opacity-0'
           )}
         >
-          {/* sits just right of the 72px Drava smile drawn by MatrixFluidCanvas */}
-          <div className="translate-x-12 -translate-y-1/2 flex items-center">
+          {/* sits just right of the 150px digit-built Drava smile in MatrixFluidCanvas */}
+          <div className="translate-x-24 -translate-y-1/2 flex items-center">
             <span className="font-mono text-xs sm:text-[13px] font-bold uppercase tracking-widest text-white whitespace-nowrap drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               SCROLL TO EXPLORE
             </span>
