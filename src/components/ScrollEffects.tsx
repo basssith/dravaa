@@ -43,7 +43,9 @@ export function ScrollEffects() {
       });
 
       // Scroll Text Scrubbing Effect: Words transition from dim green/grey through vibrant signature green into crisp white
+      // Skip any elements inside #intro / WireframeProductsSection because that pinned section manages its own scrub timeline
       gsap.utils.toArray<HTMLElement>('[data-words]').forEach((el) => {
+        if (el.closest('#intro')) return;
         const words = el.querySelectorAll<HTMLElement>('.w-scrub');
         if (!words.length) return;
 

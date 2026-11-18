@@ -153,9 +153,6 @@ export function CompanionSection() {
       data-companion-card
       className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-28 overflow-hidden flex flex-col justify-between"
     >
-      {/* Background ambient subtle glow aligned with Drava green */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#b6ff66]/5 rounded-full blur-[140px] pointer-events-none" />
-
       {/* --- TOP BAR: 04 COMPANION TAG --- */}
       <div className="wrap relative z-20 w-full pt-4">
         <div className="inline-flex items-center gap-2.5">
@@ -177,7 +174,7 @@ export function CompanionSection() {
             <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.6rem)] font-bold tracking-tight leading-[1.15] text-white">
               <span className="block text-white">
                 Meet the{' '}
-                <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-5 py-0.5 sm:py-1 rounded-[6px] sm:rounded-[8px] tracking-normal whitespace-nowrap shadow-none align-baseline">
+                <span className="font-display inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-5 py-0.5 sm:py-1 rounded-[6px] sm:rounded-[8px] tracking-normal whitespace-nowrap shadow-none align-baseline">
                   drava
                 </span>
               </span>

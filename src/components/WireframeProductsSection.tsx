@@ -33,29 +33,36 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [-2.5, -1.1, 3.0], p2: [-2.5, 0.9, 3.0] });
   lines.push({ p1: [2.5, -1.1, 3.0], p2: [2.5, 0.9, 3.0] });
 
-  // Windows & Partitions
+  // Left and Right Wall Outer Perimeter Rails taper from x = ±2.2 at z = -1.0 to x = ±2.5 at z = 3.0
+  // Slope = (2.5 - 2.2) / (3.0 - (-1.0)) = 0.3 / 4.0 = 0.075 per z unit
+  const leftWallX = (z: number) => -2.2 - (z + 1.0) * 0.075;
+  const rightWallX = (z: number) => 2.2 + (z + 1.0) * 0.075;
+
+  // Windows & Partitions (perfectly snapped to wall slope at both ends of each segment)
   for (let z = -0.5; z <= 2.2; z += 0.9) {
-    const x = -2.2 - (z + 1.0) * 0.08;
-    lines.push({ p1: [x, -1.1, z], p2: [x, 0.9, z] });
-    lines.push({ p1: [x, -0.1, z], p2: [x, -0.1, z + 0.9] });
+    const nextZ = Math.min(3.0, z + 0.9);
+    const x1 = leftWallX(z);
+    const x2 = leftWallX(nextZ);
+    // Vertical mullion
+    lines.push({ p1: [x1, -1.1, z], p2: [x1, 0.9, z] });
+    // Horizontal mullion cleanly connecting vertex at (x1, z) to (x2, nextZ)
+    lines.push({ p1: [x1, -0.1, z], p2: [x2, -0.1, nextZ] });
   }
 
   for (let z = -0.5; z <= 2.2; z += 0.9) {
-    const x = 2.2 + (z + 1.0) * 0.08;
-    lines.push({ p1: [x, -1.1, z], p2: [x, 0.9, z] });
-    lines.push({ p1: [x, 0.0, z], p2: [x, 0.0, z + 0.9] });
+    const nextZ = Math.min(3.0, z + 0.9);
+    const x1 = rightWallX(z);
+    const x2 = rightWallX(nextZ);
+    // Vertical mullion
+    lines.push({ p1: [x1, -1.1, z], p2: [x1, 0.9, z] });
+    // Horizontal mullion cleanly connecting vertex at (x1, z) to (x2, nextZ)
+    lines.push({ p1: [x1, 0.0, z], p2: [x2, 0.0, nextZ] });
   }
 
-  // Ceiling baffles & Luminaires: connected flush to outer rails
+  // Ceiling baffles: connected flush to outer rails (leftWallX and rightWallX)
   for (let z = -0.5; z <= 2.5; z += 0.75) {
-    const leftX = -2.2 - (z + 1.0) * 0.075;
-    const rightX = 2.2 + (z + 1.0) * 0.075;
-    lines.push({ p1: [leftX, -1.1, z], p2: [rightX, -1.1, z] });
+    lines.push({ p1: [leftWallX(z), -1.1, z], p2: [rightWallX(z), -1.1, z] });
   }
-
-  // Ceiling longitudinal inner lighting rails
-  lines.push({ p1: [-0.9, -1.1, -1.0], p2: [-0.9, -1.1, 2.8] });
-  lines.push({ p1: [0.9, -1.1, -1.0], p2: [0.9, -1.1, 2.8] });
 
   // Suspended linear light fixture
   lines.push({ p1: [-0.9, -0.85, 0.2], p2: [0.9, -0.85, 0.2] });
@@ -142,10 +149,6 @@ const CAMERA_REST = 2.8;
 
 const TRIGGER_ID = 'wireframe-products-trigger';
 
-// Timeline times where scrolling may come to rest: the "03 Products" intro, then each product once its
-// texts have fully arrived and before the next slide starts moving (see `stepTimes` in the effect).
-const STOPS = [52.2, 64, 75.9, 87.5, 99.5];
-
 /** Scroll position at which the pinned timeline reaches time `t`, or null before it exists. */
 function scrollForTime(t: number) {
   const st = ScrollTrigger.getById(TRIGGER_ID);
@@ -161,6 +164,8 @@ export function WireframeProductsSection() {
   const textWrapperRef = useRef<HTMLDivElement>(null);
 
   const { scrollTo } = useUI();
+  // Timeline times where scrolling may come to rest (intro, then each product); set in the effect.
+  const stopsRef = useRef<number[]>([]);
   const [fullscreenApp, setFullscreenApp] = useState<(typeof applications)[number] | null>(null);
 
   const apps = applications.slice(0, 4);
@@ -293,10 +298,11 @@ export function WireframeProductsSection() {
       gsap.set(textItems, { opacity: 0, y: 22 });
     });
 
-    // Intro initial states:
-    if (introTag) gsap.set(introTag, { opacity: 0, y: 18 });
+    // Tag (03 PRODUCTS) starts ready or reveals first upon reaching the screen
+    if (introTag) gsap.set(introTag, { opacity: 0, y: 16 });
+    // Text words start dim and un-scrubbed, waiting for scroll to scrub through them
     if (introWords && introWords.length > 0) {
-      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.20)', opacity: 0.30 });
     }
     if (introArrow) gsap.set(introArrow, { opacity: 0, scale: 0.8 });
 
@@ -324,10 +330,11 @@ export function WireframeProductsSection() {
     const onScrollEnd = () => {
       const st = masterTl.scrollTrigger;
       if (!st?.isActive) return;
+      const stops = stopsRef.current;
       const t = st.progress * masterTl.duration();
-      if (t < STOPS[0] - 2 || t > STOPS[STOPS.length - 1]) return; // before the products, or leaving them
-      if (STOPS.some((s) => Math.abs(s - t) < 0.5)) return; // already resting on a stop
-      const next = lastDir > 0 ? STOPS.find((s) => s > t) : STOPS.findLast((s) => s < t);
+      if (!stops.length || t < stops[0] - 2 || t > stops[stops.length - 1]) return; // before the products, or leaving them
+      if (stops.some((s) => Math.abs(s - t) < 0.5)) return; // already resting on a stop
+      const next = lastDir > 0 ? stops.find((s) => s > t) : stops.findLast((s) => s < t);
       const y = next === undefined ? null : scrollForTime(next);
       if (y !== null) scrollTo(y);
     };
@@ -360,38 +367,38 @@ export function WireframeProductsSection() {
       }
     }
 
-    // 2. Slower, Cinematic In-Place Transition:
-    // Scene 1 fades out into deep black (28 to 36).
-    // Scene 2 emerges in place from within the black screen (34 to 42) with gentle scale.
-    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 28);
-    masterTl.set(scene1, { pointerEvents: 'none' }, 34);
+    // 2. Cinematic In-Place Transition:
+    // Camera plunges deep inside the wireframe room, then fades completely into black (27 to 33).
+    // Scene 2 only emerges AFTER Scene 1 has fully plunged and faded out (at 33+), ensuring pure blackness between them.
+    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 27);
+    masterTl.set(scene1, { pointerEvents: 'none' }, 33);
 
     masterTl.fromTo(
       scene2,
-      { opacity: 0, scale: 0.985 },
-      { opacity: 1, scale: 1, duration: 6, ease: 'power2.out' },
+      { opacity: 0, scale: 0.99 },
+      { opacity: 1, scale: 1, duration: 5, ease: 'power2.out' },
       33
     );
-    masterTl.set(scene2, { pointerEvents: 'auto' }, 36);
+    masterTl.set(scene2, { pointerEvents: 'auto' }, 35);
 
-    // 3. ANIMATING SCENE 2 INTRO TEXTS:
-    // Reveal 03 Tag
+    // FIRST: Upon reaching the 03 PRODUCTS page, the "03 PRODUCTS" tag emerges into view cleanly
     if (introTag) {
-      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, 36);
+      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 34);
     }
 
-    // Sequentially scrub words in heading & subtitle from dim green -> bright #b6ff66 -> pure white
+    // THEN: As the user scrolls, the text animation starts and scrubs word-by-word with the scroll!
     if (introWords && introWords.length > 0) {
       const headingCount = 8; // "The product changes but the experience stays."
       introWords.forEach((word, idx) => {
         const isHeading = idx < headingCount;
-        const wordStart = isHeading ? 37 + idx * 0.6 : 42 + (idx - headingCount) * 0.45;
+        // Text animation starts after reaching the page and scrolling (from 39 upwards)
+        const wordStart = isHeading ? 39 + idx * 1.15 : 49 + (idx - headingCount) * 0.65;
         masterTl.to(
           word,
           {
             color: '#b6ff66',
             opacity: 1,
-            duration: 1.2,
+            duration: 1.1,
             ease: 'power1.inOut',
           },
           wordStart
@@ -400,7 +407,7 @@ export function WireframeProductsSection() {
           {
             color: '#ffffff',
             opacity: 1,
-            duration: 1.3,
+            duration: 1.2,
             ease: 'power1.out',
           },
           wordStart + 0.4
@@ -408,16 +415,16 @@ export function WireframeProductsSection() {
       });
     }
 
-    // Reveal arrow button
+    // Reveal arrow button as text scrub completes
     if (introArrow) {
-      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 47);
+      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 60);
     }
 
-    // Rest pause on completed Intro (48 to 53)
-    masterTl.to({}, { duration: 5 }, 48);
+    // Rest pause on completed Intro before product 01 slides in
+    masterTl.to({}, { duration: 4 }, 61);
 
     // 4. ANIMATING PRODUCTS & PRODUCT CONTENT TEXTS:
-    // Segment 1 (53 -> 65): Intro -> Product 01 (Nex)
+    // Segment 1 (63 -> 73): Intro -> Product 01 (Nex)
     if (leftCol) {
       masterTl.to(
         leftCol,
@@ -427,7 +434,7 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        53
+        63
       );
     }
     if (slide0Num) {
@@ -438,14 +445,14 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        53
+        63
       );
     }
     if (slide0Img) {
-      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 54);
+      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 64);
     }
     if (slide0Divider) {
-      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 55);
+      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 65);
     }
 
     // Stagger Product 01 content texts (step, title, description, specs, explore CTA)
@@ -460,18 +467,18 @@ export function WireframeProductsSection() {
           stagger: 0.7,
           ease: 'power2.out',
         },
-        55
+        65
       );
     }
 
     // Rest on Product 01
-    masterTl.to({}, { duration: 3 }, 63);
+    masterTl.to({}, { duration: 3 }, 72);
 
     // Segments 2, 3, 4: Transitions between Products with Text Stagger
     const stepTimes = [
-      { start: 65, textStart: 68, rest: 75 }, // Prod 01 -> Prod 02 (HMS)
-      { start: 76, textStart: 79, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
-      { start: 88, textStart: 91, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
+      { start: 74, textStart: 77, rest: 83 }, // Prod 01 -> Prod 02 (HMS)
+      { start: 84, textStart: 87, rest: 93 }, // Prod 02 -> Prod 03 (Vision)
+      { start: 94, textStart: 97, rest: 100 }, // Prod 03 -> Prod 04 (Simulator)
     ];
 
     for (let i = 0; i < panels.length - 1; i++) {
@@ -527,6 +534,12 @@ export function WireframeProductsSection() {
       masterTl.to({}, { duration: 3 }, times.rest);
     }
 
+    // Snap stops, read off the timeline above so they follow any retiming: the finished intro just
+    // before it slides away, each product at the moment the next starts to arrive (its texts are in
+    // by then), and the last product at the end of the pin.
+    const introLeaves = leftCol ? (masterTl.getTweensOf(leftCol)[0]?.startTime() ?? 0) : 0;
+    stopsRef.current = [introLeaves - 0.3, ...stepTimes.map((s) => s.start), masterTl.duration() - 0.3];
+
     // --- 3D CANVAS RENDER LOOP ---
     const project = (
       x: number,
@@ -547,13 +560,68 @@ export function WireframeProductsSection() {
       const z2 = z1 * cosX + y * sinX;
 
       const dist = z2 + cameraZ;
-      if (dist <= 0.2) return [0, 0, 0, false];
+      if (dist <= 0.05) return [0, 0, 0, false];
 
       const fov = Math.min(width, height) * 0.85;
       const projX = width / 2 + (x1 / dist) * fov;
       const projY = height / 2 + (y2 / dist) * fov;
 
       return [projX, projY, dist, true];
+    };
+
+    // Clip 3D line against near camera plane (NEAR = 0.12) to prevent lines from abruptly disappearing
+    const projectAndClipLine = (
+      p1: [number, number, number],
+      p2: [number, number, number],
+      rotX: number,
+      rotY: number,
+      cameraZ: number
+    ): [number, number, number, number] | null => {
+      const cosY = Math.cos(rotY);
+      const sinY = Math.sin(rotY);
+      const cosX = Math.cos(rotX);
+      const sinX = Math.sin(rotX);
+
+      // Transform p1
+      const x1_1 = p1[0] * cosY - p1[2] * sinY;
+      const z1_1 = p1[2] * cosY + p1[0] * sinY;
+      const y2_1 = p1[1] * cosX - z1_1 * sinX;
+      const z2_1 = z1_1 * cosX + p1[1] * sinX;
+      let dist1 = z2_1 + cameraZ;
+      let cx1 = x1_1;
+      let cy1 = y2_1;
+
+      // Transform p2
+      const x1_2 = p2[0] * cosY - p2[2] * sinY;
+      const z1_2 = p2[2] * cosY + p2[0] * sinY;
+      const y2_2 = p2[1] * cosX - z1_2 * sinX;
+      const z2_2 = z1_2 * cosX + p2[1] * sinX;
+      let dist2 = z2_2 + cameraZ;
+      let cx2 = x1_2;
+      let cy2 = y2_2;
+
+      const NEAR = 0.12;
+      if (dist1 < NEAR && dist2 < NEAR) return null;
+
+      if (dist1 < NEAR) {
+        const u = (NEAR - dist1) / (dist2 - dist1);
+        cx1 = cx1 + u * (cx2 - cx1);
+        cy1 = cy1 + u * (cy2 - cy1);
+        dist1 = NEAR;
+      } else if (dist2 < NEAR) {
+        const u = (NEAR - dist2) / (dist1 - dist2);
+        cx2 = cx2 + u * (cx1 - cx2);
+        cy2 = cy2 + u * (cy1 - cy2);
+        dist2 = NEAR;
+      }
+
+      const fov = Math.min(width, height) * 0.85;
+      const px1 = width / 2 + (cx1 / dist1) * fov;
+      const py1 = height / 2 + (cy1 / dist1) * fov;
+      const px2 = width / 2 + (cx2 / dist2) * fov;
+      const py2 = height / 2 + (cy2 / dist2) * fov;
+
+      return [px1, py1, px2, py2];
     };
 
     const render = () => {
@@ -567,15 +635,15 @@ export function WireframeProductsSection() {
       // Morph factor for wireframe assembly
       const morphFactor = Math.min(1, Math.max(0, scene1Prog * 3.5));
 
-      // Slower, richer dive into the black screen (0.65 -> 1.0 of Scene 1)
-      let cameraZ = CAMERA_REST - scene1Prog * 1.5;
-      let cameraPitch = currRotX - scene1Prog * 0.12;
+      // Deeper dive into the wireframe room before plunging into black screen (0.55 -> 1.0 of Scene 1)
+      let cameraZ = CAMERA_REST - scene1Prog * 2.2;
+      let cameraPitch = currRotX - scene1Prog * 0.16;
       let diveFade = 1;
 
-      if (scene1Prog > 0.65) {
-        const diveProgress = (scene1Prog - 0.65) / 0.35; // 0 -> 1 over a wider range for a slower, richer feel
-        cameraZ -= diveProgress * diveProgress * 4.8;
-        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.35) * 1.05);
+      if (scene1Prog > 0.60) {
+        const diveProgress = (scene1Prog - 0.60) / 0.40;
+        cameraZ -= diveProgress * diveProgress * 7.5;
+        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.5) * 1.05);
       }
 
       const cameraYaw = currRotY * diveFade;
@@ -593,13 +661,9 @@ export function WireframeProductsSection() {
           ctx.strokeStyle = `rgba(220, 238, 255, ${wireAlpha})`;
 
           wireframeLines.forEach((line) => {
-            const [x1, y1, z1] = line.p1;
-            const [x2, y2, z2] = line.p2;
-
-            const [px1, py1, , v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-            const [px2, py2, , v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
-
-            if (v1 && v2) {
+            const clipped = projectAndClipLine(line.p1, line.p2, cameraPitch, cameraYaw, cameraZ);
+            if (clipped) {
+              const [px1, py1, px2, py2] = clipped;
               ctx.beginPath();
               ctx.moveTo(px1, py1);
               ctx.lineTo(px2, py2);
@@ -750,7 +814,7 @@ export function WireframeProductsSection() {
             <h2 className="font-display text-[clamp(1.25rem,0.95rem+1.1vw,2.15rem)] font-bold tracking-tight leading-[1.2] text-white">
               <span className="block text-white">
                 The new era of{' '}
-                <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-2.5 sm:px-3 py-0.5 rounded-[5px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1 text-[0.88em]">
+                <span className="font-display inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-2.5 sm:px-3 py-0.5 rounded-[5px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1 text-[0.88em]">
                   drava
                 </span>
               </span>
@@ -814,7 +878,7 @@ export function WireframeProductsSection() {
                 type="button"
                 onClick={() => {
                   // Through Lenis (useUI), like the snapping, so the two never fight.
-                  const y = scrollForTime(STOPS[1]);
+                  const y = scrollForTime(stopsRef.current[1]);
                   if (y !== null) scrollTo(y);
                 }}
                 aria-label="Advance to first product (01 Nex)"

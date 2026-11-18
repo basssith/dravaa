@@ -40,7 +40,7 @@ export function WordScrub({
     <Tag className={cn('block w-full', className)} data-words>
       {text.split(' ').map((word, i) => (
         <Fragment key={i}>
-          <span className="w-scrub inline will-change-[color,opacity] transition-colors duration-150">{word}</span>{' '}
+          <span className="w-scrub inline will-change-[color,opacity]">{word}</span>{' '}
         </Fragment>
       ))}
     </Tag>
