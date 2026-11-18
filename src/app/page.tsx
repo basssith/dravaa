@@ -1,7 +1,6 @@
 import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
-import { CompanyWireframeSection } from '@/components/CompanyWireframeSection';
-import { EcosystemScrollSection } from '@/components/EcosystemScrollSection';
+import { WireframeProductsSection } from '@/components/WireframeProductsSection';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 import { SnakeLine } from '@/components/SnakeLine';
 import { ArrowDot } from '@/components/icons';
@@ -49,9 +48,7 @@ export default function Home() {
         </div>
       </section>
 
-      <CompanyWireframeSection />
-
-      <EcosystemScrollSection />
+      <WireframeProductsSection />
 
       <CompanionSection />
     </>
