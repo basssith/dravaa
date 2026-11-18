@@ -121,12 +121,14 @@ function buildInteriorWireframe(): Line3D[] {
 interface BinaryPoint {
   streamX: number;
   streamY: number;
+  streamZ: number;
   speedY: number;
   tx3d: number;
   ty3d: number;
   tz3d: number;
   char: '0' | '1';
   flipTimer: number;
+  flipInterval: number;
   isBright: boolean;
 }
 
@@ -136,6 +138,8 @@ interface FreeParticle {
   z: number;
   vy: number;
   char: '0' | '1';
+  flipTimer: number;
+  flipInterval: number;
   isGreen: boolean;
 }
 
@@ -177,39 +181,53 @@ export function WireframeProductsSection() {
 
     const wireframeLines = buildInteriorWireframe();
 
+    // 1. POPULATE BINARY POINTS PROPERLY ALONG ALL WIREFRAME LINES
     const particles: BinaryPoint[] = [];
-    const totalPoints = 90;
 
-    for (let i = 0; i < totalPoints; i++) {
-      const line = wireframeLines[i % wireframeLines.length];
-      const t = Math.random();
-      const tx = line.p1[0] + (line.p2[0] - line.p1[0]) * t;
-      const ty = line.p1[1] + (line.p2[1] - line.p1[1]) * t;
-      const tz = line.p1[2] + (line.p2[2] - line.p1[2]) * t;
+    wireframeLines.forEach((line) => {
+      const dx = line.p2[0] - line.p1[0];
+      const dy = line.p2[1] - line.p1[1];
+      const dz = line.p2[2] - line.p1[2];
+      const length = Math.hypot(dx, dy, dz);
 
-      particles.push({
-        streamX: (Math.random() - 0.5) * 4.8,
-        streamY: (Math.random() - 0.5) * 4.2,
-        speedY: 0.005 + Math.random() * 0.008,
-        tx3d: tx,
-        ty3d: ty,
-        tz3d: tz,
-        char: Math.random() > 0.5 ? '1' : '0',
-        flipTimer: Math.floor(Math.random() * 100),
-        isBright: Math.random() < 0.28,
-      });
-    }
+      // Even spacing along physical lines: every ~0.28 to 0.32 units
+      const count = Math.max(2, Math.round(length / 0.30));
 
+      for (let s = 0; s < count; s++) {
+        const t = count === 1 ? 0.5 : (s + 0.5) / count;
+        const tx = line.p1[0] + dx * t;
+        const ty = line.p1[1] + dy * t;
+        const tz = line.p1[2] + dz * t;
+
+        particles.push({
+          streamX: (Math.random() - 0.5) * 6.8,
+          streamY: (Math.random() - 0.5) * 5.4,
+          streamZ: -1.2 + Math.random() * 4.6,
+          speedY: 0.004 + Math.random() * 0.007,
+          tx3d: tx,
+          ty3d: ty,
+          tz3d: tz,
+          char: Math.random() > 0.5 ? '1' : '0',
+          flipTimer: Math.floor(Math.random() * 90),
+          flipInterval: 45 + Math.floor(Math.random() * 110),
+          isBright: Math.random() < 0.28,
+        });
+      }
+    });
+
+    // 2. FILL FULL SCREEN WITH RICH AMBIENT BINARY NUMBERS (280 PARTICLES COVERING ENTIRE VIEWPORT)
     const freeParticles: FreeParticle[] = [];
-    const totalFree = 80;
+    const totalFree = 280;
     for (let i = 0; i < totalFree; i++) {
       freeParticles.push({
-        x: (Math.random() - 0.5) * 5.2,
-        y: (Math.random() - 0.5) * 4.8,
-        z: -1.0 + Math.random() * 3.6,
+        x: (Math.random() - 0.5) * 7.6,
+        y: (Math.random() - 0.5) * 6.0,
+        z: -1.5 + Math.random() * 5.2,
         vy: -0.003 - Math.random() * 0.005,
         char: Math.random() > 0.5 ? '1' : '0',
-        isGreen: Math.random() < 0.15,
+        flipTimer: Math.floor(Math.random() * 90),
+        flipInterval: 40 + Math.floor(Math.random() * 100),
+        isGreen: Math.random() < 0.22,
       });
     }
 
@@ -585,62 +603,65 @@ export function WireframeProductsSection() {
         const roomLockFactor = Math.min(1, Math.max(0, (morphFactor - 0.65) / 0.35));
 
         particles.forEach((pt) => {
-          if (morphFactor < 0.95) {
-            pt.flipTimer++;
-            if (pt.flipTimer > 140) {
-              pt.char = pt.char === '1' ? '0' : '1';
-              pt.flipTimer = 0;
-            }
+          pt.flipTimer++;
+          if (pt.flipTimer > pt.flipInterval) {
+            pt.char = pt.char === '1' ? '0' : '1';
+            pt.flipTimer = 0;
           }
 
           pt.streamY += pt.speedY;
-          if (pt.streamY > 3.8) pt.streamY = -3.8;
+          if (pt.streamY > 4.2) pt.streamY = -4.2;
 
           const curX = pt.streamX * (1 - morphFactor) + pt.tx3d * morphFactor;
           const curY = pt.streamY * (1 - morphFactor) + pt.ty3d * morphFactor;
-          const curZ = (1 - morphFactor) * 0.5 + pt.tz3d * morphFactor;
+          const curZ = pt.streamZ * (1 - morphFactor) + pt.tz3d * morphFactor;
 
           const [px, py, dist, visible] = project(curX, curY, curZ, cameraPitch, cameraYaw, cameraZ);
           if (visible && px >= -80 && px <= width + 80 && py >= -80 && py <= height + 80) {
-            const baseSize = 19 * (1 - roomLockFactor) + 12 * roomLockFactor;
-            const minSize = Math.round(15 * (1 - roomLockFactor) + 10 * roomLockFactor);
-            const maxSize = Math.round(22 * (1 - roomLockFactor) + 13 * roomLockFactor);
+            const baseSize = 18 * (1 - roomLockFactor) + 11.5 * roomLockFactor;
+            const minSize = Math.round(14 * (1 - roomLockFactor) + 9.5 * roomLockFactor);
+            const maxSize = Math.round(22 * (1 - roomLockFactor) + 13.5 * roomLockFactor);
             const fontSize = Math.max(minSize, Math.min(maxSize, Math.round(baseSize * (2.6 / dist))));
 
-            ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
+            ctx.font = `500 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
 
-            if (roomLockFactor > 0.3) {
-              ctx.fillStyle = `rgba(0, 0, 0, ${0.9 * roomLockFactor})`;
+            if (roomLockFactor > 0.25) {
+              ctx.fillStyle = `rgba(0, 0, 0, ${0.88 * roomLockFactor})`;
               ctx.beginPath();
-              ctx.arc(px, py, fontSize * 0.55, 0, Math.PI * 2);
+              ctx.arc(px, py, fontSize * 0.58, 0, Math.PI * 2);
               ctx.fill();
             }
 
-            const depthAlpha = Math.max(0.68, Math.min(1.0, 2.8 / dist)) * diveFade;
+            const depthAlpha = Math.max(0.65, Math.min(1.0, 2.9 / dist)) * diveFade;
             ctx.fillStyle = pt.isBright
               ? `rgba(182, 255, 102, ${Math.min(1, 0.98 * depthAlpha)})`
-              : `rgba(150, 155, 165, ${Math.min(1, 0.92 * depthAlpha)})`;
+              : `rgba(170, 185, 205, ${Math.min(1, 0.92 * depthAlpha)})`;
             ctx.fillText(pt.char, px, py);
           }
         });
 
-        if (morphFactor < 0.8) {
-          const ambientAlpha = Math.max(0, 1 - morphFactor / 0.8);
-          freeParticles.forEach((fp) => {
-            fp.y += fp.vy;
-            if (fp.y < -4.0) fp.y = 4.0;
+        // Ambient full-screen binary numbers (gently floating across the entire viewport)
+        const ambientAlpha = Math.max(0.28, 0.78 * (1 - morphFactor * 0.55)) * diveFade;
+        freeParticles.forEach((fp) => {
+          fp.flipTimer++;
+          if (fp.flipTimer > fp.flipInterval) {
+            fp.char = fp.char === '1' ? '0' : '1';
+            fp.flipTimer = 0;
+          }
 
-            const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
-            if (visible && px >= -80 && px <= width + 80 && py >= -80 && py <= height + 80) {
-              const fontSize = Math.max(15, Math.min(22, Math.round(18 * (2.6 / dist))));
-              ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
-              ctx.fillStyle = fp.isGreen
-                ? `rgba(182, 255, 102, ${0.8 * ambientAlpha})`
-                : `rgba(150, 155, 165, ${0.72 * ambientAlpha})`;
-              ctx.fillText(fp.char, px, py);
-            }
-          });
-        }
+          fp.y += fp.vy;
+          if (fp.y < -4.8) fp.y = 4.8;
+
+          const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
+          if (visible && px >= -80 && px <= width + 80 && py >= -80 && py <= height + 80) {
+            const fontSize = Math.max(14, Math.min(22, Math.round(17 * (2.6 / dist))));
+            ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
+            ctx.fillStyle = fp.isGreen
+              ? `rgba(182, 255, 102, ${0.85 * ambientAlpha})`
+              : `rgba(145, 160, 180, ${0.68 * ambientAlpha})`;
+            ctx.fillText(fp.char, px, py);
+          }
+        });
 
         ctx.restore();
       }
