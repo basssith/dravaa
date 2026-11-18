@@ -4,9 +4,9 @@
   "private": true,
   "description": "Drava - Technology should make life feel easier.",
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev -p 3060",
     "build": "next build",
-    "start": "next start -p 3000",
+    "start": "next start -p 3060",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
