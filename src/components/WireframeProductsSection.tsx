@@ -263,11 +263,13 @@ export function WireframeProductsSection() {
     const panels = scene2.querySelectorAll<HTMLElement>('[data-product-slide]');
     const leftCol = scene2.querySelector<HTMLElement>('[data-left-col]');
     const introTag = leftCol?.querySelector<HTMLElement>('[data-intro-tag]');
-    const introWords = leftCol?.querySelectorAll<HTMLElement>('.w-scrub');
+    const introHeading = leftCol?.querySelector<HTMLElement>('[data-intro-heading]');
+    const introDesc = leftCol?.querySelector<HTMLElement>('[data-intro-desc]');
     const introArrow = leftCol?.querySelector<HTMLElement>('[data-intro-arrow]');
 
     const slide0Num = panels[0]?.querySelector<HTMLElement>('[data-flow-num]');
     const slide0Img = panels[0]?.querySelector<HTMLElement>('[data-flow-img]');
+    const slide0Details = panels[0]?.querySelector<HTMLElement>('[data-flow-details]');
     const slide0Divider = panels[0]?.querySelector<HTMLElement>('[data-flow-divider]');
 
     const isDesktop = window.innerWidth >= 1024;
@@ -281,22 +283,19 @@ export function WireframeProductsSection() {
     }
     if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
     if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
+    if (slide0Details) gsap.set(slide0Details, { x: 420, opacity: 0 });
     if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
 
-    // Hide all product details texts initially for staggered animation
-    panels.forEach((p, idx) => {
-      if (idx > 0) {
-        gsap.set(p, { xPercent: 120, opacity: 0, pointerEvents: 'none' });
-      }
-      const textItems = p.querySelectorAll<HTMLElement>('[data-text-anim]');
-      gsap.set(textItems, { opacity: 0, y: 22 });
-    });
-
-    // Intro initial states:
-    if (introTag) gsap.set(introTag, { opacity: 0, y: 18 });
-    if (introWords && introWords.length > 0) {
-      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+    for (let i = 1; i < panels.length; i++) {
+      gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
     }
+
+    // FIRST LOOK:
+    // When entering this screen, ONLY the 03 PRODUCTS tag and resting 0/1 are visible!
+    // The main heading, description, and arrow start hidden (opacity: 0, y: 35).
+    if (introTag) gsap.set(introTag, { opacity: 1, y: 0 });
+    if (introHeading) gsap.set(introHeading, { opacity: 0, y: 35 });
+    if (introDesc) gsap.set(introDesc, { opacity: 0, y: 30 });
     if (introArrow) gsap.set(introArrow, { opacity: 0, scale: 0.8 });
 
     // --- MASTER TIMELINE (SCENE 1 + SCENE 2 IN ONE CONTINUOUS PIN) ---
@@ -353,64 +352,79 @@ export function WireframeProductsSection() {
       }
     }
 
-    // 2. Slower, Cinematic In-Place Transition:
-    // Scene 1 fades out into deep black (28 to 36).
-    // Scene 2 emerges in place from within the black screen (34 to 42) with gentle scale.
-    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 28);
-    masterTl.set(scene1, { pointerEvents: 'none' }, 34);
+    // 2. Cinematic In-Place Transition:
+    // Scene 1 fades out into deep black (24 to 30).
+    // When the camera moves from wireframe to this page, the FIRST LOOK is:
+    // "03 PRODUCTS" tag (and resting 0/1 on the right).
+    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 24);
+    masterTl.set(scene1, { pointerEvents: 'none' }, 30);
 
     masterTl.fromTo(
       scene2,
-      { opacity: 0, scale: 0.985 },
-      { opacity: 1, scale: 1, duration: 6, ease: 'power2.out' },
-      33
+      { opacity: 0, scale: 0.99 },
+      { opacity: 1, scale: 1, duration: 5, ease: 'power2.out' },
+      26
     );
-    masterTl.set(scene2, { pointerEvents: 'auto' }, 36);
+    masterTl.set(scene2, { pointerEvents: 'auto' }, 30);
 
-    // 3. ANIMATING SCENE 2 INTRO TEXTS:
-    // Reveal 03 Tag
+    // Initial appearance of 03 PRODUCTS on entry
     if (introTag) {
-      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, 36);
+      masterTl.fromTo(
+        introTag,
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 4, ease: 'power2.out' },
+        27
+      );
     }
 
-    // Sequentially scrub words in heading & subtitle from dim green -> bright #b6ff66 -> pure white
-    if (introWords && introWords.length > 0) {
-      const headingCount = 8; // "The product changes but the experience stays."
-      introWords.forEach((word, idx) => {
-        const isHeading = idx < headingCount;
-        const wordStart = isHeading ? 37 + idx * 0.6 : 42 + (idx - headingCount) * 0.45;
-        masterTl.to(
-          word,
-          {
-            color: '#b6ff66',
-            opacity: 1,
-            duration: 1.2,
-            ease: 'power1.inOut',
-          },
-          wordStart
-        ).to(
-          word,
-          {
-            color: '#ffffff',
-            opacity: 1,
-            duration: 1.3,
-            ease: 'power1.out',
-          },
-          wordStart + 0.4
-        );
-      });
+    // 3. AFTER THAT SCROLL: The text content appears in scrolling animations:
+    // Heading ("The product changes but the experience stays.") smoothly rises up and fades in
+    if (introHeading) {
+      masterTl.to(
+        introHeading,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 7,
+          ease: 'power2.out',
+        },
+        33
+      );
     }
 
-    // Reveal arrow button
+    // Subtitle description rises up and fades in right after heading
+    if (introDesc) {
+      masterTl.to(
+        introDesc,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 6,
+          ease: 'power2.out',
+        },
+        39
+      );
+    }
+
+    // Forward arrow button reveals as intro text completes
     if (introArrow) {
-      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 47);
+      masterTl.to(
+        introArrow,
+        {
+          opacity: 1,
+          scale: 1,
+          duration: 3,
+          ease: 'back.out(1.5)',
+        },
+        44
+      );
     }
 
-    // Rest pause on completed Intro (48 to 53)
+    // Rest pause on completed intro text before product carousel takes over
     masterTl.to({}, { duration: 5 }, 48);
 
-    // 4. ANIMATING PRODUCTS & PRODUCT CONTENT TEXTS:
-    // Segment 1 (53 -> 65): Intro -> Product 01 (Nex)
+    // 4. ANIMATING PRODUCTS (Intro -> Product 01 Nex -> 02 -> 03 -> 04):
+    // Segment 1 (53 -> 65): Left column glides out, Product 01 glides in smoothly like before
     if (leftCol) {
       masterTl.to(
         leftCol,
@@ -437,34 +451,21 @@ export function WireframeProductsSection() {
     if (slide0Img) {
       masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 54);
     }
+    if (slide0Details) {
+      masterTl.to(slide0Details, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 54.5);
+    }
     if (slide0Divider) {
       masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 55);
-    }
-
-    // Stagger Product 01 content texts (step, title, description, specs, explore CTA)
-    const slide0Texts = panels[0]?.querySelectorAll<HTMLElement>('[data-text-anim]');
-    if (slide0Texts && slide0Texts.length > 0) {
-      masterTl.to(
-        slide0Texts,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 5,
-          stagger: 0.7,
-          ease: 'power2.out',
-        },
-        55
-      );
     }
 
     // Rest on Product 01
     masterTl.to({}, { duration: 3 }, 63);
 
-    // Segments 2, 3, 4: Transitions between Products with Text Stagger
+    // Segments 2, 3, 4: Transitions between Products
     const stepTimes = [
-      { start: 65, textStart: 68, rest: 75 }, // Prod 01 -> Prod 02 (HMS)
-      { start: 76, textStart: 79, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
-      { start: 88, textStart: 91, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
+      { start: 65, rest: 75 }, // Prod 01 -> Prod 02 (HMS)
+      { start: 76, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
+      { start: 88, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
     ];
 
     for (let i = 0; i < panels.length - 1; i++) {
@@ -473,7 +474,6 @@ export function WireframeProductsSection() {
       const times = stepTimes[i];
       if (!prev || !next || !times) continue;
 
-      // Current product leaves to left
       masterTl.to(
         prev,
         {
@@ -486,7 +486,6 @@ export function WireframeProductsSection() {
         times.start
       );
 
-      // Next product slides in
       masterTl.fromTo(
         next,
         { xPercent: 120, opacity: 0, pointerEvents: 'none' },
@@ -500,23 +499,6 @@ export function WireframeProductsSection() {
         times.start
       );
 
-      // Next product content texts stagger in cleanly
-      const nextTexts = next.querySelectorAll<HTMLElement>('[data-text-anim]');
-      if (nextTexts && nextTexts.length > 0) {
-        masterTl.to(
-          nextTexts,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 5,
-            stagger: 0.7,
-            ease: 'power2.out',
-          },
-          times.textStart
-        );
-      }
-
-      // Rest on product
       masterTl.to({}, { duration: 3 }, times.rest);
     }
 
@@ -779,23 +761,21 @@ export function WireframeProductsSection() {
               </div>
             </div>
 
-            {/* Main Content with Animated WordScrub */}
-            <div className="my-auto py-6 max-w-3xl">
-              <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
-                <WordScrub
-                  as="span"
-                  className="leading-[1.04]"
-                  text="The product changes but the experience stays."
-                />
+            {/* Main Content with Animated Heading & Subtitle */}
+            <div data-intro-content className="my-auto py-6 max-w-3xl will-change-transform">
+              <h2
+                data-intro-heading
+                className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white will-change-transform"
+              >
+                The product changes but the experience stays.
               </h2>
 
-              <div className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
-                <WordScrub
-                  as="p"
-                  className="leading-relaxed"
-                  text="Four intelligent systems engineered to unify every environment. One cohesive OS connecting hardware, spaces, and digital workflows."
-                />
-              </div>
+              <p
+                data-intro-desc
+                className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal will-change-transform"
+              >
+                Four intelligent systems engineered to unify every environment. One cohesive OS connecting hardware, spaces, and digital workflows.
+              </p>
             </div>
 
             {/* Bottom Forward Arrow Button: Advance directly to 01 Product */}
