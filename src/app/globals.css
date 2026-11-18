@@ -98,8 +98,8 @@
 /* next/font sets --font-syne / --font-inter on <html> */
 @theme inline {
   --font-display: var(--font-syne), system-ui, sans-serif;
-  --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-manrope: var(--font-manrope), var(--font-inter), sans-serif;
+  --font-body: var(--font-manrope), var(--font-inter), system-ui, sans-serif;
+  --font-manrope: var(--font-manrope), system-ui, sans-serif;
   --font-mono: var(--font-manrope), ui-monospace, monospace;
 }
 
