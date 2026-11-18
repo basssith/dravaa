@@ -73,14 +73,14 @@ export function AppGrid({ apps }: { apps: Application[] }) {
             }}
             className="sticky w-full max-w-4xl mx-auto will-change-transform"
           >
-            <article className="w-full rounded-2xl sm:rounded-3xl border border-[#2a2f38] bg-[#12151a] p-5 sm:p-7 md:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-colors hover:border-[#38404c]">
+            <article className="w-full">
               <TransitionLink
                 href={`/applications/${slugOf(app)}`}
                 aria-label={`Open ${app.name}`}
                 className="group block no-underline"
               >
-                {/* 1 Product Image in Center */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-[#090b0e] [perspective:1000px]">
+                {/* 1 Product Image in Center without surrounding square box */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black/60 [perspective:1000px]">
                   <Image
                     src={app.image}
                     alt={app.name}
