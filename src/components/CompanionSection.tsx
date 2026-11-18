@@ -21,11 +21,11 @@ export function CompanionSection() {
     const rightCol = rightColRef.current;
     if (!section || !leftCol || !rightCol) return;
 
-    const listItems = rightCol.querySelectorAll<HTMLElement>('li');
+    const listItems = rightCol.querySelectorAll<HTMLElement>('[data-point-item]');
     const leftWords = leftCol.querySelectorAll<HTMLElement>('.w-scrub');
     const rightWords = rightCol.querySelectorAll<HTMLElement>('.w-scrub');
 
-    // Initially hide the right points
+    // Initially hide the right points and their individual separator lines
     gsap.set(listItems, { y: 35, opacity: 0 });
 
     if (leftWords.length > 0) {
@@ -65,12 +65,9 @@ export function CompanionSection() {
       });
 
       // STEP 2: Animate point-by-point sequentially (Point 1, then Point 2, then Point 3):
-      // For each point:
-      //   a) The line item (and border) reveals/slides into view
-      //   b) Its words scrub through brand green to crisp white
-      //   c) Then the next point proceeds
+      // Each point and its dividing border line appear ONLY after the left text completes
       listItems.forEach((li) => {
-        // Line & tag appear
+        // Line & point appear
         tl.to(
           li,
           {
@@ -168,13 +165,14 @@ export function CompanionSection() {
           {/* --- RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL AESTHETIC BALANCE --- */}
           <div
             ref={rightColRef}
-            className="lg:col-span-5 flex flex-col justify-center lg:pt-48 xl:pt-56"
+            className="lg:col-span-5 flex flex-col justify-center lg:pt-60 xl:pt-72"
           >
-            <ol className="divide-y divide-white/10 border-t border-b border-white/10">
+            <ol className="border-none">
               {COMPANION_ITEMS.map((item, i) => (
                 <li
                   key={item}
-                  className="py-6 sm:py-7 flex items-baseline gap-5 sm:gap-6 group transition-colors duration-300 cursor-default will-change-transform"
+                  data-point-item
+                  className="py-6 sm:py-7 flex items-baseline gap-5 sm:gap-6 group transition-colors duration-300 cursor-default will-change-transform border-b border-white/10 first:border-t"
                 >
                   <span className="inline-flex items-center justify-center font-mono text-xs font-bold tracking-wider px-2 py-0.5 rounded-[4px] bg-white/10 text-white/80 group-hover:bg-[#b6ff66] group-hover:text-black transition-all duration-300 select-none">
                     0{i + 1}
