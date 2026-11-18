@@ -50,7 +50,6 @@ export function MatrixFluidCanvas() {
       speed: number;
       opacity: number;
       baseColor: string; // shades of black & grey
-      size: number;
       changeTimer: number;
     }
 
@@ -85,7 +84,6 @@ export function MatrixFluidCanvas() {
             speed: 0.35 + Math.random() * 0.7,
             opacity: baseOpacity,
             baseColor,
-            size: 20 + Math.random() * 4,
             changeTimer: Math.floor(Math.random() * 200),
           });
         }

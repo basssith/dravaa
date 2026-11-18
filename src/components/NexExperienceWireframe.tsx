@@ -7,14 +7,12 @@ interface Line3D {
   p1: [number, number, number];
   p2: [number, number, number];
   color?: string;
-  isPopUp?: boolean;
 }
 
 interface WireframeScene {
   backgroundLines: Line3D[];
   totemLines: Line3D[];
   monitorStandLines: Line3D[];
-  monitorLines: Line3D[];
   monitorFaceCorners: [number, number, number][];
   wallScreenFaces: [number, number, number][][];
   totemScreenFace: [number, number, number][];
@@ -24,7 +22,6 @@ function buildNexExperienceWireframe(): WireframeScene {
   const backgroundLines: Line3D[] = [];
   const totemLines: Line3D[] = [];
   const monitorStandLines: Line3D[] = [];
-  const monitorLines: Line3D[] = [];
 
   // ==========================================
   // 1. ARCHITECTURAL ROOM WIREFRAME
@@ -259,7 +256,6 @@ function buildNexExperienceWireframe(): WireframeScene {
     backgroundLines,
     totemLines,
     monitorStandLines,
-    monitorLines,
     monitorFaceCorners,
     wallScreenFaces,
     totemScreenFace,
@@ -297,7 +293,6 @@ export function NexExperienceWireframe() {
       backgroundLines,
       totemLines,
       monitorStandLines,
-      monitorLines,
       monitorFaceCorners,
       wallScreenFaces,
       totemScreenFace,
@@ -409,8 +404,8 @@ export function NexExperienceWireframe() {
         const [x1, y1, z1] = line.p1;
         const [x2, y2, z2] = line.p2;
 
-        const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-        const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
+        const [px1, py1, , v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
+        const [px2, py2, , v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
 
         if (v1 && v2) {
           ctx.beginPath();
@@ -427,8 +422,8 @@ export function NexExperienceWireframe() {
         const [x1, y1, z1] = line.p1;
         const [x2, y2, z2] = line.p2;
 
-        const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-        const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
+        const [px1, py1, , v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
+        const [px2, py2, , v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
 
         if (v1 && v2) {
           ctx.beginPath();
@@ -557,8 +552,8 @@ export function NexExperienceWireframe() {
         const [x1, y1, z1] = line.p1;
         const [x2, y2, z2] = line.p2;
 
-        const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-        const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
+        const [px1, py1, , v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
+        const [px2, py2, , v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
 
         if (v1 && v2) {
           ctx.beginPath();

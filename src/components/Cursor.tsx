@@ -3,17 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { gsap } from '@/lib/gsap';
-import { sound } from '@/lib/sound';
 import { cn } from '@/lib/ui';
 
-type Mode = 'idle' | 'hover' | 'view';
+type Mode = 'idle' | 'hover';
 
 /**
  * Precision Dual-Ring Crosshair Cursor:
  * - Inner sharp pinpoint dot with instant tracking
- * - Outer smooth magnetic ring with spring physics
- * - Subtle precision reticle lines on interactive elements
- * - Expanding accented "VIEW" badge on media/cards
+ * - Outer smooth magnetic ring with spring physics, enlarged over interactive elements
  * - Crisp mix-blend-difference inversion over both black and white surfaces
  * - On landing page hero (#hero), carries a floating "Scroll to explore" badge with the cursor
  */
@@ -38,7 +35,6 @@ export function Cursor() {
     let ringY = -100;
     let pillX = -100;
     let pillY = -100;
-    let lastElement: Element | null = null;
 
     const onPointerMove = (e: PointerEvent) => {
       mouseX = e.clientX;
@@ -70,12 +66,7 @@ export function Cursor() {
     };
 
     const onPointerOver = (e: PointerEvent) => {
-      const t = (e.target as Element).closest('a, button, input, [data-cursor]');
-      setMode(!t ? 'idle' : t.closest('[data-cursor="view"]') ? 'view' : 'hover');
-      if (t && t !== lastElement) {
-        sound.playHover();
-      }
-      lastElement = t;
+      setMode((e.target as Element).closest('a, button, input') ? 'hover' : 'idle');
     };
 
     const onPointerDown = () => setClicking(true);
@@ -130,22 +121,12 @@ export function Cursor() {
         ref={ringRef}
         aria-hidden="true"
         className={cn(
-          'pointer-events-none fixed top-0 left-0 z-300 grid place-items-center rounded-full border border-white/60 mix-blend-difference transition-[width,height,margin,border-color,background-color] duration-300 ease-expo',
+          'pointer-events-none fixed top-0 left-0 z-300 rounded-full border border-white/60 mix-blend-difference transition-[width,height,margin,border-color,background-color] duration-300 ease-expo',
           mode === 'idle' && '-m-[16px] size-8',
           mode === 'hover' && '-m-[24px] size-12 border-white bg-white/10',
-          mode === 'view' && '-m-[44px] size-[88px] border-accent bg-accent text-ink mix-blend-normal',
           clicking && 'scale-90'
         )}
-      >
-        <span
-          className={cn(
-            'text-[10px] font-mono tracking-widest font-bold uppercase transition-opacity duration-200',
-            mode === 'view' ? 'opacity-100' : 'opacity-0'
-          )}
-        >
-          VIEW
-        </span>
-      </div>
+      />
 
       {/* 3. Floating "SCROLL TO EXPLORE" text attached to cursor on Landing Page Hero */}
       {isLandingPage && (

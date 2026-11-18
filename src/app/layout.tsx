@@ -1,14 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Syne, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
-import { CleanMinimalBackground } from '@/components/CleanMinimalBackground';
 import { Cursor } from '@/components/Cursor';
 import { Footer } from '@/components/Footer';
-import { GlassFluidCanvas } from '@/components/GlassFluidCanvas';
 import { Header } from '@/components/Header';
 import { Menu } from '@/components/Menu';
 import { Preloader } from '@/components/Preloader';
-import { Reel } from '@/components/Reel';
 import { ScrollEffects } from '@/components/ScrollEffects';
 import { UIProvider } from '@/components/UIProvider';
 import { SITE_URL } from '@/lib/site';
@@ -45,7 +42,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <UIProvider>
           <Preloader />
-          <CleanMinimalBackground />
           <Cursor />
           <Header />
           <Menu />
@@ -53,7 +49,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
-          <Reel />
           <ScrollEffects />
         </UIProvider>
       </body>

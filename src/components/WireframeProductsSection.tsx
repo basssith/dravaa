@@ -150,7 +150,6 @@ export function WireframeProductsSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textWrapperRef = useRef<HTMLDivElement>(null);
 
-  const [activeIdx, setActiveIdx] = useState(0);
   const [fullscreenApp, setFullscreenApp] = useState<(typeof applications)[number] | null>(null);
 
   const apps = applications.slice(0, 4);
@@ -303,7 +302,6 @@ export function WireframeProductsSection() {
     // Total scale: 100 units.
     // Extended pin distance (+=760%) for a slower, richer, cinematic transition!
     const masterTl = gsap.timeline({
-      id: 'wireframe-products-scroll',
       scrollTrigger: {
         id: 'wireframe-products-trigger',
         trigger: masterContainer,
@@ -313,15 +311,6 @@ export function WireframeProductsSection() {
         scrub: 0.65,
         onUpdate: (self) => {
           targetProgress = self.progress;
-
-          // Track active product index for indicators
-          if (self.progress >= 0.44) {
-            const p = (self.progress - 0.48) / 0.52;
-            const idx = p < 0.12 ? 0 : Math.min(apps.length - 1, Math.floor((p - 0.12) / 0.25));
-            setActiveIdx(Math.max(0, idx));
-          } else {
-            setActiveIdx(0);
-          }
         },
       },
     });
@@ -589,8 +578,8 @@ export function WireframeProductsSection() {
             const [x1, y1, z1] = line.p1;
             const [x2, y2, z2] = line.p2;
 
-            const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-            const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
+            const [px1, py1, , v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
+            const [px2, py2, , v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
 
             if (v1 && v2) {
               ctx.beginPath();
@@ -682,7 +671,7 @@ export function WireframeProductsSection() {
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
     };
-  }, [apps.length]);
+  }, []);
 
   return (
     <section
@@ -820,7 +809,6 @@ export function WireframeProductsSection() {
 
           {/* FULL-SCREEN PRODUCT STAGE: Active Products on Scroll */}
           <div
-            data-product-stage
             className="absolute inset-0 w-full h-full overflow-hidden flex items-center justify-center p-2 sm:p-4 lg:p-6 z-30 pointer-events-none"
           >
             {apps.map((app, i) => (
@@ -856,7 +844,7 @@ export function WireframeProductsSection() {
                           src={app.image}
                           alt={app.name}
                           fill
-                          quality={100}
+                          quality={90}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 680px"
                           className="object-contain object-center w-full h-full transition-transform duration-700 group-hover/img:scale-[1.02]"
                         />
@@ -896,7 +884,7 @@ export function WireframeProductsSection() {
                   </div>
 
                   {/* 3. CENTER-RIGHT: Product Details & Specifications with data-text-anim for staggered entrance */}
-                  <div data-flow-details className="flex flex-col justify-center text-left space-y-3.5 w-full sm:w-[300px] lg:w-[320px] xl:w-[350px] shrink-0 will-change-transform pointer-events-auto">
+                  <div className="flex flex-col justify-center text-left space-y-3.5 w-full sm:w-[300px] lg:w-[320px] xl:w-[350px] shrink-0 will-change-transform pointer-events-auto">
                     {/* Step Number */}
                     <div data-text-anim className="font-mono text-xs sm:text-sm tracking-widest text-white/60 will-change-transform">
                       0{i + 1} / 0{apps.length}
@@ -985,7 +973,7 @@ export function WireframeProductsSection() {
                   src={fullscreenApp.image}
                   alt={fullscreenApp.name}
                   fill
-                  quality={100}
+                  quality={90}
                   className="object-contain"
                 />
               </div>

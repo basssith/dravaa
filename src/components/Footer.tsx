@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import { EMAIL, SOCIALS } from '@/lib/site';
 import { Arrow, Smile } from './icons';
 import { BackToTop, Newsletter } from './FooterActions';
-import { TransitionLink } from './TransitionLink';
 
 const linkCls = 'no-underline transition-colors duration-300 hover:text-accent';
 

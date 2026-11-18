@@ -3,7 +3,6 @@ export const SITE_URL = process.env.SITE_URL ?? process.env.URL ?? 'http://local
 
 // TODO: replace placeholder contact details with real ones.
 export const EMAIL = 'experience@thewhitetusker.com';
-export const PRESS = 'press@example.com';
 
 export const NAV = [
   { label: 'Home', href: '/' },

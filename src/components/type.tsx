@@ -38,23 +38,11 @@ export function WordScrub({
 }) {
   return (
     <Tag className={cn('block w-full', className)} data-words>
-      {text.split(' ').map((word, i) => {
-        const em = word.startsWith('*');
-        const w = em ? word.slice(1) : word;
-        return (
-          <Fragment key={i}>
-            {em ? (
-              <span className="w-scrub highlight text-ink font-semibold not-italic [box-decoration-break:clone] [-webkit-box-decoration-break:clone]">
-                {w}
-              </span>
-            ) : (
-              <span className="w-scrub inline will-change-[color,opacity] transition-colors duration-150">
-                {w}
-              </span>
-            )}{' '}
-          </Fragment>
-        );
-      })}
+      {text.split(' ').map((word, i) => (
+        <Fragment key={i}>
+          <span className="w-scrub inline will-change-[color,opacity] transition-colors duration-150">{word}</span>{' '}
+        </Fragment>
+      ))}
     </Tag>
   );
 }
