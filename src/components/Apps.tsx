@@ -30,20 +30,32 @@ export function AppGrid({ apps }: { apps: Application[] }) {
       if (index === 0) return; // First card is resting centered
 
       const prevCard = cards[index - 1];
+      const prevDetails = prevCard?.querySelector<HTMLElement>('[data-card-details]');
 
       const st = ScrollTrigger.create({
         trigger: card,
         start: 'top bottom',
-        end: 'top 12%',
-        scrub: 0.5,
+        end: 'top 20%',
+        scrub: true,
         onUpdate: (self) => {
           const p = self.progress;
-          // Scale down and slightly dim previous card to give depth
+
+          // Fade out the previous card's details completely so text doesn't show through
+          if (prevDetails) {
+            // Rapidly fade out details between progress 0.0 and 0.55
+            const detailsOpacity = Math.max(0, 1 - p * 2.2);
+            gsap.set(prevDetails, {
+              opacity: detailsOpacity,
+              y: -p * 20,
+            });
+          }
+
+          // Scale down and fade the previous card's image to clear the stage for the pop-up card
           if (prevCard) {
+            const cardOpacity = Math.max(0, 1 - p * 1.2);
             gsap.set(prevCard, {
-              scale: 1 - p * 0.05,
-              opacity: 1 - p * 0.35,
-              filter: `blur(${p * 4}px)`,
+              scale: 1 - p * 0.06,
+              opacity: cardOpacity,
             });
           }
         },
@@ -101,35 +113,37 @@ export function AppGrid({ apps }: { apps: Application[] }) {
                 </div>
 
                 {/* Meta details & title row */}
-                <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
-                      {app.id}
-                    </span>
-                    <span className="text-xs sm:text-sm font-mono tracking-widest text-white/80 font-semibold uppercase">
-                      {[app.category, app.year, app.badge].join(' • ')}
+                <div data-card-details className="will-change-transform">
+                  <div className="mt-6 sm:mt-8 flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+                        {app.id}
+                      </span>
+                      <span className="text-xs sm:text-sm font-mono tracking-widest text-white/80 font-semibold uppercase">
+                        {[app.category, app.year, app.badge].join(' • ')}
+                      </span>
+                    </div>
+
+                    <span className="text-xs sm:text-sm font-mono text-white/50 tracking-wider">
+                      0{index + 1} / 0{apps.length}
                     </span>
                   </div>
 
-                  <span className="text-xs sm:text-sm font-mono text-white/50 tracking-wider">
-                    0{index + 1} / 0{apps.length}
-                  </span>
-                </div>
+                  <div className="mt-4 flex items-center justify-between">
+                    <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white flex items-center gap-3">
+                      <span>{app.name}</span>
+                      <span className="inline-flex items-center text-[#b6ff66] opacity-0 -translate-x-2 transition-all duration-300 ease-expo group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0">
+                        <Arrow className="size-6 stroke-[2.2] -rotate-45" />
+                      </span>
+                    </h3>
+                  </div>
 
-                <div className="mt-4 flex items-center justify-between">
-                  <h3 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white flex items-center gap-3">
-                    <span>{app.name}</span>
-                    <span className="inline-flex items-center text-[#b6ff66] opacity-0 -translate-x-2 transition-all duration-300 ease-expo group-hover:opacity-100 group-hover:translate-x-0 group-focus-visible:opacity-100 group-focus-visible:translate-x-0">
-                      <Arrow className="size-6 stroke-[2.2] -rotate-45" />
-                    </span>
-                  </h3>
+                  {app.description && (
+                    <p className="mt-3 text-xs sm:text-sm md:text-base text-white/70 max-w-2xl leading-relaxed">
+                      {app.description}
+                    </p>
+                  )}
                 </div>
-
-                {app.description && (
-                  <p className="mt-3 text-xs sm:text-sm md:text-base text-white/70 max-w-2xl leading-relaxed">
-                    {app.description}
-                  </p>
-                )}
               </TransitionLink>
             </article>
           </div>
