@@ -21,35 +21,35 @@ export function CompanionSection() {
     const rightCol = rightColRef.current;
     if (!section || !leftCol || !rightCol) return;
 
-    const listItems = rightCol.querySelectorAll('li');
-    const words = leftCol.querySelectorAll<HTMLElement>('.w-scrub');
+    const listItems = rightCol.querySelectorAll<HTMLElement>('li');
+    const leftWords = leftCol.querySelectorAll<HTMLElement>('.w-scrub');
+    const rightWords = rightCol.querySelectorAll<HTMLElement>('.w-scrub');
 
     // Initially hide the right points
-    gsap.set(listItems, { y: 45, opacity: 0 });
+    gsap.set(listItems, { y: 35, opacity: 0 });
 
-    if (words.length > 0) {
-      // 1. Initial state of text: dim green/grey
-      gsap.set(words, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+    if (leftWords.length > 0) {
+      // 1. Initial state of all text (left & right): dim subtle green-grey
+      gsap.set([leftWords, rightWords], { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
 
       // 2. Timeline synchronized with scroll:
-      // First: WordScrub animation reveals all words in the text paragraph
-      // Only AFTER all words have finished animating: the 3 right points cascade in
+      // STEP 1: Left subheading words scrub through brand green to pure white
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: leftCol,
-          start: 'top 75%',
-          end: 'bottom 40%',
+          start: 'top 70%',
+          end: 'bottom 25%',
           scrub: 0.5,
         },
       });
 
-      words.forEach((w) => {
+      leftWords.forEach((w) => {
         tl.to(
           w,
           {
             color: '#b6ff66',
             opacity: 1,
-            duration: 0.15,
+            duration: 0.12,
             ease: 'power1.inOut',
           }
         ).to(
@@ -57,25 +57,48 @@ export function CompanionSection() {
           {
             color: '#ffffff',
             opacity: 1,
-            duration: 0.2,
+            duration: 0.16,
             ease: 'power1.out',
           },
-          '+=0.04'
+          '+=0.03'
         );
       });
 
-      // After text scrub finishes: right side 3 points reveal smoothly
+      // STEP 2: Only AFTER the left text animation is complete:
+      // The 3 points slide up into view
       tl.to(
         listItems,
         {
           y: 0,
           opacity: 1,
-          duration: 0.8,
-          stagger: 0.2,
+          duration: 0.6,
+          stagger: 0.15,
           ease: 'power2.out',
         },
-        '+=0.2'
+        '+=0.15'
       );
+
+      // STEP 3: Right side points text words also scrub progressively through green into white!
+      rightWords.forEach((rw) => {
+        tl.to(
+          rw,
+          {
+            color: '#b6ff66',
+            opacity: 1,
+            duration: 0.12,
+            ease: 'power1.inOut',
+          }
+        ).to(
+          rw,
+          {
+            color: '#ffffff',
+            opacity: 1,
+            duration: 0.16,
+            ease: 'power1.out',
+          },
+          '+=0.03'
+        );
+      });
 
       return () => {
         tl.kill();
@@ -136,7 +159,7 @@ export function CompanionSection() {
           {/* --- RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL AESTHETIC BALANCE --- */}
           <div
             ref={rightColRef}
-            className="lg:col-span-5 flex flex-col justify-center lg:pt-36 xl:pt-44"
+            className="lg:col-span-5 flex flex-col justify-center lg:pt-48 xl:pt-56"
           >
             <ol className="divide-y divide-white/10 border-t border-b border-white/10">
               {COMPANION_ITEMS.map((item, i) => (
@@ -147,9 +170,9 @@ export function CompanionSection() {
                   <span className="inline-flex items-center justify-center font-mono text-xs font-bold tracking-wider px-2 py-0.5 rounded-[4px] bg-white/10 text-white/80 group-hover:bg-[#b6ff66] group-hover:text-black transition-all duration-300 select-none">
                     0{i + 1}
                   </span>
-                  <span className="font-display text-[clamp(1.1rem,1rem+0.45vw,1.4rem)] font-semibold tracking-tight text-[#f0f2f5] leading-snug group-hover:text-[#b6ff66] transition-colors duration-300">
-                    {item}
-                  </span>
+                  <div className="font-display text-[clamp(1.1rem,1rem+0.45vw,1.4rem)] font-semibold tracking-tight text-[#f0f2f5] leading-snug group-hover:text-[#b6ff66] transition-colors duration-300">
+                    <WordScrub as="span" text={item} />
+                  </div>
                 </li>
               ))}
             </ol>
