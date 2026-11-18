@@ -64,40 +64,49 @@ export function CompanionSection() {
         );
       });
 
-      // STEP 2: Only AFTER the left text animation is complete:
-      // The 3 points slide up into view
-      tl.to(
-        listItems,
-        {
-          y: 0,
-          opacity: 1,
-          duration: 0.6,
-          stagger: 0.15,
-          ease: 'power2.out',
-        },
-        '+=0.15'
-      );
-
-      // STEP 3: Right side points text words also scrub progressively through green into white!
-      rightWords.forEach((rw) => {
+      // STEP 2: Animate point-by-point sequentially (Point 1, then Point 2, then Point 3):
+      // For each point:
+      //   a) The line item (and border) reveals/slides into view
+      //   b) Its words scrub through brand green to crisp white
+      //   c) Then the next point proceeds
+      listItems.forEach((li) => {
+        // Line & tag appear
         tl.to(
-          rw,
+          li,
           {
-            color: '#b6ff66',
+            y: 0,
             opacity: 1,
-            duration: 0.12,
-            ease: 'power1.inOut',
-          }
-        ).to(
-          rw,
-          {
-            color: '#ffffff',
-            opacity: 1,
-            duration: 0.16,
-            ease: 'power1.out',
+            duration: 0.45,
+            ease: 'power2.out',
           },
-          '+=0.03'
+          '+=0.1'
         );
+
+        // Words inside this point scrub sequentially
+        const itemWords = li.querySelectorAll<HTMLElement>('.w-scrub');
+        itemWords.forEach((rw) => {
+          tl.to(
+            rw,
+            {
+              color: '#b6ff66',
+              opacity: 1,
+              duration: 0.12,
+              ease: 'power1.inOut',
+            }
+          ).to(
+            rw,
+            {
+              color: '#ffffff',
+              opacity: 1,
+              duration: 0.16,
+              ease: 'power1.out',
+            },
+            '+=0.03'
+          );
+        });
+
+        // Small pause between each point
+        tl.to({}, { duration: 0.1 });
       });
 
       return () => {
