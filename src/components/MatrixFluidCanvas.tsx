@@ -8,8 +8,10 @@ import { SMILE_EYES, SMILE_PATH } from '@/lib/smile';
  * MatrixFluidCanvas:
  * Interactive Matrix Binary (0 and 1) grid in black & grey tones with fluid physics.
  * - Digital stream of binary digits ('0' and '1') in shades of black, dark grey, and charcoal.
- * - The cursor becomes the Drava smile: digits falling near it flow into the top of the logo
- *   and pour back out where the smile ends, then keep falling.
+ * - At the cursor, the rain digits nearby are sucked in and arrange themselves into the Drava smile.
+ *   The logo is always built from whatever rain is local: as the stream keeps falling (even with the
+ *   cursor idle) or the cursor moves, digits that drift out of reach go back to their place in the
+ *   rain and fresh nearby ones are pulled in.
  */
 export function MatrixFluidCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -28,31 +30,40 @@ export function MatrixFluidCanvas() {
     let dpr = 1;
     let animId = 0;
 
-    // Drava smile cursor (px). Digits falling within CAPTURE above the logo are pulled into its top;
-    // inside SWALLOW they enter, travel for TRAVEL frames, and pour out of the smile's end.
-    // Tuned so digits passing within ~90px of the logo flow through it and farther ones only bend.
-    const LOGO_W = 72;
-    const CAPTURE = 150;
-    const SWALLOW = 22;
-    const PULL = 2.2;
-    const TRAVEL = 8;
+    // The digit-built Drava smile (px). A digit whose place in the rain is within CAPTURE of the cursor
+    // fills one slot of a GRID-spaced layout of the logo; once its place has fallen or the cursor has
+    // moved beyond RELEASE it goes back to its place (CAPTURE < RELEASE so edge digits don't flicker).
+    // Slots spring at HOLD; all movement is capped at MAX_V. Simulated: 54 slots, formed in ~0.75s,
+    // ~7 digits/s swapped while idle, rebuilt in place after a move with the old digits home in ~1s.
+    const LOGO_W = 150;
+    const GRID = 11;
+    const CAPTURE = 190;
+    const RELEASE = 230;
+    const HOLD = 0.06;
+    const MAX_V = 9;
     const LIME = 'rgba(182, 255, 102, ';
-    const logoScale = LOGO_W / 170; // the smile's viewBox is 170×165
+    const s = LOGO_W / 170; // the smile's viewBox is 170×165
+
+    // Slots: grid points inside the real logo shape, as offsets from the logo's centre.
     const logo = new Path2D(SMILE_PATH);
-    for (const [x, y, s] of SMILE_EYES) logo.roundRect(x, y, s, s, 4);
+    for (const [x, y, size] of SMILE_EYES) logo.roundRect(x, y, size, size, 4);
+    const slots: { x: number; y: number; taken: boolean }[] = [];
+    for (let ly = GRID / s / 2; ly < 165; ly += GRID / s) {
+      for (let lx = GRID / s / 2; lx < 170; lx += GRID / s) {
+        if (ctx.isPointInPath(logo, lx, ly)) slots.push({ x: (lx - 85) * s, y: (ly - 82.5) * s, taken: false });
+      }
+    }
+    let free = slots.length;
 
     const pointer = { clientX: 0, clientY: 0, active: false };
-    const head = { x: 0, y: 0, shown: false }; // logo position, eased toward the pointer
-    let gulp = 0; // brief swell each time a digit is swallowed
+    const head = { x: 0, y: 0, shown: false }; // logo centre, eased toward the pointer
 
     interface BinaryParticle extends RainCell {
-      homeX: number; // its own column, restored each time it rains in from the top again
-      hidden: number; // frames left inside the logo
-      glow: number; // lime afterglow after leaving the logo
-      originX: number; // stream position the digit springs toward
+      originX: number; // its place in the rain (keeps falling even while the digit is in the logo)
       originY: number;
       vx: number;
       vy: number;
+      slot: number; // index into slots while it forms part of the logo, else -1
     }
 
     let particles: BinaryParticle[] = [];
@@ -61,14 +72,14 @@ export function MatrixFluidCanvas() {
     const initParticles = () => {
       particles = rainCells(width, height).map((c) => ({
         ...c,
-        homeX: c.x,
-        hidden: 0,
-        glow: 0,
         originX: c.x,
         originY: c.y,
         vx: 0,
-        vy: 0
+        vy: 0,
+        slot: -1
       }));
+      slots.forEach((sl) => (sl.taken = false));
+      free = slots.length;
     };
 
     const handleResize = () => {
@@ -110,16 +121,12 @@ export function MatrixFluidCanvas() {
       const px = pointer.clientX - rect.left;
       const py = pointer.clientY - rect.top;
       if (pointer.active && !head.shown) {
-        head.x = px; // appear right under the pointer instead of sliding in from the old spot
+        head.x = px; // form right under the pointer instead of sliding in from the old spot
         head.y = py;
       }
       head.shown = pointer.active;
       head.x += (px - head.x) * 0.3;
       head.y += (py - head.y) * 0.3;
-      gulp *= 0.9;
-      const s = logoScale * (1 + gulp * 0.12); // swells slightly as it swallows
-      const fromLogo = (lx: number, ly: number): [number, number] => [head.x + (lx - 85) * s, head.y + (ly - 82.5) * s];
-      const [ix, iy] = fromLogo(66, 6); // intake: top of the logo, between the eyes
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
@@ -132,69 +139,79 @@ export function MatrixFluidCanvas() {
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Inside the logo: travelling from the intake to the smile's end, then poured back out.
-        if (p.hidden > 0) {
-          if (--p.hidden === 0) {
-            const [ex, ey] = fromLogo(50, 118 + Math.random() * 32); // just past the smile's end cap
-            p.x = ex;
-            p.y = ey;
-            p.vx = -(1.5 + Math.random() * 2.5); // poured out to the left, then falls with the stream
-            p.vy = Math.random();
-            p.originX = ex - (10 + Math.random() * 40);
-            p.originY = ey;
-            p.glow = 1;
-          }
-          continue;
-        }
-
-        // Random matrix digit flip
+        // Random matrix digit flip (logo digits keep flickering too, so it reads as live binary)
         p.flipTimer++;
         if (p.flipTimer > RAIN_FLIP_EVERY) {
           p.char = p.char === '1' ? '0' : '1';
           p.flipTimer = 0;
         }
 
-        // Fluid downward matrix drift
+        // Its place in the rain keeps falling, whether or not the digit is part of the logo.
         p.originY += p.speed;
+
+        // Part of the logo: spring to its slot until its place in the rain is out of reach (it fell
+        // on, or the cursor moved, left, or sits at the bottom edge), then go back to that place.
+        if (p.slot >= 0) {
+          const out = Math.hypot(p.originX - head.x, p.originY - head.y) > RELEASE;
+          if (head.shown && !out && p.originY <= height + 20) {
+            const sl = slots[p.slot];
+            p.vx = (p.vx + (head.x + sl.x - p.x) * HOLD) * 0.82;
+            p.vy = (p.vy + (head.y + sl.y - p.y) * HOLD) * 0.82;
+            const v = Math.hypot(p.vx, p.vy);
+            if (v > MAX_V) {
+              p.vx *= MAX_V / v;
+              p.vy *= MAX_V / v;
+            }
+            p.x += p.vx;
+            p.y += p.vy;
+            ctx.fillStyle = `${LIME}0.95)`;
+            ctx.fillText(p.char, p.x, p.y);
+            continue;
+          }
+          slots[p.slot].taken = false;
+          free++;
+          p.slot = -1;
+        }
+
+        // Rain falling off the bottom starts again at the top of its column.
         if (p.originY > height + 20) {
           p.originY = -20;
           p.y = -20;
-          p.originX = p.x = p.homeX; // back in its own column
+          p.x = p.originX;
         }
 
-        // Suction from the top only: above the intake, pull the digit in and loosen its spring back
-        // to the stream, so the closer it gets the less it can escape. Digits pouring out of the
-        // smile's end are below the intake, so they are never sucked straight back in.
-        let spring = 0.045;
+        // Suck digits whose place is near the cursor into the nearest empty slot of the logo; fade the
+        // rest of the rain close to it so the digit-built logo stays readable.
         let fade = 1;
-        let color = p.glow > 0.3 ? LIME : p.color;
-        p.glow *= 0.97;
-        if (head.shown && p.y < iy) {
-          const dx = ix - p.x;
-          const dy = iy - p.y;
-          const d = Math.hypot(dx, dy) || 1;
-          if (d < SWALLOW) {
-            p.hidden = TRAVEL;
-            gulp = Math.min(1, gulp + 0.08);
-            continue;
+        if (head.shown) {
+          const d = Math.hypot(p.x - head.x, p.y - head.y);
+          if (free > 0 && Math.hypot(p.originX - head.x, p.originY - head.y) < CAPTURE) {
+            let best = -1;
+            let bestD = Infinity;
+            for (let j = 0; j < slots.length; j++) {
+              if (slots[j].taken) continue;
+              const sd = Math.hypot(head.x + slots[j].x - p.x, head.y + slots[j].y - p.y);
+              if (sd < bestD) {
+                bestD = sd;
+                best = j;
+              }
+            }
+            slots[best].taken = true;
+            free--;
+            p.slot = best;
+            continue; // starts moving next frame
           }
-          if (d < CAPTURE) {
-            const pull = 1 - d / CAPTURE; // 0 at the edge, 1 at the logo
-            p.vx += (dx / d) * pull * pull * PULL;
-            p.vy += (dy / d) * pull * pull * PULL;
-            spring *= 1 - pull;
-            fade = Math.min(1, (d - SWALLOW) / 40); // dissolve as it enters
-            color = LIME; // turns Drava lime on its way in
-          }
+          fade = Math.min(1, Math.max(0, (d - 60) / 60));
         }
 
-        // Spring toward the stream position; the digit keeps falling meanwhile.
-        p.vx += (p.originX - p.x) * spring;
-        p.vy += (p.originY - p.y) * spring;
-
-        // Fluid drag / viscosity
-        p.vx *= 0.88;
-        p.vy *= 0.88;
+        // Spring toward its place in the rain (gliding home after leaving the logo), with drag.
+        p.vx = (p.vx + (p.originX - p.x) * 0.045) * 0.88;
+        p.vy = (p.vy + (p.originY - p.y) * 0.045) * 0.88;
+        const v = Math.hypot(p.vx, p.vy);
+        if (v > MAX_V) {
+          p.vx *= MAX_V / v;
+          p.vy *= MAX_V / v;
+        }
 
         // Update position
         p.x += p.vx;
@@ -204,20 +221,8 @@ export function MatrixFluidCanvas() {
         const vel = Math.hypot(p.vx, p.vy);
         const dynamicAlpha = Math.min(p.opacity + vel * 0.08, 0.85);
 
-        ctx.fillStyle = `${color}${dynamicAlpha * fade})`;
+        ctx.fillStyle = `${p.color}${dynamicAlpha * fade})`;
         ctx.fillText(p.char, p.x, p.y);
-      }
-
-      // The smile itself, centred on the pointer, drawn over the digits passing behind it.
-      if (head.shown) {
-        ctx.save();
-        ctx.translate(head.x - 85 * s, head.y - 82.5 * s);
-        ctx.scale(s, s);
-        ctx.shadowColor = 'rgba(182, 255, 102, 0.55)';
-        ctx.shadowBlur = 24;
-        ctx.fillStyle = '#b6ff66';
-        ctx.fill(logo);
-        ctx.restore();
       }
 
       ctx.restore();
@@ -245,4 +250,3 @@ export function MatrixFluidCanvas() {
     </div>
   );
 }
-
