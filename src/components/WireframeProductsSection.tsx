@@ -283,19 +283,15 @@ export function WireframeProductsSection() {
     if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
     if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
 
-    // Hide all product details texts initially for staggered animation
-    panels.forEach((p, idx) => {
-      if (idx > 0) {
-        gsap.set(p, { xPercent: 120, opacity: 0, pointerEvents: 'none' });
-      }
-      const textItems = p.querySelectorAll<HTMLElement>('[data-text-anim]');
-      gsap.set(textItems, { opacity: 0, y: 22 });
-    });
+    for (let i = 1; i < panels.length; i++) {
+      gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
+    }
 
-    // Intro initial states:
-    if (introTag) gsap.set(introTag, { opacity: 0, y: 18 });
+    // Tag (03 PRODUCTS) starts ready or reveals first upon entering screen
+    if (introTag) gsap.set(introTag, { opacity: 0, y: 16 });
+    // Text words start dim and un-scrubbed, waiting for scroll to scrub through them slowly
     if (introWords && introWords.length > 0) {
-      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.20)', opacity: 0.30 });
     }
     if (introArrow) gsap.set(introArrow, { opacity: 0, scale: 0.8 });
 
@@ -353,38 +349,39 @@ export function WireframeProductsSection() {
       }
     }
 
-    // 2. Slower, Cinematic In-Place Transition:
-    // Scene 1 fades out into deep black (28 to 36).
-    // Scene 2 emerges in place from within the black screen (34 to 42) with gentle scale.
-    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 28);
-    masterTl.set(scene1, { pointerEvents: 'none' }, 34);
+    // 2. Cinematic In-Place Transition:
+    // Scene 1 plunges into black (24 to 29).
+    // When entering the third screen, the number "03" and "PRODUCTS" (introTag) along with resting "0/1" come first!
+    masterTl.to(scene1, { opacity: 0, duration: 5, ease: 'power1.inOut' }, 24);
+    masterTl.set(scene1, { pointerEvents: 'none' }, 28);
 
     masterTl.fromTo(
       scene2,
-      { opacity: 0, scale: 0.985 },
-      { opacity: 1, scale: 1, duration: 6, ease: 'power2.out' },
-      33
+      { opacity: 0, scale: 0.99 },
+      { opacity: 1, scale: 1, duration: 4, ease: 'power2.out' },
+      26
     );
-    masterTl.set(scene2, { pointerEvents: 'auto' }, 36);
+    masterTl.set(scene2, { pointerEvents: 'auto' }, 28);
 
-    // 3. ANIMATING SCENE 2 INTRO TEXTS:
-    // Reveal 03 Tag
+    // FIRST: Upon entering screen, the 03 and PRODUCTS tag emerges into view cleanly
     if (introTag) {
-      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, 36);
+      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 28);
     }
 
-    // Sequentially scrub words in heading & subtitle from dim green -> bright #b6ff66 -> pure white
+    // THEN: As the user scrolls slowly, the text scrolling animation starts!
+    // Words scrub word-by-word with the scroll through green into white
     if (introWords && introWords.length > 0) {
       const headingCount = 8; // "The product changes but the experience stays."
       introWords.forEach((word, idx) => {
         const isHeading = idx < headingCount;
-        const wordStart = isHeading ? 37 + idx * 0.6 : 42 + (idx - headingCount) * 0.45;
+        // Text animation begins at unit 33 after 03 PRODUCTS is in view
+        const wordStart = isHeading ? 33 + idx * 1.15 : 43 + (idx - headingCount) * 0.65;
         masterTl.to(
           word,
           {
             color: '#b6ff66',
             opacity: 1,
-            duration: 1.2,
+            duration: 1.1,
             ease: 'power1.inOut',
           },
           wordStart
@@ -393,7 +390,7 @@ export function WireframeProductsSection() {
           {
             color: '#ffffff',
             opacity: 1,
-            duration: 1.3,
+            duration: 1.2,
             ease: 'power1.out',
           },
           wordStart + 0.4
@@ -401,16 +398,16 @@ export function WireframeProductsSection() {
       });
     }
 
-    // Reveal arrow button
+    // Reveal arrow button as text animation finishes
     if (introArrow) {
-      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 47);
+      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 54);
     }
 
-    // Rest pause on completed Intro (48 to 53)
-    masterTl.to({}, { duration: 5 }, 48);
+    // Rest pause on completed Intro before products glide in
+    masterTl.to({}, { duration: 4 }, 55);
 
-    // 4. ANIMATING PRODUCTS & PRODUCT CONTENT TEXTS:
-    // Segment 1 (53 -> 65): Intro -> Product 01 (Nex)
+    // 4. ANIMATING PRODUCTS (Intro -> Product 01 Nex -> 02 -> 03 -> 04):
+    // Segment 1 (58 -> 68): Intro to Product 01 (Nex)
     if (leftCol) {
       masterTl.to(
         leftCol,
@@ -420,7 +417,7 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        53
+        58
       );
     }
     if (slide0Num) {
@@ -431,14 +428,14 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        53
+        58
       );
     }
     if (slide0Img) {
-      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 54);
+      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 59);
     }
     if (slide0Divider) {
-      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 55);
+      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 60);
     }
 
     // Stagger Product 01 content texts (step, title, description, specs, explore CTA)
@@ -453,18 +450,18 @@ export function WireframeProductsSection() {
           stagger: 0.7,
           ease: 'power2.out',
         },
-        55
+        60
       );
     }
 
     // Rest on Product 01
-    masterTl.to({}, { duration: 3 }, 63);
+    masterTl.to({}, { duration: 3 }, 67);
 
     // Segments 2, 3, 4: Transitions between Products with Text Stagger
     const stepTimes = [
-      { start: 65, textStart: 68, rest: 75 }, // Prod 01 -> Prod 02 (HMS)
-      { start: 76, textStart: 79, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
-      { start: 88, textStart: 91, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
+      { start: 69, textStart: 72, rest: 78 }, // Prod 01 -> Prod 02 (HMS)
+      { start: 79, textStart: 82, rest: 88 }, // Prod 02 -> Prod 03 (Vision)
+      { start: 89, textStart: 92, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
     ];
 
     for (let i = 0; i < panels.length - 1; i++) {
