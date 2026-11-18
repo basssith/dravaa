@@ -71,16 +71,16 @@ export function AppGrid({ apps }: { apps: Application[] }) {
               top: `clamp(70px, ${topOffset}px, 110px)`,
               zIndex: 10 + index,
             }}
-            className="sticky w-full max-w-4xl mx-auto will-change-transform transition-shadow"
+            className="sticky w-full max-w-4xl mx-auto will-change-transform"
           >
-            <article className="w-full rounded-3xl border border-white/15 bg-[#090b0e]/95 backdrop-blur-xl p-5 sm:p-8 md:p-10 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] hover:border-white/30 transition-colors">
+            <article className="w-full">
               <TransitionLink
                 href={`/applications/${slugOf(app)}`}
                 aria-label={`Open ${app.name}`}
                 className="group block no-underline"
               >
-                {/* 1 Product Image in Center with high quality frame */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black border border-white/10 shadow-inner [perspective:1000px]">
+                {/* 1 Product Image in Center without surrounding square box */}
+                <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-black/60 [perspective:1000px]">
                   <Image
                     src={app.image}
                     alt={app.name}
