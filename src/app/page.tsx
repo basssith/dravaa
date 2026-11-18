@@ -1,22 +1,6 @@
-import { AppGrid } from '@/components/Apps';
 import { CompanionSection } from '@/components/CompanionSection';
 import { WireframeProductsSection } from '@/components/WireframeProductsSection';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
-import { SnakeLine } from '@/components/SnakeLine';
-import { ArrowDot } from '@/components/icons';
-import { PageHero } from '@/components/PageHero';
-import { ReelButton } from '@/components/Reel';
-import { TransitionLink } from '@/components/TransitionLink';
-import { Lines, SectionHead, WordScrub } from '@/components/type';
-import { SeeAllButton } from '@/components/SeeAllButton';
-import { applications } from '@/lib/applications';
-import { pill } from '@/lib/ui';
-
-const COMPANION = [
-  'Spatial telemetry & multi-modal perception',
-  'Zero-latency neural automation engine',
-  'Cross-product context continuity'
-];
 
 export default function Home() {
   return (
@@ -24,7 +8,7 @@ export default function Home() {
       <section
         id="hero"
         data-hero
-        className="relative flex min-h-svh flex-col justify-end px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 sm:pb-12 bg-[#000000]"
+        className="relative flex min-h-svh cursor-none flex-col justify-end px-gutter pt-[calc(var(--spacing-header)+--spacing(3))] pb-8 sm:pb-12 bg-[#000000]"
       >
         <MatrixFluidCanvas />
 
@@ -40,7 +24,10 @@ export default function Home() {
           </div>
 
           <h1 className="font-display text-[clamp(3.5rem,2.2rem+6vw,8rem)] font-bold tracking-tight text-white leading-none">
-            <span>The </span>
+            {/* Syne's capital T stands ~7% shorter than its h (measured 83px vs 89px); enlarge the T so "The" reads as one height. */}
+            <span>
+              <span className="text-[1.07em]">T</span>he{' '}
+            </span>
             <span className="font-display inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-4 sm:px-6 py-1 sm:py-2 rounded-[8px] tracking-normal whitespace-nowrap shadow-none">
               drava
             </span>

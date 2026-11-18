@@ -5,22 +5,16 @@ import conceptRunnerImage from '../../public/assets/app_concept_runner.png';
 import dataArtImage from '../../public/assets/app_data_art.png';
 import whiteTuskerImage from '../../public/assets/app_white_tusker.png';
 
-export type Metric = { label: string; value: string };
-export type Review = { stars: string; source: string; quote: string };
-
 export type Application = {
   id: string;
   name: string;
   tagline: string;
   category: string;
   year: string;
-  director?: string;
   description: string;
   image: StaticImageData;
-  accentColor?: string;
-  metrics: Metric[];
+  metrics: { label: string; value: string }[];
   highlights: string[];
-  reviews?: Record<string, Review>;
   badge: string;
 };
 
@@ -31,10 +25,8 @@ export const applications: Application[] = [
     tagline: 'Manage lighting, climate, and audio from one place.',
     category: 'Environment OS & Facility Intelligence',
     year: '2026',
-    director: 'Drava Hardware Lab',
     description: 'Centralized environment and facility intelligence OS. Manage tactile rotary dial audio master volume, adaptive climate regulation (22% Dry), lighting brightness (100%), and unified system security.',
     image: whiteTuskerImage,
-    accentColor: '#8eff43',
     metrics: [
       { label: 'Master Volume', value: '12 / 100' },
       { label: 'Climate Humidity', value: '22% Dry' },
@@ -46,18 +38,6 @@ export const applications: Application[] = [
       'Real-time facility security and lock management',
       'Adaptive lighting scenes with 100% brightness control'
     ],
-    reviews: {
-      review1: {
-        stars: '★★★★★',
-        source: 'WIRED UK',
-        quote: '“A MASTERCLASS IN TACTILE ROTARY TELEMETRY AND UNIFIED FACILITY INTELLIGENCE.”'
-      },
-      review2: {
-        stars: '★★★★★',
-        source: 'FAST COMPANY',
-        quote: '“BRINGS CLIMATE, AUDIO, AND LIGHTING INTO ONE SEAMLESS HARDWARE SPACE.”'
-      }
-    },
     badge: 'Environment OS'
   },
   {
@@ -66,10 +46,8 @@ export const applications: Application[] = [
     tagline: 'Spatial screen orchestration & collaborative workspace.',
     category: 'Spatial Multi-Screen Canvas & Media OS',
     year: '2026',
-    director: 'Spatial Systems Group',
     description: 'Infinite multi-screen visual workspace allowing teams to assign physical screens, organize media libraries, configure interactive room templates, and stream camera feeds.',
     image: canvasImage,
-    accentColor: '#62ffea',
     metrics: [
       { label: 'Sync Latency', value: '< 8ms' },
       { label: 'Active Screens', value: '16+' },
@@ -81,18 +59,6 @@ export const applications: Application[] = [
       'Pre-configured templates for rooms & presentations',
       'Real-time screen arrangement and camera monitoring'
     ],
-    reviews: {
-      review1: {
-        stars: '★★★★★',
-        source: 'THE VERGE',
-        quote: '“SPATIAL COLLABORATION REIMAGINED WITH UNMATCHED FLUIDITY.”'
-      },
-      review2: {
-        stars: '★★★★★',
-        source: 'TECHCRUNCH',
-        quote: '“TURNS ANY PHYSICAL ROOM INTO AN INTERACTIVE MULTI-DISPLAY COMMAND CENTER.”'
-      }
-    },
     badge: 'Real-Time Engine'
   },
   {
@@ -101,10 +67,8 @@ export const applications: Application[] = [
     tagline: 'Midnight · Chosen on the kilos · niche 02',
     category: '3D Neural Vision & Footwear Architecture',
     year: '2026',
-    director: 'Neural Perception Division',
     description: 'Neural 3D computer vision and volumetric spatial recognition system. Analyzes tonal knit upper textures, aerodynamic responsive foam contours, and physical component geometry in real time.',
     image: conceptRunnerImage,
-    accentColor: '#ff4d4d',
     metrics: [
       { label: 'Upper Analysis', value: 'Tonal Knit' },
       { label: 'Contour Engine', value: 'Responsive Foam' },
@@ -116,18 +80,6 @@ export const applications: Application[] = [
       'Interactive 3D revolving turntable inspection',
       'Real-time component categorization & telemetry'
     ],
-    reviews: {
-      review1: {
-        stars: '★★★★★',
-        source: 'DESIGN MILK',
-        quote: '“THE GOLD STANDARD FOR VOLUMETRIC FOOTWEAR AND MATERIAL INTELLIGENCE.”'
-      },
-      review2: {
-        stars: '★★★★★',
-        source: 'HYPEBEAST TECH',
-        quote: '“BRIDGES PHYSICAL INDUSTRIAL DESIGN WITH REAL-TIME COMPUTER VISION.”'
-      }
-    },
     badge: 'Neural Vision'
   },
   {
@@ -136,10 +88,8 @@ export const applications: Application[] = [
     tagline: 'Generative data art, dynamic pattern synthesis & mosaic tapestry.',
     category: 'Generative Art & Computational Design',
     year: '2026',
-    director: 'Drava Generative Lab',
     description: 'Generative visual computing and dynamic spatial data tapestry. Synthesizes high-density data vectors into fluid digital mosaics, real-time procedural geometry, and responsive architectural ambient art.',
     image: dataArtImage,
-    accentColor: '#b6ff66',
     metrics: [
       { label: 'Render FPS', value: '120 FPS' },
       { label: 'Vector Nodes', value: '64,000+' },
@@ -151,18 +101,6 @@ export const applications: Application[] = [
       'High-velocity WebGL GPU shader processing',
       'Adaptive ambient color synthesis for physical spaces'
     ],
-    reviews: {
-      review1: {
-        stars: '★★★★★',
-        source: 'CREATIVE APPLICATIONS',
-        quote: '“A MESMERIZING INTERSECTION OF RAW ENTERPRISE DATA AND LIVING DIGITAL ART.”'
-      },
-      review2: {
-        stars: '★★★★★',
-        source: 'FRAME MAGAZINE',
-        quote: '“TRANSFORMS ANY SPATIAL CANVAS INTO AN EVER-EVOLVING GENERATIVE TAPESTRY.”'
-      }
-    },
     badge: 'Generative Art'
   }
 ];

@@ -80,7 +80,7 @@ export default async function ApplicationPage({ params }: Props) {
             src={app.image}
             alt={`${app.name} interface preview`}
             priority
-            quality={95}
+            quality={90}
             placeholder="blur"
             sizes="(max-width: 1024px) 100vw, 920px"
             className="block h-auto w-full rounded-xl object-contain object-center"

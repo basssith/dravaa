@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { SMILE_EYES, SMILE_PATH } from './smile';
 
 export const ogSize = { width: 1200, height: 630 };
 
@@ -9,9 +10,10 @@ export function ogCard({ eyebrow, title }: { eyebrow: string; title: string }) {
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: 72, background: '#0d0d0d', color: '#f2f2ee' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 18, fontSize: 40, fontWeight: 700 }}>
           <svg width="56" height="54" viewBox="0 0 170 165" fill="#b6ff66">
-            <rect x="14" y="10" width="40" height="40" rx="4" />
-            <rect x="77" y="10" width="40" height="40" rx="4" />
-            <path d="M118 50h40A104 104 0 0 1 54 154v-40a64 64 0 0 0 64-64z" />
+            {SMILE_EYES.map(([x, y, s]) => (
+              <rect key={x} x={x} y={y} width={s} height={s} rx="4" />
+            ))}
+            <path d={SMILE_PATH} />
           </svg>
           drava
         </div>

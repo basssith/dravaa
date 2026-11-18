@@ -42,7 +42,7 @@ export function Menu() {
     >
       <div className="flex min-h-full flex-col justify-between gap-12 px-gutter pt-[calc(var(--spacing-header)+--spacing(8))] pb-8">
         <ul>
-          {NAV.map((item, i) => (
+          {NAV.map((item) => (
             <li key={item.href} className="overflow-hidden border-b border-line-inv">
               <TransitionLink href={item.href} className="group flex items-baseline py-2 no-underline">
                 <span

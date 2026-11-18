@@ -97,7 +97,7 @@ export function AppGrid({ apps }: { apps: Application[] }) {
                     src={app.image}
                     alt={app.name}
                     fill
-                    quality={100}
+                    quality={90}
                     placeholder="blur"
                     sizes="(min-width: 1024px) 896px, 100vw"
                     className="hover-blur-shake app-card-img object-contain sm:object-cover w-full h-full transition-transform duration-700 group-hover:scale-[1.02]"
