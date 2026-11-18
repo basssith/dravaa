@@ -43,26 +43,28 @@ export function ScrollEffects() {
         });
       });
 
-      // Smooth Card Stacking & Pop-Up Elevation on Scroll:
-      // Cards stack progressively as you scroll down, lifting up and scaling gracefully
-      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el) => {
+      // Clean One-by-One Staggered Card Slide-Up Animation:
+      // When scrolling into product rows, each card slides up sequentially one after the other
+      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el, i) => {
+        const isOddInRow = i % 2 === 1;
         gsap.fromTo(
           el,
           {
-            y: 80,
+            y: 85,
+            opacity: 0,
             scale: 0.94,
-            opacity: 0.6,
           },
           {
             y: 0,
-            scale: 1,
             opacity: 1,
-            ease: 'power2.out',
+            scale: 1,
+            duration: 1.1,
+            delay: isOddInRow ? 0.22 : 0,
+            ease: 'power3.out',
             scrollTrigger: {
               trigger: el,
-              start: 'top 92%',
-              end: 'top 55%',
-              scrub: 0.6,
+              start: 'top 88%',
+              once: true,
             },
           }
         );
