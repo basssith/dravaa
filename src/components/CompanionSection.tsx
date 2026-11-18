@@ -17,32 +17,70 @@ export function CompanionSection() {
 
   useEffect(() => {
     const section = sectionRef.current;
+    const leftCol = leftColRef.current;
     const rightCol = rightColRef.current;
-    if (!section || !rightCol) return;
+    if (!section || !leftCol || !rightCol) return;
 
     const listItems = rightCol.querySelectorAll('li');
+    const words = leftCol.querySelectorAll<HTMLElement>('.w-scrub');
 
-    // Staggered aesthetic entrance: After left content is visible, right points cascade in with smooth upward drift
-    gsap.set(listItems, { y: 40, opacity: 0 });
+    // Initially hide the right points
+    gsap.set(listItems, { y: 45, opacity: 0 });
 
-    const st = ScrollTrigger.create({
-      trigger: section,
-      start: 'top 55%',
-      once: true,
-      onEnter: () => {
-        gsap.to(listItems, {
+    if (words.length > 0) {
+      // 1. Initial state of text: dim green/grey
+      gsap.set(words, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+
+      // 2. Timeline synchronized with scroll:
+      // First: WordScrub animation reveals all words in the text paragraph
+      // Only AFTER all words have finished animating: the 3 right points cascade in
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: leftCol,
+          start: 'top 75%',
+          end: 'bottom 40%',
+          scrub: 0.5,
+        },
+      });
+
+      words.forEach((w) => {
+        tl.to(
+          w,
+          {
+            color: '#b6ff66',
+            opacity: 1,
+            duration: 0.15,
+            ease: 'power1.inOut',
+          }
+        ).to(
+          w,
+          {
+            color: '#ffffff',
+            opacity: 1,
+            duration: 0.2,
+            ease: 'power1.out',
+          },
+          '+=0.04'
+        );
+      });
+
+      // After text scrub finishes: right side 3 points reveal smoothly
+      tl.to(
+        listItems,
+        {
           y: 0,
           opacity: 1,
-          duration: 1.0,
-          stagger: 0.16,
-          ease: 'power3.out',
-        });
-      },
-    });
+          duration: 0.8,
+          stagger: 0.2,
+          ease: 'power2.out',
+        },
+        '+=0.2'
+      );
 
-    return () => {
-      st.kill();
-    };
+      return () => {
+        tl.kill();
+      };
+    }
   }, []);
 
   return (
@@ -98,7 +136,7 @@ export function CompanionSection() {
           {/* --- RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL AESTHETIC BALANCE --- */}
           <div
             ref={rightColRef}
-            className="lg:col-span-5 flex flex-col justify-center lg:pt-20 xl:pt-24"
+            className="lg:col-span-5 flex flex-col justify-center lg:pt-36 xl:pt-44"
           >
             <ol className="divide-y divide-white/10 border-t border-b border-white/10">
               {COMPANION_ITEMS.map((item, i) => (
