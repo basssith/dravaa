@@ -240,9 +240,12 @@ export function WireframeProductsSection() {
     // --- SETUP SCENE 2 ELEMENTS ---
     const panels = scene2.querySelectorAll<HTMLElement>('[data-product-slide]');
     const leftCol = scene2.querySelector<HTMLElement>('[data-left-col]');
+    const introTag = leftCol?.querySelector<HTMLElement>('[data-intro-tag]');
+    const introWords = leftCol?.querySelectorAll<HTMLElement>('.w-scrub');
+    const introArrow = leftCol?.querySelector<HTMLElement>('[data-intro-arrow]');
+
     const slide0Num = panels[0]?.querySelector<HTMLElement>('[data-flow-num]');
     const slide0Img = panels[0]?.querySelector<HTMLElement>('[data-flow-img]');
-    const slide0Details = panels[0]?.querySelector<HTMLElement>('[data-flow-details]');
     const slide0Divider = panels[0]?.querySelector<HTMLElement>('[data-flow-divider]');
 
     const isDesktop = window.innerWidth >= 1024;
@@ -250,33 +253,42 @@ export function WireframeProductsSection() {
       ? (window.innerWidth * 0.8) - ((window.innerWidth - Math.min(window.innerWidth - 64, 1152)) / 2 + 80)
       : 0;
 
-    // Initial Scene 2 states: resting intro layout
+    // Initial Scene 2 states:
     if (panels[0]) {
       gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
     }
     if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
     if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
-    if (slide0Details) gsap.set(slide0Details, { x: 420, opacity: 0 });
     if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
 
-    for (let i = 1; i < panels.length; i++) {
-      gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
+    // Hide all product details texts initially for staggered animation
+    panels.forEach((p, idx) => {
+      if (idx > 0) {
+        gsap.set(p, { xPercent: 120, opacity: 0, pointerEvents: 'none' });
+      }
+      const textItems = p.querySelectorAll<HTMLElement>('[data-text-anim]');
+      gsap.set(textItems, { opacity: 0, y: 22 });
+    });
+
+    // Intro initial states:
+    if (introTag) gsap.set(introTag, { opacity: 0, y: 18 });
+    if (introWords && introWords.length > 0) {
+      gsap.set(introWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
     }
+    if (introArrow) gsap.set(introArrow, { opacity: 0, scale: 0.8 });
 
     // --- MASTER TIMELINE (SCENE 1 + SCENE 2 IN ONE CONTINUOUS PIN) ---
     // Total scale: 100 units.
-    // 0 -> 38: Scene 1 (02 WHAT WE DO & 3D Wireframe Room)
-    // 37 -> 43: Seamless Transition in place (Scene 1 plunges into black, Scene 2 appears right there)
-    // 43 -> 100: Scene 2 (03 PRODUCTS - Intro & 4 Product Slides)
+    // Extended pin distance (+=760%) for a slower, richer, cinematic transition!
     const masterTl = gsap.timeline({
       id: 'wireframe-products-scroll',
       scrollTrigger: {
         id: 'wireframe-products-trigger',
         trigger: masterContainer,
         start: 'top top',
-        end: '+=620%',
+        end: '+=760%',
         pin: true,
-        scrub: 0.6,
+        scrub: 0.65,
         onUpdate: (self) => {
           targetProgress = self.progress;
 
@@ -292,7 +304,7 @@ export function WireframeProductsSection() {
       },
     });
 
-    // 1. Initial States
+    // 1. Initial Scene 1 States
     gsap.set(scene1, { opacity: 1, pointerEvents: 'auto' });
     gsap.set(scene2, { opacity: 0, pointerEvents: 'none' });
 
@@ -305,35 +317,78 @@ export function WireframeProductsSection() {
       if (tag && block1 && block2 && block3) {
         masterTl.set([tag, block1, block2, block3], { opacity: 0, y: 30 }, 0);
 
-        // Sequence 02 Tag & Text blocks
-        masterTl.to(tag, { opacity: 1, y: 0, duration: 4, ease: 'power2.out' }, 6);
-        masterTl.to(block1, { opacity: 1, y: 0, duration: 5, ease: 'power2.out' }, 10);
-        masterTl.to(block2, { opacity: 1, y: 0, duration: 5, ease: 'power2.out' }, 16);
-        masterTl.to(block3, { opacity: 1, y: 0, duration: 5, ease: 'power2.out' }, 22);
+        // Sequence 02 Tag & Text blocks in Scene 1
+        masterTl.to(tag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 4);
+        masterTl.to(block1, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 7);
+        masterTl.to(block2, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 12);
+        masterTl.to(block3, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 17);
 
-        // Fade out text cleanly as camera plunges into the black screen
-        masterTl.to([tag, block1, block2, block3], { opacity: 0, y: -30, duration: 4, ease: 'power2.in' }, 30);
+        // Ample time to read all 3 statements in the wireframe room
+        masterTl.to({}, { duration: 4 }, 21.5);
+
+        // Fade out text cleanly as camera prepares to plunge into black screen
+        masterTl.to([tag, block1, block2, block3], { opacity: 0, y: -25, duration: 3.5, ease: 'power2.in' }, 25.5);
       }
     }
 
-    // 2. Seamless In-Place Transition:
-    // Scene 1 fades out into pure black, Scene 2 fades in right in place (no down-scroll!)
-    masterTl.to(scene1, { opacity: 0, duration: 4, ease: 'power1.inOut' }, 36);
-    masterTl.set(scene1, { pointerEvents: 'none' }, 40);
+    // 2. Slower, Cinematic In-Place Transition:
+    // Scene 1 fades out into deep black (28 to 36).
+    // Scene 2 emerges in place from within the black screen (34 to 42) with gentle scale.
+    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 28);
+    masterTl.set(scene1, { pointerEvents: 'none' }, 34);
 
     masterTl.fromTo(
       scene2,
       { opacity: 0, scale: 0.985 },
-      { opacity: 1, scale: 1, duration: 4, ease: 'power2.out' },
-      38
+      { opacity: 1, scale: 1, duration: 6, ease: 'power2.out' },
+      33
     );
-    masterTl.set(scene2, { pointerEvents: 'auto' }, 40);
+    masterTl.set(scene2, { pointerEvents: 'auto' }, 36);
 
-    // Rest on Scene 2's Intro (42 to 48)
-    masterTl.to({}, { duration: 6 }, 42);
+    // 3. ANIMATING SCENE 2 INTRO TEXTS:
+    // Reveal 03 Tag
+    if (introTag) {
+      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, 36);
+    }
 
-    // 3. Scene 2: Product Carousel Slides
-    // Segment 1 (48 -> 60): Intro to Product 01 (Nex)
+    // Sequentially scrub words in heading & subtitle from dim green -> bright #b6ff66 -> pure white
+    if (introWords && introWords.length > 0) {
+      const headingCount = 8; // "The product changes but the experience stays."
+      introWords.forEach((word, idx) => {
+        const isHeading = idx < headingCount;
+        const wordStart = isHeading ? 37 + idx * 0.6 : 42 + (idx - headingCount) * 0.45;
+        masterTl.to(
+          word,
+          {
+            color: '#b6ff66',
+            opacity: 1,
+            duration: 1.2,
+            ease: 'power1.inOut',
+          },
+          wordStart
+        ).to(
+          word,
+          {
+            color: '#ffffff',
+            opacity: 1,
+            duration: 1.3,
+            ease: 'power1.out',
+          },
+          wordStart + 0.4
+        );
+      });
+    }
+
+    // Reveal arrow button
+    if (introArrow) {
+      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 47);
+    }
+
+    // Rest pause on completed Intro (48 to 53)
+    masterTl.to({}, { duration: 5 }, 48);
+
+    // 4. ANIMATING PRODUCTS & PRODUCT CONTENT TEXTS:
+    // Segment 1 (53 -> 65): Intro -> Product 01 (Nex)
     if (leftCol) {
       masterTl.to(
         leftCol,
@@ -343,7 +398,7 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        48
+        53
       );
     }
     if (slide0Num) {
@@ -354,27 +409,40 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        48
+        53
       );
     }
     if (slide0Img) {
-      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 50);
-    }
-    if (slide0Details) {
-      masterTl.to(slide0Details, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 51);
+      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 54);
     }
     if (slide0Divider) {
-      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 52);
+      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 55);
+    }
+
+    // Stagger Product 01 content texts (step, title, description, specs, explore CTA)
+    const slide0Texts = panels[0]?.querySelectorAll<HTMLElement>('[data-text-anim]');
+    if (slide0Texts && slide0Texts.length > 0) {
+      masterTl.to(
+        slide0Texts,
+        {
+          opacity: 1,
+          y: 0,
+          duration: 5,
+          stagger: 0.7,
+          ease: 'power2.out',
+        },
+        55
+      );
     }
 
     // Rest on Product 01
-    masterTl.to({}, { duration: 3 }, 59);
+    masterTl.to({}, { duration: 3 }, 63);
 
-    // Segments 2, 3, 4: Transitions between Products
+    // Segments 2, 3, 4: Transitions between Products with Text Stagger
     const stepTimes = [
-      { start: 62, rest: 73 }, // Prod 01 -> Prod 02
-      { start: 74, rest: 85 }, // Prod 02 -> Prod 03
-      { start: 86, rest: 98 }, // Prod 03 -> Prod 04
+      { start: 65, textStart: 68, rest: 75 }, // Prod 01 -> Prod 02 (HMS)
+      { start: 76, textStart: 79, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
+      { start: 88, textStart: 91, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
     ];
 
     for (let i = 0; i < panels.length - 1; i++) {
@@ -383,6 +451,7 @@ export function WireframeProductsSection() {
       const times = stepTimes[i];
       if (!prev || !next || !times) continue;
 
+      // Current product leaves to left
       masterTl.to(
         prev,
         {
@@ -395,6 +464,7 @@ export function WireframeProductsSection() {
         times.start
       );
 
+      // Next product slides in
       masterTl.fromTo(
         next,
         { xPercent: 120, opacity: 0, pointerEvents: 'none' },
@@ -407,6 +477,22 @@ export function WireframeProductsSection() {
         },
         times.start
       );
+
+      // Next product content texts stagger in cleanly
+      const nextTexts = next.querySelectorAll<HTMLElement>('[data-text-anim]');
+      if (nextTexts && nextTexts.length > 0) {
+        masterTl.to(
+          nextTexts,
+          {
+            opacity: 1,
+            y: 0,
+            duration: 5,
+            stagger: 0.7,
+            ease: 'power2.out',
+          },
+          times.textStart
+        );
+      }
 
       // Rest on product
       masterTl.to({}, { duration: 3 }, times.rest);
@@ -446,21 +532,21 @@ export function WireframeProductsSection() {
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
-      // Scale scrollProgress to Scene 1's domain (0 to 0.40)
-      const scene1Prog = Math.min(1, Math.max(0, scrollProgress / 0.38));
+      // Scale scrollProgress to Scene 1's domain (0 to 0.35)
+      const scene1Prog = Math.min(1, Math.max(0, scrollProgress / 0.35));
 
       // Morph factor for wireframe assembly
       const morphFactor = Math.min(1, Math.max(0, scene1Prog * 3.5));
 
-      // Dive animation into the black screen (0.75 -> 1.0 of Scene 1)
+      // Slower, richer dive into the black screen (0.65 -> 1.0 of Scene 1)
       let cameraZ = 2.8 - scene1Prog * 1.5;
       let cameraPitch = currRotX - scene1Prog * 0.12;
       let diveFade = 1;
 
-      if (scene1Prog > 0.75) {
-        const diveProgress = (scene1Prog - 0.75) / 0.25; // 0 -> 1
-        cameraZ -= diveProgress * diveProgress * 4.6;
-        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.2) * 1.05);
+      if (scene1Prog > 0.65) {
+        const diveProgress = (scene1Prog - 0.65) / 0.35; // 0 -> 1 over a wider range for a slower, richer feel
+        cameraZ -= diveProgress * diveProgress * 4.8;
+        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.35) * 1.05);
       }
 
       const cameraYaw = currRotY * diveFade;
@@ -658,7 +744,7 @@ export function WireframeProductsSection() {
           >
             {/* Top Tag: 03 PRODUCTS */}
             <div className="pt-2">
-              <div className="inline-flex items-center gap-2.5">
+              <div data-intro-tag className="inline-flex items-center gap-2.5 will-change-transform">
                 <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
                   03
                 </span>
@@ -668,7 +754,7 @@ export function WireframeProductsSection() {
               </div>
             </div>
 
-            {/* Main Content */}
+            {/* Main Content with Animated WordScrub */}
             <div className="my-auto py-6 max-w-3xl">
               <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
                 <WordScrub
@@ -690,16 +776,17 @@ export function WireframeProductsSection() {
             {/* Bottom Forward Arrow Button: Advance directly to 01 Product */}
             <div className="pb-2">
               <button
+                data-intro-arrow
                 type="button"
                 onClick={() => {
                   const st = ScrollTrigger.getById('wireframe-products-trigger');
                   if (st) {
-                    const targetScroll = st.start + (st.end - st.start) * 0.58;
+                    const targetScroll = st.start + (st.end - st.start) * 0.62;
                     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
                   }
                 }}
                 aria-label="Advance to first product (01 Nex)"
-                className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2 cursor-pointer focus:outline-none"
+                className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2 cursor-pointer focus:outline-none will-change-transform"
               >
                 <Arrow className="size-8 sm:size-10 text-white group-hover:text-[#b6ff66] transition-all duration-300 group-hover:translate-x-2" />
               </button>
@@ -783,21 +870,25 @@ export function WireframeProductsSection() {
                     </div>
                   </div>
 
-                  {/* 3. CENTER-RIGHT: Details */}
+                  {/* 3. CENTER-RIGHT: Product Details & Specifications with data-text-anim for staggered entrance */}
                   <div data-flow-details className="flex flex-col justify-center text-left space-y-3.5 w-full sm:w-[300px] lg:w-[320px] xl:w-[350px] shrink-0 will-change-transform pointer-events-auto">
-                    <div className="font-mono text-xs sm:text-sm tracking-widest text-white/60">
+                    {/* Step Number */}
+                    <div data-text-anim className="font-mono text-xs sm:text-sm tracking-widest text-white/60 will-change-transform">
                       0{i + 1} / 0{apps.length}
                     </div>
 
-                    <h3 className="font-display text-[clamp(2.2rem,1.9rem+1.6vw,3.3rem)] font-bold leading-none tracking-tight text-white">
+                    {/* Product Name */}
+                    <h3 data-text-anim className="font-display text-[clamp(2.2rem,1.9rem+1.6vw,3.3rem)] font-bold leading-none tracking-tight text-white will-change-transform">
                       {app.name}
                     </h3>
 
-                    <p className="text-xs sm:text-sm lg:text-base leading-relaxed text-[#c8ccd6]">
+                    {/* Description */}
+                    <p data-text-anim className="text-xs sm:text-sm lg:text-base leading-relaxed text-[#c8ccd6] will-change-transform">
                       {app.description}
                     </p>
 
-                    <div className="border-t border-b border-white/20 py-3 my-1 space-y-2">
+                    {/* Specs Table */}
+                    <div data-text-anim className="border-t border-b border-white/20 py-3 my-1 space-y-2 will-change-transform">
                       <div className="flex justify-between text-xs sm:text-sm font-mono text-white/80">
                         <span>Category</span>
                         <span className="text-white font-medium">{app.badge}</span>
@@ -808,14 +899,16 @@ export function WireframeProductsSection() {
                       </div>
                     </div>
 
-                    {/* Explore Button */}
-                    <TransitionLink
-                      href={`/applications/${slugOf(app)}`}
-                      className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group mt-1"
-                    >
-                      <span>Explore {app.name}</span>
-                      <Arrow className="size-3.5 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
-                    </TransitionLink>
+                    {/* Explore CTA */}
+                    <div data-text-anim className="will-change-transform">
+                      <TransitionLink
+                        href={`/applications/${slugOf(app)}`}
+                        className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group mt-1"
+                      >
+                        <span>Explore {app.name}</span>
+                        <Arrow className="size-3.5 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
+                      </TransitionLink>
+                    </div>
                   </div>
 
                   {/* 4. VERTICAL GREEN LINE DIVIDER */}
