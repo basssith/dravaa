@@ -68,28 +68,6 @@ export function ScrollEffects() {
         );
       });
 
-      // 4th Screen Card Slide-Up Elevation (smooth card overlay as you scroll out of Products):
-      const companionCard = document.querySelector<HTMLElement>('[data-companion-card]');
-      const appsSection = document.getElementById('applications');
-
-      if (companionCard && appsSection) {
-        gsap.fromTo(
-          companionCard,
-          { yPercent: 14, scale: 0.98 },
-          {
-            yPercent: 0,
-            scale: 1,
-            ease: 'power2.out',
-            scrollTrigger: {
-              trigger: companionCard,
-              start: 'top bottom',
-              end: 'top 15%',
-              scrub: 0.8,
-            },
-          }
-        );
-      }
-
 
 
       // Scroll Text Scrubbing Effect: Words transition from dim green/grey through vibrant signature green into crisp white
