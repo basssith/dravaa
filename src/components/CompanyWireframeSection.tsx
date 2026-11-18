@@ -257,17 +257,17 @@ export function CompanyWireframeSection() {
     window.addEventListener('resize', handleResize);
 
     // PINNED SCROLL TIMELINE:
-    // 0 -> 28%: Wireframe assemble & exploration
-    // 28% -> 44%: Left-side top block appears
-    // 44% -> 60%: Center block appears
-    // 60% -> 76%: Right-side bottom block appears (with DRAVA)
-    // 76% -> 100%: Camera zooms deeply into the room portal / black screen to transition into 03 Products
+    // 0 -> 24%: Wireframe assemble & exploration
+    // 24% -> 44%: Left-side top block appears
+    // 44% -> 64%: Center block appears
+    // 64% -> 80%: Right-side bottom block appears (with DRAVA)
+    // 80% -> 100%: Camera dives through the room into the black screen; by 100% Section 03 connects seamlessly
     const pinTrigger = ScrollTrigger.create({
       trigger: container,
       start: 'top top',
-      end: '+=350%',
+      end: '+=240%',
       pin: true,
-      scrub: 1.2,
+      scrub: 0.8,
       onUpdate: (self) => {
         targetProgress = self.progress;
       },
@@ -283,8 +283,8 @@ export function CompanyWireframeSection() {
         scrollTrigger: {
           trigger: container,
           start: 'top top',
-          end: '+=350%',
-          scrub: 1.2,
+          end: '+=240%',
+          scrub: 0.8,
         },
       });
 
@@ -292,19 +292,19 @@ export function CompanyWireframeSection() {
       tl.set([tag, block1, block2, block3], { opacity: 0, y: 30 });
 
       // Step 1: Tag appears
-      tl.to(tag, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.20);
+      tl.to(tag, { opacity: 1, y: 0, duration: 0.5, ease: 'power2.out' }, 0.16);
 
       // Step 2: Left-side top 2 lines appear
-      tl.to(block1, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.30);
+      tl.to(block1, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.25);
 
       // Step 3: Center 2 lines appear
-      tl.to(block2, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.45);
+      tl.to(block2, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.42);
 
       // Step 4: Right-side bottom 2 lines appear (with green DRAVA box)
-      tl.to(block3, { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' }, 0.60);
+      tl.to(block3, { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out' }, 0.58);
 
-      // Step 5: As the camera plunges into the black screen (0.75 -> 1.0), fade out all text blocks cleanly
-      tl.to([tag, block1, block2, block3], { opacity: 0, y: -40, duration: 0.8, ease: 'power2.in' }, 0.76);
+      // Step 5: As the camera plunges into the black screen (0.78 -> 1.0), fade out all text blocks cleanly
+      tl.to([tag, block1, block2, block3], { opacity: 0, y: -30, duration: 0.5, ease: 'power2.in' }, 0.78);
     }
 
     const project = (
@@ -343,18 +343,18 @@ export function CompanyWireframeSection() {
       // Morph factor: completes earlier so room wireframe is fully visible while text reads
       const morphFactor = Math.min(1, Math.max(0, scrollProgress * 3.5));
 
-      // Dive animation into the black screen (0.74 -> 1.0)
+      // Dive animation into the black screen (0.78 -> 1.0)
       // Camera plunges deeply through the room portal into the black screen, accelerating forward
       let cameraZ = 2.8 - scrollProgress * 1.5;
       let cameraPitch = currRotX - scrollProgress * 0.12;
       let diveFade = 1;
 
-      if (scrollProgress > 0.74) {
-        const diveProgress = (scrollProgress - 0.74) / 0.26; // 0 -> 1
+      if (scrollProgress > 0.78) {
+        const diveProgress = (scrollProgress - 0.78) / 0.22; // 0 -> 1
         // Rapid exponential zoom forward into the black screen
-        cameraZ -= diveProgress * diveProgress * 4.2;
-        // Fade lines out as camera goes beyond the front portal into darkness
-        diveFade = Math.max(0, 1 - diveProgress * 1.5);
+        cameraZ -= diveProgress * diveProgress * 4.5;
+        // Fade lines out cleanly as camera plunges into pure black by the end of section
+        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.2) * 1.05);
       }
 
       const cameraYaw = currRotY * diveFade;
