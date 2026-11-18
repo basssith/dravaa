@@ -268,6 +268,7 @@ export function WireframeProductsSection() {
 
     const slide0Num = panels[0]?.querySelector<HTMLElement>('[data-flow-num]');
     const slide0Img = panels[0]?.querySelector<HTMLElement>('[data-flow-img]');
+    const slide0Details = panels[0]?.querySelector<HTMLElement>('[data-flow-details]');
     const slide0Divider = panels[0]?.querySelector<HTMLElement>('[data-flow-divider]');
 
     const isDesktop = window.innerWidth >= 1024;
@@ -275,22 +276,18 @@ export function WireframeProductsSection() {
       ? (window.innerWidth * 0.8) - ((window.innerWidth - Math.min(window.innerWidth - 64, 1152)) / 2 + 80)
       : 0;
 
-    // Initial Scene 2 states:
+    // Initial Scene 2 states (same like before we made):
     if (panels[0]) {
       gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
     }
     if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
     if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
+    if (slide0Details) gsap.set(slide0Details, { x: 420, opacity: 0 });
     if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
 
-    // Hide all product details texts initially for staggered animation
-    panels.forEach((p, idx) => {
-      if (idx > 0) {
-        gsap.set(p, { xPercent: 120, opacity: 0, pointerEvents: 'none' });
-      }
-      const textItems = p.querySelectorAll<HTMLElement>('[data-text-anim]');
-      gsap.set(textItems, { opacity: 0, y: 22 });
-    });
+    for (let i = 1; i < panels.length; i++) {
+      gsap.set(panels[i], { xPercent: 120, opacity: 0, pointerEvents: 'none' });
+    }
 
     // Intro initial states:
     if (introTag) gsap.set(introTag, { opacity: 0, y: 18 });
@@ -354,23 +351,23 @@ export function WireframeProductsSection() {
     }
 
     // 2. Slower, Cinematic In-Place Transition:
-    // Scene 1 fades out into deep black (28 to 36).
-    // Scene 2 emerges in place from within the black screen (34 to 42) with gentle scale.
-    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 28);
-    masterTl.set(scene1, { pointerEvents: 'none' }, 34);
+    // Scene 1 fades out into deep black (26 to 31).
+    // Scene 2 emerges in place from within the black screen (28 to 32).
+    masterTl.to(scene1, { opacity: 0, duration: 5, ease: 'power1.inOut' }, 26);
+    masterTl.set(scene1, { pointerEvents: 'none' }, 30);
 
     masterTl.fromTo(
       scene2,
-      { opacity: 0, scale: 0.985 },
-      { opacity: 1, scale: 1, duration: 6, ease: 'power2.out' },
-      33
+      { opacity: 0, scale: 0.99 },
+      { opacity: 1, scale: 1, duration: 4, ease: 'power2.out' },
+      28
     );
-    masterTl.set(scene2, { pointerEvents: 'auto' }, 36);
+    masterTl.set(scene2, { pointerEvents: 'auto' }, 31);
 
-    // 3. ANIMATING SCENE 2 INTRO TEXTS:
+    // 3. ANIMATING SCENE 2 INTRO TEXT CONTENT WHEN WE SCROLL:
     // Reveal 03 Tag
     if (introTag) {
-      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, 36);
+      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3, ease: 'power2.out' }, 31);
     }
 
     // Sequentially scrub words in heading & subtitle from dim green -> bright #b6ff66 -> pure white
@@ -378,13 +375,13 @@ export function WireframeProductsSection() {
       const headingCount = 8; // "The product changes but the experience stays."
       introWords.forEach((word, idx) => {
         const isHeading = idx < headingCount;
-        const wordStart = isHeading ? 37 + idx * 0.6 : 42 + (idx - headingCount) * 0.45;
+        const wordStart = isHeading ? 33 + idx * 1.0 : 41 + (idx - headingCount) * 0.55;
         masterTl.to(
           word,
           {
             color: '#b6ff66',
             opacity: 1,
-            duration: 1.2,
+            duration: 1.0,
             ease: 'power1.inOut',
           },
           wordStart
@@ -393,24 +390,24 @@ export function WireframeProductsSection() {
           {
             color: '#ffffff',
             opacity: 1,
-            duration: 1.3,
+            duration: 1.1,
             ease: 'power1.out',
           },
-          wordStart + 0.4
+          wordStart + 0.35
         );
       });
     }
 
     // Reveal arrow button
     if (introArrow) {
-      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 47);
+      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 50);
     }
 
-    // Rest pause on completed Intro (48 to 53)
-    masterTl.to({}, { duration: 5 }, 48);
+    // Rest pause on completed Intro (52 to 56)
+    masterTl.to({}, { duration: 4 }, 52);
 
-    // 4. ANIMATING PRODUCTS & PRODUCT CONTENT TEXTS:
-    // Segment 1 (53 -> 65): Intro -> Product 01 (Nex)
+    // 4. ANIMATING PRODUCTS (EXACT SAME LIKE BEFORE WE MADE):
+    // Segment 1 (56 -> 66): Intro -> Product 01 (Nex)
     if (leftCol) {
       masterTl.to(
         leftCol,
@@ -420,7 +417,7 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        53
+        56
       );
     }
     if (slide0Num) {
@@ -431,40 +428,27 @@ export function WireframeProductsSection() {
           duration: 9,
           ease: 'power2.inOut',
         },
-        53
+        56
       );
     }
     if (slide0Img) {
-      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 54);
+      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 57);
+    }
+    if (slide0Details) {
+      masterTl.to(slide0Details, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 57.5);
     }
     if (slide0Divider) {
-      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 55);
-    }
-
-    // Stagger Product 01 content texts (step, title, description, specs, explore CTA)
-    const slide0Texts = panels[0]?.querySelectorAll<HTMLElement>('[data-text-anim]');
-    if (slide0Texts && slide0Texts.length > 0) {
-      masterTl.to(
-        slide0Texts,
-        {
-          opacity: 1,
-          y: 0,
-          duration: 5,
-          stagger: 0.7,
-          ease: 'power2.out',
-        },
-        55
-      );
+      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 58);
     }
 
     // Rest on Product 01
-    masterTl.to({}, { duration: 3 }, 63);
+    masterTl.to({}, { duration: 3 }, 65);
 
-    // Segments 2, 3, 4: Transitions between Products with Text Stagger
+    // Segments 2, 3, 4: Transitions between Products (same like before we made)
     const stepTimes = [
-      { start: 65, textStart: 68, rest: 75 }, // Prod 01 -> Prod 02 (HMS)
-      { start: 76, textStart: 79, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
-      { start: 88, textStart: 91, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
+      { start: 67, rest: 76 }, // Prod 01 -> Prod 02 (HMS)
+      { start: 78, rest: 87 }, // Prod 02 -> Prod 03 (Vision)
+      { start: 89, rest: 98 }, // Prod 03 -> Prod 04 (Simulator)
     ];
 
     for (let i = 0; i < panels.length - 1; i++) {
@@ -499,22 +483,6 @@ export function WireframeProductsSection() {
         },
         times.start
       );
-
-      // Next product content texts stagger in cleanly
-      const nextTexts = next.querySelectorAll<HTMLElement>('[data-text-anim]');
-      if (nextTexts && nextTexts.length > 0) {
-        masterTl.to(
-          nextTexts,
-          {
-            opacity: 1,
-            y: 0,
-            duration: 5,
-            stagger: 0.7,
-            ease: 'power2.out',
-          },
-          times.textStart
-        );
-      }
 
       // Rest on product
       masterTl.to({}, { duration: 3 }, times.rest);
@@ -895,25 +863,25 @@ export function WireframeProductsSection() {
                     </div>
                   </div>
 
-                  {/* 3. CENTER-RIGHT: Product Details & Specifications with data-text-anim for staggered entrance */}
+                  {/* 3. CENTER-RIGHT: Product Details & Specifications */}
                   <div data-flow-details className="flex flex-col justify-center text-left space-y-3.5 w-full sm:w-[300px] lg:w-[320px] xl:w-[350px] shrink-0 will-change-transform pointer-events-auto">
                     {/* Step Number */}
-                    <div data-text-anim className="font-mono text-xs sm:text-sm tracking-widest text-white/60 will-change-transform">
+                    <div className="font-mono text-xs sm:text-sm tracking-widest text-white/60">
                       0{i + 1} / 0{apps.length}
                     </div>
 
                     {/* Product Name */}
-                    <h3 data-text-anim className="font-display text-[clamp(2.2rem,1.9rem+1.6vw,3.3rem)] font-bold leading-none tracking-tight text-white will-change-transform">
+                    <h3 className="font-display text-[clamp(2.2rem,1.9rem+1.6vw,3.3rem)] font-bold leading-none tracking-tight text-white">
                       {app.name}
                     </h3>
 
                     {/* Description */}
-                    <p data-text-anim className="text-xs sm:text-sm lg:text-base leading-relaxed text-[#c8ccd6] will-change-transform">
+                    <p className="text-xs sm:text-sm lg:text-base leading-relaxed text-[#c8ccd6]">
                       {app.description}
                     </p>
 
                     {/* Specs Table */}
-                    <div data-text-anim className="border-t border-b border-white/20 py-3 my-1 space-y-2 will-change-transform">
+                    <div className="border-t border-b border-white/20 py-3 my-1 space-y-2">
                       <div className="flex justify-between text-xs sm:text-sm font-mono text-white/80">
                         <span>Category</span>
                         <span className="text-white font-medium">{app.badge}</span>
@@ -925,7 +893,7 @@ export function WireframeProductsSection() {
                     </div>
 
                     {/* Explore CTA */}
-                    <div data-text-anim className="will-change-transform">
+                    <div>
                       <TransitionLink
                         href={`/applications/${slugOf(app)}`}
                         className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group mt-1"
