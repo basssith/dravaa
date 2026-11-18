@@ -6,7 +6,9 @@ import { applications, slugOf } from '@/lib/applications';
 import { TransitionLink } from './TransitionLink';
 import { Arrow } from './icons';
 import { WordScrub } from './type';
+import { useUI } from './UIProvider';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { RAIN_FLIP_EVERY, RAIN_FONT, rainCells, type RainCell } from '@/lib/rain';
 
 interface Line3D {
   p1: [number, number, number];
@@ -132,15 +134,23 @@ interface BinaryPoint {
   isBright: boolean;
 }
 
-interface FreeParticle {
-  x: number;
-  y: number;
-  z: number;
-  vy: number;
-  char: '0' | '1';
-  flipTimer: number;
-  flipInterval: number;
-  isGreen: boolean;
+/** A hero rain digit placed at a depth `z`, so the grid parallaxes and the camera can dive through it. */
+type RainDigit = RainCell & { z: number };
+
+// Camera distance at rest (scroll progress 0, mouse centred); see `cameraZ` in render.
+const CAMERA_REST = 2.8;
+
+const TRIGGER_ID = 'wireframe-products-trigger';
+
+// Timeline times where scrolling may come to rest: the "03 Products" intro, then each product once its
+// texts have fully arrived and before the next slide starts moving (see `stepTimes` in the effect).
+const STOPS = [52.2, 64, 75.9, 87.5, 99.5];
+
+/** Scroll position at which the pinned timeline reaches time `t`, or null before it exists. */
+function scrollForTime(t: number) {
+  const st = ScrollTrigger.getById(TRIGGER_ID);
+  const tl = st?.animation;
+  return st && tl ? st.start + (st.end - st.start) * (t / tl.duration()) : null;
 }
 
 export function WireframeProductsSection() {
@@ -150,6 +160,7 @@ export function WireframeProductsSection() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const textWrapperRef = useRef<HTMLDivElement>(null);
 
+  const { scrollTo } = useUI();
   const [fullscreenApp, setFullscreenApp] = useState<(typeof applications)[number] | null>(null);
 
   const apps = applications.slice(0, 4);
@@ -218,21 +229,10 @@ export function WireframeProductsSection() {
       }
     });
 
-    // 2. FILL FULL SCREEN WITH RICH AMBIENT BINARY NUMBERS (240 PARTICLES COVERING ENTIRE VIEWPORT)
-    const freeParticles: FreeParticle[] = [];
-    const totalFree = 240;
-    for (let i = 0; i < totalFree; i++) {
-      freeParticles.push({
-        x: (Math.random() - 0.5) * 7.6,
-        y: (Math.random() - 0.5) * 6.0,
-        z: -1.5 + Math.random() * 5.2,
-        vy: -0.003 - Math.random() * 0.005,
-        char: Math.random() > 0.5 ? '1' : '0',
-        flipTimer: Math.floor(Math.random() * 90),
-        flipInterval: 40 + Math.floor(Math.random() * 100),
-        isGreen: Math.random() < 0.22,
-      });
-    }
+    // 2. THE HERO'S RAIN, CONTINUED: same grid, colours and speeds (lib/rain.ts), each digit at its own
+    // depth. With the camera at rest it lines up exactly with the hero; moving the mouse or scrolling
+    // turns and dives the camera, so the rain parallaxes in 3D. Rebuilt on resize.
+    let rain: RainDigit[] = [];
 
     const onPointerMove = (e: MouseEvent) => {
       const normX = (e.clientX / window.innerWidth) * 2 - 1;
@@ -253,6 +253,8 @@ export function WireframeProductsSection() {
       canvas.height = Math.round(height * dpr);
       canvas.style.width = `${width}px`;
       canvas.style.height = `${height}px`;
+
+      rain = rainCells(width, height).map((c) => ({ ...c, z: -1 + Math.random() * 4 }));
     };
 
     handleResize();
@@ -301,9 +303,10 @@ export function WireframeProductsSection() {
     // --- MASTER TIMELINE (SCENE 1 + SCENE 2 IN ONE CONTINUOUS PIN) ---
     // Total scale: 100 units.
     // Extended pin distance (+=760%) for a slower, richer, cinematic transition!
+    let lastDir = 1; // 1 = scrolling down, -1 = up
     const masterTl = gsap.timeline({
       scrollTrigger: {
-        id: 'wireframe-products-trigger',
+        id: TRIGGER_ID,
         trigger: masterContainer,
         start: 'top top',
         end: '+=760%',
@@ -311,9 +314,24 @@ export function WireframeProductsSection() {
         scrub: 0.65,
         onUpdate: (self) => {
           targetProgress = self.progress;
+          lastDir = self.direction;
         },
       },
     });
+
+    // Snap between products: when a scroll ends between two stops, glide on to the next stop in the
+    // direction you were scrolling, so one scroll lands on the next product instead of in between.
+    const onScrollEnd = () => {
+      const st = masterTl.scrollTrigger;
+      if (!st?.isActive) return;
+      const t = st.progress * masterTl.duration();
+      if (t < STOPS[0] - 2 || t > STOPS[STOPS.length - 1]) return; // before the products, or leaving them
+      if (STOPS.some((s) => Math.abs(s - t) < 0.5)) return; // already resting on a stop
+      const next = lastDir > 0 ? STOPS.find((s) => s > t) : STOPS.findLast((s) => s < t);
+      const y = next === undefined ? null : scrollForTime(next);
+      if (y !== null) scrollTo(y);
+    };
+    ScrollTrigger.addEventListener('scrollEnd', onScrollEnd);
 
     // 1. Initial Scene 1 States
     gsap.set(scene1, { opacity: 1, pointerEvents: 'auto' });
@@ -550,7 +568,7 @@ export function WireframeProductsSection() {
       const morphFactor = Math.min(1, Math.max(0, scene1Prog * 3.5));
 
       // Slower, richer dive into the black screen (0.65 -> 1.0 of Scene 1)
-      let cameraZ = 2.8 - scene1Prog * 1.5;
+      let cameraZ = CAMERA_REST - scene1Prog * 1.5;
       let cameraPitch = currRotX - scene1Prog * 0.12;
       let diveFade = 1;
 
@@ -633,26 +651,27 @@ export function WireframeProductsSection() {
           }
         });
 
-        // Ambient full-screen binary numbers (gently floating across the entire viewport)
-        const ambientAlpha = Math.max(0.28, 0.78 * (1 - morphFactor * 0.55)) * diveFade;
-        freeParticles.forEach((fp) => {
-          fp.flipTimer++;
-          if (fp.flipTimer > fp.flipInterval) {
-            fp.char = fp.char === '1' ? '0' : '1';
-            fp.flipTimer = 0;
+        // The hero's rain, continued in 3D. Each digit falls in screen space exactly like the hero's,
+        // then is lifted to its depth: at rest it projects back onto its screen spot, and when the
+        // camera turns or dives it parallaxes. It dims as the room assembles so the wireframe leads.
+        const fov = Math.min(width, height) * 0.85; // same as project()
+        const rainDim = (1 - morphFactor * 0.55) * diveFade;
+        ctx.font = RAIN_FONT;
+        rain.forEach((d) => {
+          d.flipTimer++;
+          if (d.flipTimer > RAIN_FLIP_EVERY) {
+            d.char = d.char === '1' ? '0' : '1';
+            d.flipTimer = 0;
           }
 
-          fp.y += fp.vy;
-          if (fp.y < -4.8) fp.y = 4.8;
+          d.y += d.speed;
+          if (d.y > height + 20) d.y = -20;
 
-          const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
+          const k = (d.z + CAMERA_REST) / fov;
+          const [px, py, , visible] = project((d.x - width / 2) * k, (d.y - height / 2) * k, d.z, cameraPitch, cameraYaw, cameraZ);
           if (visible && px >= -80 && px <= width + 80 && py >= -80 && py <= height + 80) {
-            const fontSize = Math.max(14, Math.min(22, Math.round(17 * (2.6 / dist))));
-            ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
-            ctx.fillStyle = fp.isGreen
-              ? `rgba(182, 255, 102, ${0.85 * ambientAlpha})`
-              : `rgba(145, 160, 180, ${0.68 * ambientAlpha})`;
-            ctx.fillText(fp.char, px, py);
+            ctx.fillStyle = `${d.color}${Math.min(d.opacity + d.speed * 0.08, 0.85) * rainDim})`;
+            ctx.fillText(d.char, px, py);
           }
         });
 
@@ -667,11 +686,12 @@ export function WireframeProductsSection() {
     return () => {
       cancelAnimationFrame(animId);
       masterTl.kill();
-      ScrollTrigger.getById('wireframe-products-trigger')?.kill();
+      ScrollTrigger.getById(TRIGGER_ID)?.kill();
+      ScrollTrigger.removeEventListener('scrollEnd', onScrollEnd);
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [scrollTo]);
 
   return (
     <section
@@ -688,8 +708,8 @@ export function WireframeProductsSection() {
       >
         {/* 3D Wireframe Canvas */}
         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 select-none">
+          {/* No fade at the top: this rain continues the hero's (lib/rain.ts). */}
           <canvas ref={canvasRef} className="block h-full w-full" />
-          <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-t from-transparent to-[#000000] pointer-events-none" />
         </div>
 
         {/* Content Wrapper */}
@@ -731,7 +751,7 @@ export function WireframeProductsSection() {
               <span className="block text-white">
                 The new era of{' '}
                 <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-2.5 sm:px-3 py-0.5 rounded-[5px] tracking-normal align-middle whitespace-nowrap shadow-none leading-tight ml-1 text-[0.88em]">
-                  Drava
+                  drava
                 </span>
               </span>
               <span className="block text-white mt-1">— where work flows effortlessly.</span>
@@ -793,11 +813,9 @@ export function WireframeProductsSection() {
                 data-intro-arrow
                 type="button"
                 onClick={() => {
-                  const st = ScrollTrigger.getById('wireframe-products-trigger');
-                  if (st) {
-                    const targetScroll = st.start + (st.end - st.start) * 0.62;
-                    window.scrollTo({ top: targetScroll, behavior: 'smooth' });
-                  }
+                  // Through Lenis (useUI), like the snapping, so the two never fight.
+                  const y = scrollForTime(STOPS[1]);
+                  if (y !== null) scrollTo(y);
                 }}
                 aria-label="Advance to first product (01 Nex)"
                 className="group inline-flex items-center text-white hover:text-[#b6ff66] transition-colors duration-300 py-2 cursor-pointer focus:outline-none will-change-transform"

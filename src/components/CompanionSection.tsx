@@ -178,7 +178,7 @@ export function CompanionSection() {
               <span className="block text-white">
                 Meet the{' '}
                 <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-5 py-0.5 sm:py-1 rounded-[6px] sm:rounded-[8px] tracking-normal whitespace-nowrap shadow-none align-baseline">
-                  Drava
+                  drava
                 </span>
               </span>
               <span className="block mt-2 text-white">

@@ -45,24 +45,8 @@ export function Cursor() {
         dotRef.current.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0)`;
       }
 
-      // Check if mouse is over landing hero section
-      if (isLandingPage) {
-        const heroEl = document.getElementById('hero');
-        if (heroEl) {
-          const rect = heroEl.getBoundingClientRect();
-          const inside = (
-            e.clientX >= rect.left &&
-            e.clientX <= rect.right &&
-            e.clientY >= rect.top &&
-            e.clientY <= rect.bottom
-          );
-          setInHero(inside);
-        } else {
-          setInHero(false);
-        }
-      } else {
-        setInHero(false);
-      }
+      // Over the landing hero itself (not the header or menu floating above it)?
+      setInHero(isLandingPage && !!(e.target as Element).closest('#hero'));
     };
 
     const onPointerOver = (e: PointerEvent) => {
@@ -112,7 +96,8 @@ export function Cursor() {
         aria-hidden="true"
         className={cn(
           'pointer-events-none fixed top-0 left-0 z-300 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white mix-blend-difference transition-transform duration-75',
-          clicking ? 'size-1.5' : 'size-1'
+          clicking ? 'size-1.5' : 'size-1',
+          inHero && 'opacity-0' // the hero's Drava smile is the cursor there
         )}
       />
 
@@ -124,7 +109,8 @@ export function Cursor() {
           'pointer-events-none fixed top-0 left-0 z-300 rounded-full border border-white/60 mix-blend-difference transition-[width,height,margin,border-color,background-color] duration-300 ease-expo',
           mode === 'idle' && '-m-[16px] size-8',
           mode === 'hover' && '-m-[24px] size-12 border-white bg-white/10',
-          clicking && 'scale-90'
+          clicking && 'scale-90',
+          inHero && 'opacity-0'
         )}
       />
 
@@ -138,7 +124,8 @@ export function Cursor() {
             inHero && mode === 'idle' ? 'opacity-100' : 'opacity-0'
           )}
         >
-          <div className="translate-x-6 -translate-y-1/2 flex items-center">
+          {/* sits just right of the 72px Drava smile drawn by MatrixFluidCanvas */}
+          <div className="translate-x-12 -translate-y-1/2 flex items-center">
             <span className="font-mono text-xs sm:text-[13px] font-bold uppercase tracking-widest text-white whitespace-nowrap drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               SCROLL TO EXPLORE
             </span>
