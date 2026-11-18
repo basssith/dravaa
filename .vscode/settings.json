@@ -1,5 +1,5 @@
 {
-  "git.path": "C:\\Program Files\\Git\\ucrt64\\libexec\\git-core\\git.exe",
+  "git.path": "C:\\Program Files\\Git\\cmd\\git.exe",
   "git.enabled": true,
   "git-graph.showStatusBarItem": true
 }
