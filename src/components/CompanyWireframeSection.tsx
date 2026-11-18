@@ -39,19 +39,28 @@ function buildInteriorWireframe(): Line3D[] {
     lines.push({ p1: [x, 0.0, z], p2: [x, 0.0, z + 0.9] });
   }
 
-  // Ceiling baffles & Luminaires
+  // Ceiling baffles & Luminaires: perfectly connected to ceiling corner longitudinal rails (x = -2.2 and 2.2)
   for (let z = -0.5; z <= 2.5; z += 0.75) {
-    lines.push({ p1: [-2.0, -1.1, z], p2: [2.0, -1.1, z] });
+    const leftX = -2.2 - (z + 1.0) * 0.075;
+    const rightX = 2.2 + (z + 1.0) * 0.075;
+    lines.push({ p1: [leftX, -1.1, z], p2: [rightX, -1.1, z] });
   }
-  lines.push({ p1: [-0.8, -1.1, -1.0], p2: [-0.8, -1.1, 2.8] });
-  lines.push({ p1: [0.8, -1.1, -1.0], p2: [0.8, -1.1, 2.8] });
 
-  lines.push({ p1: [-1.0, -0.85, 0.2], p2: [1.0, -0.85, 0.2] });
-  lines.push({ p1: [-1.0, -0.85, 1.4], p2: [1.0, -0.85, 1.4] });
-  lines.push({ p1: [-1.0, -1.1, 0.2], p2: [-1.0, -0.85, 0.2] });
-  lines.push({ p1: [1.0, -1.1, 0.2], p2: [1.0, -0.85, 0.2] });
-  lines.push({ p1: [-1.0, -1.1, 1.4], p2: [-1.0, -0.85, 1.4] });
-  lines.push({ p1: [1.0, -1.1, 1.4], p2: [1.0, -0.85, 1.4] });
+  // Ceiling longitudinal inner lighting rails
+  lines.push({ p1: [-0.9, -1.1, -1.0], p2: [-0.9, -1.1, 2.8] });
+  lines.push({ p1: [0.9, -1.1, -1.0], p2: [0.9, -1.1, 2.8] });
+
+  // Suspended linear light fixture (pendant frame connected cleanly to ceiling)
+  lines.push({ p1: [-0.9, -0.85, 0.2], p2: [0.9, -0.85, 0.2] });
+  lines.push({ p1: [-0.9, -0.85, 1.6], p2: [0.9, -0.85, 1.6] });
+  lines.push({ p1: [-0.9, -0.85, 0.2], p2: [-0.9, -0.85, 1.6] });
+  lines.push({ p1: [0.9, -0.85, 0.2], p2: [0.9, -0.85, 1.6] });
+
+  // Vertical suspension rods from ceiling (-1.1) to pendant light (-0.85)
+  lines.push({ p1: [-0.9, -1.1, 0.2], p2: [-0.9, -0.85, 0.2] });
+  lines.push({ p1: [0.9, -1.1, 0.2], p2: [0.9, -0.85, 0.2] });
+  lines.push({ p1: [-0.9, -1.1, 1.6], p2: [-0.9, -0.85, 1.6] });
+  lines.push({ p1: [0.9, -1.1, 1.6], p2: [0.9, -0.85, 1.6] });
 
   // Boardroom Table
   const tableTopY = 0.38;
