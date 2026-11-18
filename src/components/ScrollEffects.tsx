@@ -43,21 +43,15 @@ export function ScrollEffects() {
         });
       });
 
-      // Staggered Sequential Card Slide-Up on Scroll:
-      // In two-column rows (Card 1 left, Card 2 right), Card 1 slides up first,
-      // and as you continue scrolling, Card 2 smoothly slides up after Card 1.
-      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el, idx) => {
-        // Even indices (0, 2 -> Left card) start earlier; Odd indices (1, 3 -> Right card) start slightly later
-        const isRightCard = idx % 2 === 1;
-        const startTrigger = isRightCard ? 'top 80%' : 'top 92%';
-        const endTrigger = isRightCard ? 'top 45%' : 'top 55%';
-
+      // Smooth Card Stacking & Pop-Up Elevation on Scroll:
+      // Cards stack progressively as you scroll down, lifting up and scaling gracefully
+      gsap.utils.toArray<HTMLElement>('[data-app-card]').forEach((el) => {
         gsap.fromTo(
           el,
           {
-            y: 90,
+            y: 80,
             scale: 0.94,
-            opacity: 0.2,
+            opacity: 0.6,
           },
           {
             y: 0,
@@ -66,8 +60,8 @@ export function ScrollEffects() {
             ease: 'power2.out',
             scrollTrigger: {
               trigger: el,
-              start: startTrigger,
-              end: endTrigger,
+              start: 'top 92%',
+              end: 'top 55%',
               scrub: 0.6,
             },
           }

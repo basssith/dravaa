@@ -10,6 +10,7 @@ export function AppGrid({ apps }: { apps: Application[] }) {
       {apps.map((app) => (
         <article
           key={app.id}
+          data-reveal
           data-app-card
           className="w-full"
         >
