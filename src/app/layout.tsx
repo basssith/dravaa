@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Syne } from 'next/font/google';
+import { Inter, Syne, Manrope } from 'next/font/google';
 import type { ReactNode } from 'react';
 import { CleanMinimalBackground } from '@/components/CleanMinimalBackground';
 import { Cursor } from '@/components/Cursor';
@@ -16,6 +16,7 @@ import './globals.css';
 
 const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'], variable: '--font-syne', display: 'swap' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-inter', display: 'swap' });
+const manrope = Manrope({ subsets: ['latin'], weight: ['400', '500', '600', '700', '800'], variable: '--font-manrope', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -37,7 +38,7 @@ const BOOT = `document.documentElement.classList.add('js');try{if(!sessionStorag
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${syne.variable} ${inter.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: BOOT }} />
       </head>

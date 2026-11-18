@@ -119,7 +119,7 @@ export function AppGrid({ apps }: { apps: Application[] }) {
                       <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
                         {app.id}
                       </span>
-                      <span className="text-xs sm:text-sm font-mono tracking-widest text-white/80 font-semibold uppercase">
+                      <span className="text-xs sm:text-sm font-[family-name:var(--font-manrope)] tracking-widest text-white/90 font-semibold uppercase">
                         {app.category}
                       </span>
                     </div>
