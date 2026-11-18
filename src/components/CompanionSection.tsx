@@ -117,7 +117,7 @@ export function CompanionSection() {
       ref={sectionRef}
       id="approach"
       data-companion-card
-      className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-28 overflow-hidden flex flex-col justify-between"
+      className="relative z-30 min-h-screen w-full bg-[#000000] text-white py-section lg:py-28 overflow-hidden flex flex-col justify-between rounded-t-[36px] sm:rounded-t-[48px] border-t border-white/10 shadow-[0_-25px_80px_rgba(0,0,0,0.95)] will-change-transform"
     >
       {/* Background ambient subtle glow aligned with Drava green */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-[#b6ff66]/5 rounded-full blur-[140px] pointer-events-none" />
