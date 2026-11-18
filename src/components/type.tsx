@@ -48,7 +48,7 @@ export function WordScrub({
                 {w}
               </span>
             ) : (
-              <span className="w-scrub inline will-change-[color,opacity] transition-colors duration-150">
+              <span className="w-scrub inline will-change-[color,opacity]">
                 {w}
               </span>
             )}{' '}
