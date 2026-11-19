@@ -285,7 +285,9 @@ export function WireframeProductsSection() {
     const companionSlide = scene2.querySelector<HTMLElement>('[data-companion-slide]');
     const companionLeftCol = companionSlide?.querySelector<HTMLElement>('[data-comp-left]');
     const companionRightCol = companionSlide?.querySelector<HTMLElement>('[data-comp-right]');
-    const compLeftWords = companionLeftCol?.querySelectorAll<HTMLElement>('.w-scrub');
+    const compHeadingWords = companionLeftCol?.querySelectorAll<HTMLElement>('.w-scrub:not([data-words] .w-scrub)');
+    const compBadge = companionLeftCol?.querySelector<HTMLElement>('.w-comp-badge');
+    const compLeftWords = companionLeftCol?.querySelectorAll<HTMLElement>('[data-words] .w-scrub');
     const compRightWords = companionRightCol?.querySelectorAll<HTMLElement>('.w-scrub');
     const compListItems = companionRightCol?.querySelectorAll<HTMLElement>('[data-point-item]');
     const compDividers = companionRightCol?.querySelectorAll<HTMLElement>('[data-point-divider]');
@@ -317,6 +319,12 @@ export function WireframeProductsSection() {
     }
     if (compDividers) {
       gsap.set(compDividers, { scaleX: 0, transformOrigin: 'left center' });
+    }
+    if (compHeadingWords && compHeadingWords.length > 0) {
+      gsap.set(compHeadingWords, { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+    }
+    if (compBadge) {
+      gsap.set(compBadge, { opacity: 0.35, scale: 0.95, filter: 'grayscale(0.6)' });
     }
     if (compLeftWords && compLeftWords.length > 0) {
       gsap.set([compLeftWords, compRightWords], { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
@@ -608,10 +616,61 @@ export function WireframeProductsSection() {
       );
     }
 
+    // Companion Left Heading ("Meet the drava companion.") Word Scrub Animation
+    if (compHeadingWords && compHeadingWords.length >= 3) {
+      // "Meet"
+      masterTl.to(
+        compHeadingWords[0],
+        { color: '#b6ff66', opacity: 1, duration: 1.0, ease: 'power1.inOut' },
+        122
+      ).to(
+        compHeadingWords[0],
+        { color: '#ffffff', opacity: 1, duration: 1.1, ease: 'power1.out' },
+        122.4
+      );
+
+      // "the"
+      masterTl.to(
+        compHeadingWords[1],
+        { color: '#b6ff66', opacity: 1, duration: 1.0, ease: 'power1.inOut' },
+        123.2
+      ).to(
+        compHeadingWords[1],
+        { color: '#ffffff', opacity: 1, duration: 1.1, ease: 'power1.out' },
+        123.6
+      );
+
+      // "drava" green badge pops into full brilliance
+      if (compBadge) {
+        masterTl.to(
+          compBadge,
+          {
+            opacity: 1,
+            scale: 1,
+            filter: 'grayscale(0)',
+            duration: 1.2,
+            ease: 'back.out(1.4)',
+          },
+          124.4
+        );
+      }
+
+      // "companion."
+      masterTl.to(
+        compHeadingWords[2],
+        { color: '#b6ff66', opacity: 1, duration: 1.1, ease: 'power1.inOut' },
+        125.6
+      ).to(
+        compHeadingWords[2],
+        { color: '#ffffff', opacity: 1, duration: 1.2, ease: 'power1.out' },
+        126.1
+      );
+    }
+
     // Companion Left Subheading Words Scrub (green -> white)
     if (compLeftWords && compLeftWords.length > 0) {
       compLeftWords.forEach((w, idx) => {
-        const startT = 124 + idx * 0.45;
+        const startT = 127 + idx * 0.45;
         masterTl.to(
           w,
           {
@@ -635,7 +694,7 @@ export function WireframeProductsSection() {
     }
 
     // Companion Right Points & Dividers Sequential Progression
-    let pointTime = 137;
+    let pointTime = 142;
     // Reveal top divider line (Line 0 of 4)
     if (compDividers && compDividers[0]) {
       masterTl.to(
@@ -1101,7 +1160,7 @@ export function WireframeProductsSection() {
                           fill
                           quality={100}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 680px"
-                          className="object-contain object-center w-full h-full transition-transform duration-700 group-hover:scale-[1.02]"
+                          className="object-cover object-center w-full h-full transition-transform duration-700 group-hover:scale-[1.03]"
                         />
 
                         {/* Hover Overlay: appears smoothly when hovering product image */}
@@ -1162,10 +1221,10 @@ export function WireframeProductsSection() {
             {/* 04 COMPANION SLIDE: Appears seamlessly after 4th product with the same centered in-place transition */}
             <div
               data-companion-slide
-              className="absolute inset-0 flex flex-col justify-between p-4 sm:p-8 lg:p-12 will-change-transform pointer-events-none z-40 bg-black"
+              className="absolute inset-0 flex flex-col justify-between py-12 lg:py-16 will-change-transform pointer-events-none z-40 bg-black"
             >
-              {/* TOP BAR: 04 COMPANION TAG */}
-              <div className="w-full pt-2 sm:pt-4">
+              {/* TOP BAR: 04 COMPANION TAG (aligned with global layout grid and positioned nicely down) */}
+              <div className="wrap w-full pt-4 sm:pt-6 lg:pt-8 px-gutter">
                 <div className="inline-flex items-center gap-2.5">
                   <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
                     04
@@ -1177,20 +1236,21 @@ export function WireframeProductsSection() {
               </div>
 
               {/* MAIN CONTENT GRID */}
-              <div className="w-full flex min-h-[60vh] flex-col justify-center my-auto max-w-[95vw] 2xl:max-w-[1550px] mx-auto">
+              <div className="wrap w-full flex min-h-[60vh] flex-col justify-center my-auto px-gutter mx-auto">
                 <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
                   
                   {/* LEFT SIDE: TWO-LINE HEADLINE & SUBHEADING */}
                   <div data-comp-left className="lg:col-span-7 flex flex-col justify-center">
                     <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.6rem)] font-bold tracking-tight leading-[1.15] text-white">
                       <span className="block text-white">
-                        Meet the{' '}
-                        <span className="font-display inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-5 py-0.5 sm:py-1 rounded-[6px] sm:rounded-[8px] tracking-normal whitespace-nowrap shadow-none align-baseline">
+                        <span className="w-scrub inline">Meet</span>{' '}
+                        <span className="w-scrub inline">the</span>{' '}
+                        <span className="w-comp-badge font-display inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-5 py-0.5 sm:py-1 rounded-[6px] sm:rounded-[8px] tracking-normal whitespace-nowrap shadow-none align-baseline">
                           drava
                         </span>
                       </span>
                       <span className="block mt-2 text-white">
-                        companion.
+                        <span className="w-scrub inline">companion.</span>
                       </span>
                     </h2>
 
