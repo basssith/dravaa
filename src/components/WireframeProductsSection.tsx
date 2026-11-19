@@ -8,6 +8,12 @@ import { Arrow } from './icons';
 import { WordScrub } from './type';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
+const COMPANION_ITEMS = [
+  'Spatial telemetry & multi-modal perception',
+  'Zero-latency neural automation engine',
+  'Cross-product context continuity'
+];
+
 interface Line3D {
   p1: [number, number, number];
   p2: [number, number, number];
@@ -158,7 +164,6 @@ export function WireframeProductsSection() {
   const textWrapperRef = useRef<HTMLDivElement>(null);
 
   const [activeIdx, setActiveIdx] = useState(0);
-  const [fullscreenApp, setFullscreenApp] = useState<(typeof applications)[number] | null>(null);
 
   const apps = applications.slice(0, 4);
 
@@ -275,29 +280,47 @@ export function WireframeProductsSection() {
 
     const slide0Num = panels[0]?.querySelector<HTMLElement>('[data-flow-num]');
     const slide0Img = panels[0]?.querySelector<HTMLElement>('[data-flow-img]');
-    const slide0Divider = panels[0]?.querySelector<HTMLElement>('[data-flow-divider]');
 
-    const isDesktop = window.innerWidth >= 1024;
-    const initialOffset01 = isDesktop
-      ? (window.innerWidth * 0.8) - ((window.innerWidth - Math.min(window.innerWidth - 64, 1152)) / 2 + 80)
-      : 0;
+    // Companion Slide elements
+    const companionSlide = scene2.querySelector<HTMLElement>('[data-companion-slide]');
+    const companionLeftCol = companionSlide?.querySelector<HTMLElement>('[data-comp-left]');
+    const companionRightCol = companionSlide?.querySelector<HTMLElement>('[data-comp-right]');
+    const compLeftWords = companionLeftCol?.querySelectorAll<HTMLElement>('.w-scrub');
+    const compRightWords = companionRightCol?.querySelectorAll<HTMLElement>('.w-scrub');
+    const compListItems = companionRightCol?.querySelectorAll<HTMLElement>('[data-point-item]');
+    const compDividers = companionRightCol?.querySelectorAll<HTMLElement>('[data-point-divider]');
 
     // Initial Scene 2 states:
-    if (panels[0]) {
-      gsap.set(panels[0], { xPercent: 0, opacity: 1, pointerEvents: 'auto' });
-    }
-    if (slide0Num) gsap.set(slide0Num, { x: initialOffset01, opacity: 1 });
-    if (slide0Img) gsap.set(slide0Img, { x: 350, opacity: 0 });
-    if (slide0Divider) gsap.set(slide0Divider, { x: 450, opacity: 0 });
-
-    // Hide all product details texts initially for staggered animation
-    panels.forEach((p, idx) => {
-      if (idx > 0) {
-        gsap.set(p, { xPercent: 120, opacity: 0, pointerEvents: 'none' });
-      }
+    // Keep all product panels in the center initially, hidden until activated
+    panels.forEach((p) => {
+      gsap.set(p, {
+        scale: 0.92,
+        opacity: 0,
+        pointerEvents: 'none',
+      });
       const textItems = p.querySelectorAll<HTMLElement>('[data-text-anim]');
-      gsap.set(textItems, { opacity: 0, y: 22 });
+      gsap.set(textItems, { opacity: 0, y: 16 });
     });
+    if (slide0Num) gsap.set(slide0Num, { x: 0, opacity: 1 });
+    if (slide0Img) gsap.set(slide0Img, { x: 0, opacity: 1 });
+
+    // Initial Companion slide states: starts centered, scaled down and hidden
+    if (companionSlide) {
+      gsap.set(companionSlide, {
+        scale: 0.92,
+        opacity: 0,
+        pointerEvents: 'none',
+      });
+    }
+    if (compListItems) {
+      gsap.set(compListItems, { y: 25, opacity: 0 });
+    }
+    if (compDividers) {
+      gsap.set(compDividers, { scaleX: 0, transformOrigin: 'left center' });
+    }
+    if (compLeftWords && compLeftWords.length > 0) {
+      gsap.set([compLeftWords, compRightWords], { color: 'rgba(182, 255, 102, 0.22)', opacity: 0.35 });
+    }
 
     // Tag (03 PRODUCTS) starts ready or reveals first upon reaching the screen
     if (introTag) gsap.set(introTag, { opacity: 0, y: 16 });
@@ -307,24 +330,24 @@ export function WireframeProductsSection() {
     }
     if (introArrow) gsap.set(introArrow, { opacity: 0, scale: 0.8 });
 
-    // --- MASTER TIMELINE (SCENE 1 + SCENE 2 IN ONE CONTINUOUS PIN) ---
-    // Total scale: 100 units.
-    // Extended pin distance (+=760%) for a slower, richer, cinematic transition!
+    // --- MASTER TIMELINE (SCENE 1 + SCENE 2 + COMPANION IN ONE CONTINUOUS PIN) ---
+    // Perfectly tuned pin distance (+=1050%) and responsive scrub (0.6) so wireframe room is smooth,
+    // comfortably readable without dragging or feeling slow, before plunging cleanly into blackness.
     const masterTl = gsap.timeline({
       id: 'wireframe-products-scroll',
       scrollTrigger: {
         id: 'wireframe-products-trigger',
         trigger: masterContainer,
         start: 'top top',
-        end: '+=760%',
+        end: '+=1050%',
         pin: true,
-        scrub: 0.65,
+        scrub: 0.6,
         onUpdate: (self) => {
           targetProgress = self.progress;
 
           // Track active product index for indicators
-          if (self.progress >= 0.44) {
-            const p = (self.progress - 0.48) / 0.52;
+          if (self.progress >= 0.36 && self.progress < 0.72) {
+            const p = (self.progress - 0.38) / 0.33;
             const idx = p < 0.12 ? 0 : Math.min(apps.length - 1, Math.floor((p - 0.12) / 0.25));
             setActiveIdx(Math.max(0, idx));
           } else {
@@ -348,36 +371,40 @@ export function WireframeProductsSection() {
         masterTl.set([tag, block1, block2, block3], { opacity: 0, y: 30 }, 0);
 
         // Sequence 02 Tag & Text blocks in Scene 1
-        masterTl.to(tag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 4);
-        masterTl.to(block1, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 7);
-        masterTl.to(block2, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 12);
-        masterTl.to(block3, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 17);
+        masterTl.to(tag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 3);
+        masterTl.to(block1, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 6.5);
+        masterTl.to(block2, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 11.5);
+        masterTl.to(block3, { opacity: 1, y: 0, duration: 4.5, ease: 'power2.out' }, 16.5);
 
-        // Ample time to read all 3 statements in the wireframe room
-        masterTl.to({}, { duration: 4 }, 21.5);
+        // Keep statements visible while the camera dives deep into the wireframe room
+        // They only fade out right as the camera plunges into the pure black screen!
+        masterTl.to({}, { duration: 15 }, 21);
 
-        // Fade out text cleanly as camera prepares to plunge into black screen
-        masterTl.to([tag, block1, block2, block3], { opacity: 0, y: -25, duration: 3.5, ease: 'power2.in' }, 25.5);
+        // Statements fade out exactly as the wireframe plunges into the black screen
+        masterTl.to([tag, block1, block2, block3], { opacity: 0, y: -25, duration: 5, ease: 'power2.in' }, 36);
       }
     }
 
     // 2. Cinematic In-Place Transition:
-    // Camera plunges deep inside the wireframe room, then fades completely into black (27 to 33).
-    // Scene 2 only emerges AFTER Scene 1 has fully plunged and faded out (at 33+), ensuring pure blackness between them.
-    masterTl.to(scene1, { opacity: 0, duration: 6, ease: 'power1.inOut' }, 27);
-    masterTl.set(scene1, { pointerEvents: 'none' }, 33);
+    // Wireframe room stays visible as camera moves forward, then plunges and fades into black (37 to 45).
+    // Scene 2 emerges cleanly AFTER pure blackness (at 45+).
+    masterTl.to(scene1, { opacity: 0, duration: 7.5, ease: 'power1.inOut' }, 37.5);
+    masterTl.set(scene1, { pointerEvents: 'none' }, 45);
 
     masterTl.fromTo(
       scene2,
       { opacity: 0, scale: 0.99 },
-      { opacity: 1, scale: 1, duration: 5, ease: 'power2.out' },
-      33
+      { opacity: 1, scale: 1, duration: 5.5, ease: 'power2.out' },
+      45
     );
-    masterTl.set(scene2, { pointerEvents: 'auto' }, 35);
+    masterTl.set(scene2, { pointerEvents: 'auto' }, 47);
+
+    // Initial state: leftCol (Intro) is interactive, product stage pointer-events handled per slide
+    masterTl.set(leftCol, { pointerEvents: 'auto' }, 47);
 
     // FIRST: Upon reaching the 03 PRODUCTS page, the "03 PRODUCTS" tag emerges into view cleanly
     if (introTag) {
-      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 34);
+      masterTl.to(introTag, { opacity: 1, y: 0, duration: 3.5, ease: 'power2.out' }, 46);
     }
 
     // THEN: As the user scrolls, the text animation starts and scrubs word-by-word with the scroll!
@@ -385,8 +412,8 @@ export function WireframeProductsSection() {
       const headingCount = 8; // "The product changes but the experience stays."
       introWords.forEach((word, idx) => {
         const isHeading = idx < headingCount;
-        // Text animation starts after reaching the page and scrolling (from 39 upwards)
-        const wordStart = isHeading ? 39 + idx * 1.15 : 49 + (idx - headingCount) * 0.65;
+        // Text animation starts after reaching the page and scrolling (from 51 upwards)
+        const wordStart = isHeading ? 51 + idx * 1.15 : 61 + (idx - headingCount) * 0.65;
         masterTl.to(
           word,
           {
@@ -411,42 +438,48 @@ export function WireframeProductsSection() {
 
     // Reveal arrow button as text scrub completes
     if (introArrow) {
-      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 60);
+      masterTl.to(introArrow, { opacity: 1, scale: 1, duration: 2.5, ease: 'back.out(1.5)' }, 72);
     }
 
     // Rest pause on completed Intro before product 01 slides in
-    masterTl.to({}, { duration: 4 }, 61);
+    masterTl.to({}, { duration: 4 }, 73);
 
     // 4. ANIMATING PRODUCTS & PRODUCT CONTENT TEXTS:
-    // Segment 1 (63 -> 73): Intro -> Product 01 (Nex)
+    // Segment 1 (73 -> 84): Intro text fades out past camera, and Product 01 (Nex) fades in at center
     if (leftCol) {
       masterTl.to(
         leftCol,
         {
-          xPercent: -125,
+          scale: 1.15,
           opacity: 0,
-          duration: 9,
+          duration: 7,
           ease: 'power2.inOut',
         },
-        63
+        73
       );
+      masterTl.set(leftCol, { pointerEvents: 'none' }, 74);
     }
-    if (slide0Num) {
-      masterTl.to(
-        slide0Num,
+
+    // Product 01 fades in at center (scale 0.92 -> 1, opacity 0 -> 1)
+    if (panels[0]) {
+      masterTl.fromTo(
+        panels[0],
         {
-          x: 0,
-          duration: 9,
-          ease: 'power2.inOut',
+          scale: 0.92,
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: 1,
         },
-        63
+        {
+          scale: 1,
+          opacity: 1,
+          pointerEvents: 'auto',
+          zIndex: 10,
+          duration: 7.5,
+          ease: 'power2.out',
+        },
+        74.5
       );
-    }
-    if (slide0Img) {
-      masterTl.to(slide0Img, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 64);
-    }
-    if (slide0Divider) {
-      masterTl.to(slide0Divider, { x: 0, opacity: 1, duration: 8, ease: 'power2.out' }, 65);
     }
 
     // Stagger Product 01 content texts (step, title, description, specs, explore CTA)
@@ -458,21 +491,21 @@ export function WireframeProductsSection() {
           opacity: 1,
           y: 0,
           duration: 5,
-          stagger: 0.7,
+          stagger: 0.6,
           ease: 'power2.out',
         },
-        65
+        76
       );
     }
 
     // Rest on Product 01
-    masterTl.to({}, { duration: 3 }, 72);
+    masterTl.to({}, { duration: 3.5 }, 83);
 
-    // Segments 2, 3, 4: Transitions between Products with Text Stagger
+    // Segments 2, 3, 4: Smooth In-Place Crossfade/Zoom Between Products (stay in center, no side-to-side)
     const stepTimes = [
-      { start: 74, textStart: 77, rest: 83 }, // Prod 01 -> Prod 02 (HMS)
-      { start: 84, textStart: 87, rest: 93 }, // Prod 02 -> Prod 03 (Vision)
-      { start: 94, textStart: 97, rest: 100 }, // Prod 03 -> Prod 04 (Simulator)
+      { start: 85, textStart: 88, rest: 94 }, // Prod 01 -> Prod 02 (HMS)
+      { start: 95, textStart: 98, rest: 104 }, // Prod 02 -> Prod 03 (Vision)
+      { start: 105, textStart: 108, rest: 113 }, // Prod 03 -> Prod 04 (Simulator)
     ];
 
     for (let i = 0; i < panels.length - 1; i++) {
@@ -481,31 +514,38 @@ export function WireframeProductsSection() {
       const times = stepTimes[i];
       if (!prev || !next || !times) continue;
 
-      // Current product leaves to left
+      // Current product smoothly fades out at center (scale 1 -> 1.12, opacity 1 -> 0)
       masterTl.to(
         prev,
         {
-          xPercent: -130,
+          scale: 1.12,
           opacity: 0,
+          zIndex: 1,
           pointerEvents: 'none',
-          duration: 9,
+          duration: 7,
           ease: 'power2.inOut',
         },
         times.start
       );
 
-      // Next product slides in
+      // Next product smoothly fades in at center (scale 0.92 -> 1, opacity 0 -> 1)
       masterTl.fromTo(
         next,
-        { xPercent: 120, opacity: 0, pointerEvents: 'none' },
         {
-          xPercent: 0,
+          scale: 0.92,
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: 2,
+        },
+        {
+          scale: 1,
           opacity: 1,
           pointerEvents: 'auto',
-          duration: 9,
-          ease: 'power2.inOut',
+          zIndex: 10,
+          duration: 7.5,
+          ease: 'power2.out',
         },
-        times.start
+        times.start + 1.2
       );
 
       // Next product content texts stagger in cleanly
@@ -517,7 +557,7 @@ export function WireframeProductsSection() {
             opacity: 1,
             y: 0,
             duration: 5,
-            stagger: 0.7,
+            stagger: 0.6,
             ease: 'power2.out',
           },
           times.textStart
@@ -525,8 +565,150 @@ export function WireframeProductsSection() {
       }
 
       // Rest on product
-      masterTl.to({}, { duration: 3 }, times.rest);
+      masterTl.to({}, { duration: 3.5 }, times.rest);
     }
+
+    // Segment 5 (115 -> 163): Transition from Product 04 directly to 04 COMPANION in-place!
+    // Product 04 smoothly fades out at center (scale 1 -> 1.12, opacity 1 -> 0)
+    const prod4 = panels[3];
+    if (prod4) {
+      masterTl.to(
+        prod4,
+        {
+          scale: 1.12,
+          opacity: 0,
+          zIndex: 1,
+          pointerEvents: 'none',
+          duration: 7,
+          ease: 'power2.inOut',
+        },
+        115
+      );
+    }
+
+    // 04 Companion slide smoothly fades in at center (scale 0.92 -> 1, opacity 0 -> 1)
+    if (companionSlide) {
+      masterTl.fromTo(
+        companionSlide,
+        {
+          scale: 0.92,
+          opacity: 0,
+          pointerEvents: 'none',
+          zIndex: 2,
+        },
+        {
+          scale: 1,
+          opacity: 1,
+          pointerEvents: 'auto',
+          zIndex: 20,
+          duration: 7.5,
+          ease: 'power2.out',
+        },
+        116.2
+      );
+    }
+
+    // Companion Left Subheading Words Scrub (green -> white)
+    if (compLeftWords && compLeftWords.length > 0) {
+      compLeftWords.forEach((w, idx) => {
+        const startT = 124 + idx * 0.45;
+        masterTl.to(
+          w,
+          {
+            color: '#b6ff66',
+            opacity: 1,
+            duration: 0.8,
+            ease: 'power1.inOut',
+          },
+          startT
+        ).to(
+          w,
+          {
+            color: '#ffffff',
+            opacity: 1,
+            duration: 0.9,
+            ease: 'power1.out',
+          },
+          startT + 0.3
+        );
+      });
+    }
+
+    // Companion Right Points & Dividers Sequential Progression
+    let pointTime = 137;
+    // Reveal top divider line (Line 0 of 4)
+    if (compDividers && compDividers[0]) {
+      masterTl.to(
+        compDividers[0],
+        {
+          scaleX: 1,
+          duration: 2.2,
+          ease: 'power2.out',
+        },
+        pointTime
+      );
+      pointTime += 2.5;
+    }
+
+    if (compListItems) {
+      compListItems.forEach((li, idx) => {
+        // Point item slides up & fades in
+        masterTl.to(
+          li,
+          {
+            y: 0,
+            opacity: 1,
+            duration: 2.8,
+            ease: 'power2.out',
+          },
+          pointTime
+        );
+
+        // Words inside this point scrub from green to pure white
+        const itemWords = li.querySelectorAll<HTMLElement>('.w-scrub');
+        itemWords.forEach((rw, widx) => {
+          const wStart = pointTime + 0.8 + widx * 0.35;
+          masterTl.to(
+            rw,
+            {
+              color: '#b6ff66',
+              opacity: 1,
+              duration: 0.7,
+              ease: 'power1.inOut',
+            },
+            wStart
+          ).to(
+            rw,
+            {
+              color: '#ffffff',
+              opacity: 1,
+              duration: 0.8,
+              ease: 'power1.out',
+            },
+            wStart + 0.25
+          );
+        });
+
+        // The dividing line below this point draws across (Lines 1, 2, 3)
+        const bottomLine = compDividers && compDividers[idx + 1];
+        if (bottomLine) {
+          masterTl.to(
+            bottomLine,
+            {
+              scaleX: 1,
+              duration: 2.2,
+              ease: 'power2.out',
+            },
+            pointTime + 2.8
+          );
+        }
+
+        pointTime += 6.5;
+      });
+    }
+
+    // Settle/rest on Companion section at the end of the pin
+    masterTl.to({}, { duration: 4 }, pointTime);
 
     // --- 3D CANVAS RENDER LOOP ---
     const project = (
@@ -613,25 +795,27 @@ export function WireframeProductsSection() {
     };
 
     const render = () => {
-      scrollProgress += (targetProgress - scrollProgress) * 0.08;
+      scrollProgress += (targetProgress - scrollProgress) * 0.12;
       currRotY += (targetRotY - currRotY) * 0.05;
       currRotX += (targetRotX - currRotX) * 0.05;
 
-      // Scale scrollProgress to Scene 1's domain (0 to 0.35)
-      const scene1Prog = Math.min(1, Math.max(0, scrollProgress / 0.35));
+      // Scale scrollProgress to Scene 1's domain (0 to 0.28)
+      const scene1Prog = Math.min(1, Math.max(0, scrollProgress / 0.28));
 
       // Morph factor for wireframe assembly
-      const morphFactor = Math.min(1, Math.max(0, scene1Prog * 3.5));
+      const morphFactor = Math.min(1, Math.max(0, scene1Prog * 4.0));
 
-      // Deeper dive into the wireframe room before plunging into black screen (0.55 -> 1.0 of Scene 1)
-      let cameraZ = 2.8 - scene1Prog * 2.2;
-      let cameraPitch = currRotX - scene1Prog * 0.16;
+      // Smooth camera glide through the wireframe room
+      let cameraZ = 2.8 - scene1Prog * 1.8;
+      let cameraPitch = currRotX - scene1Prog * 0.12;
       let diveFade = 1;
 
-      if (scene1Prog > 0.60) {
-        const diveProgress = (scene1Prog - 0.60) / 0.40;
-        cameraZ -= diveProgress * diveProgress * 7.5;
-        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.5) * 1.05);
+      // Camera advances forward through the room, then deep plunges into pure black screen
+      if (scene1Prog > 0.70) {
+        const diveProgress = (scene1Prog - 0.70) / 0.30;
+        cameraZ -= diveProgress * diveProgress * 8.5;
+        // Fades seamlessly to complete black level as camera penetrates deep into the room
+        diveFade = Math.max(0, 1 - Math.pow(diveProgress, 1.25) * 1.05);
       }
 
       const cameraYaw = currRotY * diveFade;
@@ -820,15 +1004,15 @@ export function WireframeProductsSection() {
         id="applications"
         className="absolute inset-0 w-full h-full flex flex-col justify-between overflow-hidden pointer-events-none will-change-transform"
       >
-        <div className="relative flex-1 flex flex-col lg:flex-row w-full h-full">
-          {/* LEFT COLUMN: 60% Width Intro Content */}
+        <div className="relative flex-1 flex flex-col items-center justify-center w-full h-full">
+          {/* CENTER INTRO: 03 PRODUCTS Intro Stage */}
           <div
             data-left-col
-            className="w-full lg:w-[60%] h-full flex flex-col justify-between p-6 sm:p-10 lg:p-16 xl:p-20 z-20 bg-[#000000] border-b lg:border-b-0 lg:border-r border-[#b6ff66]/40 select-none will-change-transform"
+            className="relative z-20 flex flex-col justify-between h-full p-4 sm:p-8 lg:p-12 w-full max-w-[95vw] 2xl:max-w-[1550px] mx-auto will-change-transform items-center"
           >
-            {/* Top Tag: 03 PRODUCTS */}
-            <div className="pt-2">
-              <div data-intro-tag className="inline-flex items-center gap-2.5 will-change-transform">
+            {/* Top Tag: 03 PRODUCTS (Centered and lowered slightly) */}
+            <div data-intro-tag className="pt-6 sm:pt-10 lg:pt-14 will-change-transform">
+              <div className="inline-flex items-center gap-2.5">
                 <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
                   03
                 </span>
@@ -838,20 +1022,20 @@ export function WireframeProductsSection() {
               </div>
             </div>
 
-            {/* Main Content with Animated WordScrub */}
-            <div className="my-auto py-6 max-w-3xl">
-              <h2 className="font-display text-[clamp(2.6rem,2.8rem+3.5vw,5.8rem)] font-bold tracking-tight leading-[1.04] text-white">
+            {/* Main Content with Animated WordScrub (Centered) */}
+            <div className="my-auto py-6 max-w-4xl mx-auto flex flex-col items-center">
+              <h2 className="font-display text-[clamp(2.4rem,2.5rem+3vw,5.2rem)] font-bold tracking-tight leading-[1.08] text-white text-center">
                 <WordScrub
                   as="span"
-                  className="leading-[1.04]"
+                  className="leading-[1.08] text-center"
                   text="The product changes but the experience stays."
                 />
               </h2>
 
-              <div className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[48ch] font-normal">
+              <div className="mt-8 text-base sm:text-lg lg:text-xl text-white/80 leading-relaxed max-w-[50ch] font-normal text-center mx-auto">
                 <WordScrub
                   as="p"
-                  className="leading-relaxed"
+                  className="leading-relaxed text-center"
                   text="Four intelligent systems engineered to unify every environment. One cohesive OS connecting hardware, spaces, and digital workflows."
                 />
               </div>
@@ -865,7 +1049,7 @@ export function WireframeProductsSection() {
                 onClick={() => {
                   const st = ScrollTrigger.getById('wireframe-products-trigger');
                   if (st) {
-                    const targetScroll = st.start + (st.end - st.start) * 0.62;
+                    const targetScroll = st.start + (st.end - st.start) * 0.58;
                     window.scrollTo({ top: targetScroll, behavior: 'smooth' });
                   }
                 }}
@@ -905,10 +1089,10 @@ export function WireframeProductsSection() {
 
                   {/* 2. CENTER: Horizontal Screen Monitor */}
                   <div data-flow-img className="shrink-0 flex justify-center items-center will-change-transform pointer-events-auto">
-                    <div className="relative aspect-[16/9] w-[330px] sm:w-[450px] md:w-[520px] lg:w-[500px] xl:w-[590px] 2xl:w-[680px] max-h-[60vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group/frame">
+                    <div className="relative aspect-[16/9] w-[330px] sm:w-[450px] md:w-[520px] lg:w-[500px] xl:w-[590px] 2xl:w-[680px] max-h-[60vh] rounded-2xl border-2 border-white/20 bg-[#0a0c0e] overflow-hidden flex flex-col justify-between shadow-[0_0_50px_rgba(255,255,255,0.06)] group">
                       <TransitionLink
                         href={`/applications/${slugOf(app)}`}
-                        className="group/img relative w-full h-full block cursor-pointer overflow-hidden"
+                        className="relative w-full h-full block cursor-pointer overflow-hidden group/link"
                         aria-label={`View ${app.name} details`}
                       >
                         <Image
@@ -917,39 +1101,16 @@ export function WireframeProductsSection() {
                           fill
                           quality={100}
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 680px"
-                          className="object-contain object-center w-full h-full transition-transform duration-700 group-hover/img:scale-[1.02]"
+                          className="object-contain object-center w-full h-full transition-transform duration-700 group-hover:scale-[1.02]"
                         />
 
-                        {/* Hover Overlay */}
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[2px]">
-                          <span className="inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] transform translate-y-2 group-hover/img:translate-y-0">
+                        {/* Hover Overlay: appears smoothly when hovering product image */}
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4 z-10 backdrop-blur-[2px] pointer-events-none">
+                          <span className="inline-flex min-h-11 cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/80 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 group-hover:border-[#b6ff66] group-hover:bg-[#b6ff66] group-hover:text-[#000000] transform translate-y-2 group-hover:translate-y-0">
                             <span>View {app.name}</span>
                             <Arrow className="size-3.5 -rotate-45" />
                           </span>
                         </div>
-
-                        {/* Fullscreen Button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setFullscreenApp(app);
-                          }}
-                          className="absolute bottom-3 right-3 z-20 inline-flex items-center gap-1.5 text-xs font-mono px-3 py-1.5 rounded-md bg-black/75 hover:bg-black/90 border border-white/20 text-white/80 hover:text-[#b6ff66] transition-all cursor-pointer backdrop-blur-sm"
-                          aria-label={`View ${app.name} in fullscreen modal`}
-                        >
-                          <svg
-                            className="size-3.5 fill-none stroke-current"
-                            viewBox="0 0 24 24"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
-                          </svg>
-                          <span>Fullscreen</span>
-                        </button>
                       </TransitionLink>
                     </div>
                   </div>
@@ -983,86 +1144,107 @@ export function WireframeProductsSection() {
                       </div>
                     </div>
 
-                    {/* Explore CTA */}
-                    <div data-text-anim className="will-change-transform">
+                    {/* Explore CTA: aligned flush with the left boundary of the specs lines and text */}
+                    <div data-text-anim className="pt-2 will-change-transform">
                       <TransitionLink
                         href={`/applications/${slugOf(app)}`}
-                        className="inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group mt-1"
+                        className="group/cta inline-flex min-h-11 w-fit cursor-pointer items-center gap-2.5 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-6 text-small font-semibold tracking-wider uppercase text-white shadow-2xl transition-all duration-300 hover:!border-[#b6ff66] hover:!bg-[#b6ff66] hover:!text-[#000000]"
                       >
-                        <span>Explore {app.name}</span>
-                        <Arrow className="size-3.5 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
+                        <span className="text-current">Explore {app.name}</span>
+                        <Arrow className="size-3.5 -rotate-45 transition-transform duration-300 group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5 text-current" />
                       </TransitionLink>
                     </div>
                   </div>
-
-                  {/* 4. VERTICAL GREEN LINE DIVIDER */}
-                  {i < apps.length - 1 && (
-                    <div
-                      data-flow-divider
-                      style={{ backgroundColor: '#b6ff66' }}
-                      className="hidden lg:block w-[1px] h-screen shrink-0 ml-5 lg:ml-7 xl:ml-10 will-change-transform shadow-[0_0_12px_rgba(182,255,102,0.4)]"
-                    />
-                  )}
                 </div>
               </div>
             ))}
-          </div>
-        </div>
 
-        {/* FULLSCREEN POPUP MODAL */}
-        {fullscreenApp && (
-          <div
-            role="dialog"
-            aria-modal="true"
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 sm:p-8 animate-in fade-in duration-200 pointer-events-auto"
-            onClick={() => setFullscreenApp(null)}
-          >
+            {/* 04 COMPANION SLIDE: Appears seamlessly after 4th product with the same centered in-place transition */}
             <div
-              className="relative max-w-5xl w-full max-h-[90vh] bg-[#0a0c0e] border-2 border-white/20 rounded-2xl overflow-hidden p-4 sm:p-6 flex flex-col justify-between shadow-[0_0_80px_rgba(0,0,0,0.8)]"
-              onClick={(e) => e.stopPropagation()}
+              data-companion-slide
+              className="absolute inset-0 flex flex-col justify-between p-4 sm:p-8 lg:p-12 will-change-transform pointer-events-none z-40 bg-black"
             >
-              {/* Modal Header */}
-              <div className="flex justify-between items-center pb-3 border-b border-white/10 text-xs sm:text-sm font-mono">
-                <div className="flex items-center gap-3">
-                  <span className="text-[#b6ff66] font-bold">Product {fullscreenApp.id}</span>
-                  <span className="text-white/40">/</span>
-                  <span className="text-white font-semibold">{fullscreenApp.name}</span>
+              {/* TOP BAR: 04 COMPANION TAG */}
+              <div className="w-full pt-2 sm:pt-4">
+                <div className="inline-flex items-center gap-2.5">
+                  <span className="inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs sm:text-sm px-2.5 py-0.5 rounded-[4px] leading-tight tracking-normal">
+                    04
+                  </span>
+                  <span className="font-mono text-xs sm:text-sm tracking-widest text-white font-semibold">
+                    COMPANION
+                  </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setFullscreenApp(null)}
-                  aria-label="Close fullscreen modal"
-                  className="size-8 rounded-full border border-white/20 bg-white/5 hover:bg-[#b6ff66] hover:text-black flex items-center justify-center transition-colors cursor-pointer text-white"
-                >
-                  ✕
-                </button>
               </div>
 
-              {/* Modal Image Body */}
-              <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] max-h-[68vh] my-4 rounded-xl overflow-hidden bg-black/80">
-                <Image
-                  src={fullscreenApp.image}
-                  alt={fullscreenApp.name}
-                  fill
-                  quality={100}
-                  className="object-contain"
-                />
-              </div>
+              {/* MAIN CONTENT GRID */}
+              <div className="w-full flex min-h-[60vh] flex-col justify-center my-auto max-w-[95vw] 2xl:max-w-[1550px] mx-auto">
+                <div className="grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
+                  
+                  {/* LEFT SIDE: TWO-LINE HEADLINE & SUBHEADING */}
+                  <div data-comp-left className="lg:col-span-7 flex flex-col justify-center">
+                    <h2 className="font-display text-[clamp(2.4rem,1.9rem+2.8vw,4.6rem)] font-bold tracking-tight leading-[1.15] text-white">
+                      <span className="block text-white">
+                        Meet the{' '}
+                        <span className="font-display inline-flex items-center justify-center bg-[#b6ff66] text-[#000000] font-bold px-3 sm:px-5 py-0.5 sm:py-1 rounded-[6px] sm:rounded-[8px] tracking-normal whitespace-nowrap shadow-none align-baseline">
+                          drava
+                        </span>
+                      </span>
+                      <span className="block mt-2 text-white">
+                        companion.
+                      </span>
+                    </h2>
 
-              {/* Modal Footer */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 pt-3 border-t border-white/10 text-xs sm:text-sm font-mono text-white/70">
-                <p className="max-w-xl text-xs sm:text-sm text-[#c8ccd6]">{fullscreenApp.description}</p>
-                <TransitionLink
-                  href={`/applications/${slugOf(fullscreenApp)}`}
-                  className="inline-flex min-h-10 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border border-white/30 bg-black/60 px-5 text-xs font-semibold tracking-wider uppercase text-white shadow-xl transition-all duration-300 hover:border-[#b6ff66] hover:bg-[#b6ff66] hover:text-[#000000] group"
-                >
-                  <span>Explore {fullscreenApp.name}</span>
-                  <Arrow className="size-3 -rotate-45 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-current" />
-                </TransitionLink>
+                    {/* Subheading with scroll WordScrub */}
+                    <div className="mt-6 max-w-[50ch] text-[clamp(0.92rem,0.88rem+0.25vw,1.06rem)] leading-relaxed text-[#c8ccd6]">
+                      <WordScrub
+                        as="p"
+                        className="leading-relaxed"
+                        text="Stationed at the edge of your digital universe. A continuous AI co-pilot that streamlines complex operations, bridges products and guides zero-friction workflows in real time."
+                      />
+                    </div>
+                  </div>
+
+                  {/* RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL BALANCE */}
+                  <div
+                    data-comp-right
+                    className="lg:col-span-5 flex flex-col justify-center pt-4 sm:pt-8 lg:pt-56 xl:pt-72 pointer-events-auto"
+                  >
+                    <ol className="border-none">
+                      {/* Divider Line 0 (top line above Point 01) */}
+                      <div
+                        data-point-divider
+                        className="w-full h-[1px] bg-white/10 origin-left"
+                      />
+
+                      {COMPANION_ITEMS.map((item, idx) => (
+                        <div key={item}>
+                          <li
+                            data-point-item
+                            className="py-5 sm:py-6 flex items-baseline gap-4 sm:gap-5 group transition-colors duration-300 cursor-default"
+                          >
+                            <span className="inline-flex items-center justify-center font-mono text-xs font-bold tracking-wider px-2 py-0.5 rounded-[4px] bg-white/10 text-white/80 group-hover:bg-[#b6ff66] group-hover:text-black transition-colors duration-300 select-none">
+                              0{idx + 1}
+                            </span>
+                            <div className="font-display text-[clamp(1.05rem,0.95rem+0.4vw,1.35rem)] font-semibold tracking-tight text-[#f0f2f5] leading-snug group-hover:text-[#b6ff66] transition-colors duration-300">
+                              <WordScrub as="span" text={item} />
+                            </div>
+                          </li>
+
+                          {/* Divider Line below this point */}
+                          <div
+                            data-point-divider
+                            className="w-full h-[1px] bg-white/10 origin-left"
+                          />
+                        </div>
+                      ))}
+                    </ol>
+                  </div>
+
+                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </section>
   );

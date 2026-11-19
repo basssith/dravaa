@@ -303,22 +303,10 @@ export function NexExperienceWireframe() {
       totemScreenFace,
     } = buildNexExperienceWireframe();
 
-    let mouseX = 0;
-    let mouseY = 0;
     let targetRotY = 0;
     let targetRotX = 0;
     let currRotY = 0;
     let currRotX = 0;
-
-    const onPointerMove = (e: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
-      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-      targetRotY = mouseX * 0.35;
-      targetRotX = -mouseY * 0.2;
-    };
-
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
 
     const handleResize = () => {
       const rect = container.getBoundingClientRect();
@@ -639,7 +627,6 @@ export function NexExperienceWireframe() {
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('resize', handleResize);
     };
   }, []);
