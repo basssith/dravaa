@@ -102,6 +102,12 @@ function buildInteriorWireframe(): Line3D[] {
   lines.push({ p1: [-tableW + 0.12, tableTopY, tableZ2 - 0.12], p2: [-tableW + 0.12, 0.9, tableZ2 - 0.12] });
   lines.push({ p1: [tableW - 0.12, tableTopY, tableZ2 - 0.12], p2: [tableW - 0.12, 0.9, tableZ2 - 0.12] });
 
+  // Floor Perimeter Rails at Bottom of Table Legs (Connecting the 4 table legs cleanly along the floor)
+  lines.push({ p1: [-tableW + 0.12, 0.9, tableZ1 + 0.12], p2: [tableW - 0.12, 0.9, tableZ1 + 0.12] });
+  lines.push({ p1: [tableW - 0.12, 0.9, tableZ1 + 0.12], p2: [tableW - 0.12, 0.9, tableZ2 - 0.12] });
+  lines.push({ p1: [tableW - 0.12, 0.9, tableZ2 - 0.12], p2: [-tableW + 0.12, 0.9, tableZ2 - 0.12] });
+  lines.push({ p1: [-tableW + 0.12, 0.9, tableZ2 - 0.12], p2: [-tableW + 0.12, 0.9, tableZ1 + 0.12] });
+
   // Chairs
   const chairPositions: [number, number][] = [
     [-tableW - 0.35, 0.55],
@@ -1101,7 +1107,7 @@ export function WireframeProductsSection() {
             </div>
 
             {/* Bottom Forward Arrow Button: Advance directly to 01 Product */}
-            <div className="pb-2">
+            <div className="pb-6 sm:pb-10 lg:pb-14">
               <button
                 data-intro-arrow
                 type="button"
@@ -1267,7 +1273,7 @@ export function WireframeProductsSection() {
                   {/* RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL BALANCE */}
                   <div
                     data-comp-right
-                    className="lg:col-span-5 flex flex-col justify-center pt-4 sm:pt-8 lg:pt-56 xl:pt-72 pointer-events-auto"
+                    className="lg:col-span-5 flex flex-col justify-center pt-8 sm:pt-14 lg:pt-80 xl:pt-96 2xl:pt-[26rem] pointer-events-auto"
                   >
                     <ol className="border-none">
                       {/* Divider Line 0 (top line above Point 01) */}
