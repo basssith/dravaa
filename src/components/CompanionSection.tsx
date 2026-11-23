@@ -193,10 +193,10 @@ export function CompanionSection() {
             </div>
           </div>
 
-          {/* --- RIGHT SIDE: 3 NUMBERED POINTS OFFSET DOWN FOR ASYMMETRICAL AESTHETIC BALANCE --- */}
+          {/* --- RIGHT SIDE: 3 NUMBERED POINTS --- */}
           <div
             ref={rightColRef}
-            className="lg:col-span-5 flex flex-col justify-center pt-8 sm:pt-12 lg:pt-80 xl:pt-96"
+            className="lg:col-span-5 flex flex-col justify-center pt-2 sm:pt-4 lg:-mt-12 xl:-mt-20"
           >
             <ol className="border-none">
               {/* Divider Line 0 (top line above Point 01) */}

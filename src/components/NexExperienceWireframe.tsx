@@ -10,19 +10,37 @@ interface Line3D {
   isPopUp?: boolean;
 }
 
+interface BinaryPoint {
+  tx3d: number;
+  ty3d: number;
+  tz3d: number;
+  char: '0' | '1';
+  flipTimer: number;
+  flipInterval: number;
+  isBright: boolean;
+}
+
+interface FreeParticle {
+  x: number;
+  y: number;
+  z: number;
+  vy: number;
+  char: '0' | '1';
+  flipTimer: number;
+  flipInterval: number;
+  isGreen: boolean;
+}
+
 interface WireframeScene {
   backgroundLines: Line3D[];
-  totemLines: Line3D[];
   monitorStandLines: Line3D[];
   monitorLines: Line3D[];
   monitorFaceCorners: [number, number, number][];
   wallScreenFaces: [number, number, number][][];
-  totemScreenFace: [number, number, number][];
 }
 
 function buildNexExperienceWireframe(): WireframeScene {
   const backgroundLines: Line3D[] = [];
-  const totemLines: Line3D[] = [];
   const monitorStandLines: Line3D[] = [];
   const monitorLines: Line3D[] = [];
 
@@ -36,22 +54,19 @@ function buildNexExperienceWireframe(): WireframeScene {
   const roomZ_front = 3.6; // Front plane
 
   // Back Wall rectangle (Outer Architectural Boundary)
-  // Ceiling transverse line connecting top-left and top-right: accented in White Tusker red
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back], color: 'rgba(235, 45, 55, 0.9)' });
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_back] });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_bot, roomZ_back] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_back] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_top, roomZ_back] });
 
   // 4 Clean Perspective Room Edges (Wall/Ceiling and Wall/Floor junctions)
-  // Left and right side above: accented in White Tusker red
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [-roomW, roomH_top, roomZ_front], color: 'rgba(235, 45, 55, 0.9)' });
-  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_front], color: 'rgba(235, 45, 55, 0.9)' });
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_back], p2: [-roomW, roomH_top, roomZ_front] });
+  backgroundLines.push({ p1: [roomW, roomH_top, roomZ_back], p2: [roomW, roomH_top, roomZ_front] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_back], p2: [-roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_back], p2: [roomW, roomH_bot, roomZ_front] });
 
   // Front Aperture Frame
-  // Front ceiling transverse line connecting top-left and top-right: accented in White Tusker red
-  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_front], p2: [roomW, roomH_top, roomZ_front], color: 'rgba(235, 45, 55, 0.9)' });
+  backgroundLines.push({ p1: [-roomW, roomH_top, roomZ_front], p2: [roomW, roomH_top, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_top, roomZ_front], p2: [roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [roomW, roomH_bot, roomZ_front], p2: [-roomW, roomH_bot, roomZ_front] });
   backgroundLines.push({ p1: [-roomW, roomH_bot, roomZ_front], p2: [-roomW, roomH_top, roomZ_front] });
@@ -81,23 +96,22 @@ function buildNexExperienceWireframe(): WireframeScene {
     }
   }
 
-  // 4 Elegant Axis Spokes for Dome (Horizontal and Vertical cross lines) accented in White Tusker red
+  // 4 Elegant Axis Spokes for Dome (Horizontal and Vertical cross lines)
   for (let s = 0; s < 4; s++) {
     const a = (s / 4) * Math.PI * 2;
     backgroundLines.push({
       p1: [0, domeCenterY, domeCenterZ],
       p2: [Math.cos(a) * 2.2, domeCenterY, domeCenterZ + Math.sin(a) * 1.3],
-      color: 'rgba(235, 45, 55, 0.9)',
     });
   }
 
   // ==========================================
-  // 3. LOWER WALL: THREE PRESENTATION SCREENS
+  // 3. WALL: THREE PRESENTATION SCREENS
   // ==========================================
-  // 3. Three Presentation Screens: Balanced size attached flush into the back wall
+  // Three Presentation Screens: Balanced position on the back wall, fully visible above the foreground kiosk
   const screenW = 0.62;
   const screenH = 0.349; // Exact 16:9 ratio
-  const lowerScreenCY = 0.07;
+  const lowerScreenCY = -0.16;
   const lowerScreenY1 = lowerScreenCY - screenH / 2;
   const lowerScreenY2 = lowerScreenCY + screenH / 2;
   const lowerScreens = [
@@ -122,91 +136,21 @@ function buildNexExperienceWireframe(): WireframeScene {
   });
 
   // ==========================================
-  // 4. UPPER FLOOR MEZZANINE (ABOVE THE 3 SCREENS)
-  const upperFloorY = -0.32; // Floor level right above lower screens
-  const upperFloorZ_front = 1.35; // Walkway front edge
-
-  // Mezzanine structural beam & border
-  backgroundLines.push({ p1: [-roomW, upperFloorY, roomZ_back], p2: [roomW, upperFloorY, roomZ_back] });
-  backgroundLines.push({ p1: [-roomW, upperFloorY, upperFloorZ_front], p2: [roomW, upperFloorY, upperFloorZ_front] });
-  backgroundLines.push({ p1: [-roomW, upperFloorY, roomZ_back], p2: [-roomW, upperFloorY, upperFloorZ_front] });
-  backgroundLines.push({ p1: [roomW, upperFloorY, roomZ_back], p2: [roomW, upperFloorY, upperFloorZ_front] });
-
-  // Minimal Mezzanine Walkway Slats (clean spacing)
-  for (let uz = 0.45; uz < upperFloorZ_front; uz += 0.45) {
-    backgroundLines.push({ p1: [-roomW, upperFloorY, uz], p2: [roomW, upperFloorY, uz] });
-  }
-
-  // ==========================================
-  // 5. UPPER LEVEL SCREENS:
-  // LEFT SIDE: Digital Signage Totem (Portrait 9:16) with Red Logo & White Tusker
-  // RIGHT SIDE: 1 Screen like the 3 screens (Landscape 16:9)
-  // Attached directly into the back wall plane behind the upper mezzanine platform
-  // ==========================================
-
-  // A) LEFT SIDE DIGITAL SIGNAGE TOTEM (Sleek Modern Digital Kiosk Stand)
-  // Flush mounted directly onto the back wall:
-  const totemW = 0.36;
-  const totemH = 0.64;
-  const totemX = -1.60;
-  const totemBaseY = upperFloorY;
-  const totemTopY = totemBaseY - totemH;
-  const totemZ = roomZ_back; // Attached to backside wall
-  const hw_t = totemW / 2;
-
-  // 1. Sleek Floor Base Plinth:
-  const baseW = totemW + 0.08;
-  const bH = 0.025;
-  totemLines.push({ p1: [totemX - baseW / 2, totemBaseY, totemZ], p2: [totemX + baseW / 2, totemBaseY, totemZ] });
-  totemLines.push({ p1: [totemX - baseW / 2, totemBaseY - bH, totemZ], p2: [totemX + baseW / 2, totemBaseY - bH, totemZ] });
-  totemLines.push({ p1: [totemX - baseW / 2, totemBaseY, totemZ], p2: [totemX - baseW / 2, totemBaseY - bH, totemZ] });
-  totemLines.push({ p1: [totemX + baseW / 2, totemBaseY, totemZ], p2: [totemX + baseW / 2, totemBaseY - bH, totemZ] });
-
-  // 2. Clean Front Outer Chassis Frame:
-  totemLines.push({ p1: [totemX - hw_t, totemBaseY - bH, totemZ], p2: [totemX + hw_t, totemBaseY - bH, totemZ] });
-  totemLines.push({ p1: [totemX + hw_t, totemBaseY - bH, totemZ], p2: [totemX + hw_t, totemTopY, totemZ] });
-  totemLines.push({ p1: [totemX + hw_t, totemTopY, totemZ], p2: [totemX - hw_t, totemTopY, totemZ] });
-  totemLines.push({ p1: [totemX - hw_t, totemTopY, totemZ], p2: [totemX - hw_t, totemBaseY - bH, totemZ] });
-
-  // 3. Screen Face (Inner display area):
-  const bIn = 0.02;
-  const totemScreenFace: [number, number, number][] = [
-    [totemX - hw_t + bIn, totemTopY + bIn, totemZ],
-    [totemX + hw_t - bIn, totemTopY + bIn, totemZ],
-    [totemX + hw_t - bIn, totemBaseY - bH - bIn, totemZ],
-    [totemX - hw_t + bIn, totemBaseY - bH - bIn, totemZ],
-  ];
-
-  // B) RIGHT SIDE: 1 Screen like the 3 screens (Landscape 16:9) on the Upper Wall
-  // Attached directly onto the back wall:
-  const upperRightScreenW = 0.68;
-  const upperRightScreenH = 0.3825; // Exact 16:9 ratio
-  const upperRightCX = 1.60; // Clean symmetric positioning on the upper back wall
-  const upperRightCY = upperFloorY - upperRightScreenH / 2 - 0.08;
-  const urY1 = upperRightCY - upperRightScreenH / 2;
-  const urY2 = upperRightCY + upperRightScreenH / 2;
-
-  wallScreenFaces.push([
-    [upperRightCX - upperRightScreenW / 2, urY1, roomZ_back],
-    [upperRightCX + upperRightScreenW / 2, urY1, roomZ_back],
-    [upperRightCX + upperRightScreenW / 2, urY2, roomZ_back],
-    [upperRightCX - upperRightScreenW / 2, urY2, roomZ_back],
-  ]);
-
-  // ==========================================
   // 6. MAIN GROUND FLOOR PERSPECTIVE GRID (Clean, minimal architectural lines)
-  for (let z = 0.8; z <= roomZ_front; z += 0.9) {
+  // Clean floor transverse lines across the lower perspective area
+  const floorZ = [1.3, 2.2];
+  floorZ.forEach((z) => {
     backgroundLines.push({ p1: [-roomW, roomH_bot, z], p2: [roomW, roomH_bot, z] });
-  }
+  });
 
   // ==========================================
   // 7. THE MONITOR IN FRONT OF THE VIEWER
-  // Grounded prominently at the first floor horizontal line right before me
+  // Positioned closer to the viewer in the foreground while keeping the 3 back screens in full view
   // ==========================================
-  const tabW = 2.00;
-  const tabH = 2.00 / (790 / 376); // Exact 790x376 ratio (2.10106) => 0.9519
-  const tabCenterZ = 0.58; // Grounded right at the starting first floor horizontal line
-  const tabCenterY = 0.64; // Comfortably grounded in the foreground
+  const tabW = 2.30;
+  const tabH = 2.30 / (790 / 376); // Exact 790x376 ratio (2.10106) => 1.0947
+  const tabCenterZ = 0.44; // Brought closer to the viewer
+  const tabCenterY = 0.58; // Grounded comfortably in the foreground
   const tiltAngle = 0.0;   // Upright monitor aligned with 3D camera and UI
 
   const getTabPoint = (localX: number, localY: number, localZ: number = 0): [number, number, number] => {
@@ -257,12 +201,10 @@ function buildNexExperienceWireframe(): WireframeScene {
 
   return {
     backgroundLines,
-    totemLines,
     monitorStandLines,
     monitorLines,
     monitorFaceCorners,
     wallScreenFaces,
-    totemScreenFace,
   };
 }
 
@@ -295,12 +237,10 @@ export function NexExperienceWireframe() {
 
     const {
       backgroundLines,
-      totemLines,
       monitorStandLines,
       monitorLines,
       monitorFaceCorners,
       wallScreenFaces,
-      totemScreenFace,
     } = buildNexExperienceWireframe();
 
     let targetRotY = 0;
@@ -352,6 +292,48 @@ export function NexExperienceWireframe() {
     };
 
     const cameraZ = 2.4;
+
+    // Populate binary points along background wireframe lines
+    const lineParticles: BinaryPoint[] = [];
+    backgroundLines.forEach((line) => {
+      const dx = line.p2[0] - line.p1[0];
+      const dy = line.p2[1] - line.p1[1];
+      const dz = line.p2[2] - line.p1[2];
+      const length = Math.hypot(dx, dy, dz);
+
+      // Skip very short segments
+      if (length < 0.35) return;
+
+      const count = Math.max(1, Math.round(length / 0.8));
+      for (let s = 0; s < count; s++) {
+        const t = (s + 0.5) / count;
+        lineParticles.push({
+          tx3d: line.p1[0] + dx * t,
+          ty3d: line.p1[1] + dy * t,
+          tz3d: line.p1[2] + dz * t,
+          char: Math.random() > 0.5 ? '1' : '0',
+          flipTimer: Math.floor(Math.random() * 90),
+          flipInterval: 50 + Math.floor(Math.random() * 120),
+          isBright: Math.random() < 0.3,
+        });
+      }
+    });
+
+    // Populate ambient free-floating binary numbers across the 3D room space
+    const freeParticles: FreeParticle[] = [];
+    const totalFree = 80;
+    for (let i = 0; i < totalFree; i++) {
+      freeParticles.push({
+        x: (Math.random() - 0.5) * 6.8,
+        y: -1.4 + Math.random() * 2.4,
+        z: -0.2 + Math.random() * 3.6,
+        vy: -0.002 - Math.random() * 0.004,
+        char: Math.random() > 0.5 ? '1' : '0',
+        flipTimer: Math.floor(Math.random() * 90),
+        flipInterval: 60 + Math.floor(Math.random() * 120),
+        isGreen: Math.random() < 0.32,
+      });
+    }
 
     const drawTri = (
       img: HTMLImageElement,
@@ -405,35 +387,17 @@ export function NexExperienceWireframe() {
           ctx.moveTo(px1, py1);
           ctx.lineTo(px2, py2);
           ctx.lineWidth = line.color ? 1.4 : 0.85;
-          ctx.strokeStyle = line.color || 'rgba(255, 255, 255, 0.45)';
+          ctx.strokeStyle = line.color || 'rgba(255, 255, 255, 0.85)';
           ctx.stroke();
         }
       });
 
-      // 2. Draw Digital Signage Totem Chassis & Plinth Wireframe
-      totemLines.forEach((line) => {
-        const [x1, y1, z1] = line.p1;
-        const [x2, y2, z2] = line.p2;
-
-        const [px1, py1, d1, v1] = project(x1, y1, z1, cameraPitch, cameraYaw, cameraZ);
-        const [px2, py2, d2, v2] = project(x2, y2, z2, cameraPitch, cameraYaw, cameraZ);
-
-        if (v1 && v2) {
-          ctx.beginPath();
-          ctx.moveTo(px1, py1);
-          ctx.lineTo(px2, py2);
-          ctx.lineWidth = 1.0;
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
-          ctx.stroke();
-        }
-      });
-
-      // 3. Render White Tusker Graphics on Wall Screens & Digital Signage
+      // 2. Render White Tusker Graphics on Lower Wall Screens
       if (wallImgLoaded && wallScreenImg.naturalWidth > 0) {
         const wiw = wallScreenImg.naturalWidth;
         const wih = wallScreenImg.naturalHeight;
 
-        // Presentation screens (Lower 3 screens + Upper Right screen) attached static to back wall without animation
+        // Presentation screens (Lower 3 screens) attached static to back wall without animation
         wallScreenFaces.forEach((corners) => {
           const x1 = Math.min(corners[0][0], corners[1][0]);
           const x2 = Math.max(corners[0][0], corners[1][0]);
@@ -494,51 +458,60 @@ export function NexExperienceWireframe() {
             ctx.stroke();
           }
         });
-
-        // Left Digital Signage Totem on Upper Floor: Rendered in FRONT of the kiosk frame
-        if (totemScreenFace) {
-          const projTotem = totemScreenFace.map((p) =>
-            project(p[0], p[1], p[2], cameraPitch, cameraYaw, cameraZ)
-          );
-          if (projTotem.every((p) => p[3])) {
-            const p0: [number, number] = [projTotem[0][0], projTotem[0][1]];
-            const p1: [number, number] = [projTotem[1][0], projTotem[1][1]];
-            const p2: [number, number] = [projTotem[2][0], projTotem[2][1]];
-            const p3: [number, number] = [projTotem[3][0], projTotem[3][1]];
-
-            // Solid black underlay
-            ctx.fillStyle = '#000000';
-            ctx.beginPath();
-            ctx.moveTo(p0[0], p0[1]);
-            ctx.lineTo(p1[0], p1[1]);
-            ctx.lineTo(p2[0], p2[1]);
-            ctx.lineTo(p3[0], p3[1]);
-            ctx.closePath();
-            ctx.fill();
-
-            // Center-crop portrait mapping for the vertical kiosk screen
-            const uCrop = wiw * 0.22;
-            const u0 = uCrop;
-            const u1 = wiw - uCrop;
-            const v0 = wih * 0.08;
-            const v1 = wih * 0.92;
-
-            drawTri(wallScreenImg, p0, p1, p2, u0, v0, u1, v0, u1, v1);
-            drawTri(wallScreenImg, p0, p2, p3, u0, v0, u1, v1, u0, v1);
-
-            // Subtle crisp border around the screen glass
-            ctx.beginPath();
-            ctx.moveTo(p0[0], p0[1]);
-            ctx.lineTo(p1[0], p1[1]);
-            ctx.lineTo(p2[0], p2[1]);
-            ctx.lineTo(p3[0], p3[1]);
-            ctx.closePath();
-            ctx.lineWidth = 1.2;
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-            ctx.stroke();
-          }
-        }
       }
+
+      // 3. Binary Numbers (0 / 1) anchored on wireframe lines and floating in room
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      // 3a. Line-anchored binary particles
+      lineParticles.forEach((pt) => {
+        pt.flipTimer++;
+        if (pt.flipTimer > pt.flipInterval) {
+          pt.char = pt.char === '1' ? '0' : '1';
+          pt.flipTimer = 0;
+        }
+
+        const [px, py, dist, visible] = project(pt.tx3d, pt.ty3d, pt.tz3d, cameraPitch, cameraYaw, cameraZ);
+        if (visible && px >= -50 && px <= width + 50 && py >= -50 && py <= height + 50) {
+          const fontSize = Math.max(9, Math.min(13, Math.round(11 * (2.4 / dist))));
+          ctx.font = `500 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
+
+          // Subtle dark backing circle to keep wireframe strokes legible
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.88)';
+          ctx.beginPath();
+          ctx.arc(px, py, fontSize * 0.58, 0, Math.PI * 2);
+          ctx.fill();
+
+          const depthAlpha = Math.max(0.6, Math.min(1.0, 2.6 / dist));
+          ctx.fillStyle = pt.isBright
+            ? `rgba(182, 255, 102, ${Math.min(1, 0.98 * depthAlpha)})`
+            : `rgba(200, 220, 245, ${Math.min(1, 0.88 * depthAlpha)})`;
+          ctx.fillText(pt.char, px, py);
+        }
+      });
+
+      // 3b. Ambient floating binary particles
+      freeParticles.forEach((fp) => {
+        fp.flipTimer++;
+        if (fp.flipTimer > fp.flipInterval) {
+          fp.char = fp.char === '1' ? '0' : '1';
+          fp.flipTimer = 0;
+        }
+
+        fp.y += fp.vy;
+        if (fp.y < -1.5) fp.y = 1.1;
+
+        const [px, py, dist, visible] = project(fp.x, fp.y, fp.z, cameraPitch, cameraYaw, cameraZ);
+        if (visible && px >= -50 && px <= width + 50 && py >= -50 && py <= height + 50) {
+          const fontSize = Math.max(9, Math.min(14, Math.round(12 * (2.4 / dist))));
+          ctx.font = `400 ${fontSize}px var(--font-inter), system-ui, -apple-system, sans-serif`;
+          ctx.fillStyle = fp.isGreen
+            ? 'rgba(182, 255, 102, 0.65)'
+            : 'rgba(175, 195, 220, 0.50)';
+          ctx.fillText(fp.char, px, py);
+        }
+      });
 
       // 4. Draw Monitor Stand Pedestal in the floor
       monitorStandLines.forEach((line) => {
@@ -634,7 +607,7 @@ export function NexExperienceWireframe() {
   return (
     <div
       ref={containerRef}
-      className="relative h-screen w-full bg-[#000000] overflow-hidden select-none cursor-crosshair"
+      className="relative h-screen w-full bg-[#000000] overflow-hidden select-none"
     >
       {/* 3D Wireframe Canvas */}
       <canvas ref={canvasRef} className="block h-full w-full" />

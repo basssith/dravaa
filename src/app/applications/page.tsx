@@ -20,7 +20,7 @@ export default function ApplicationsPage() {
         }
         lines={['Everything', 'in one', 'space.']}
         highlight={2}
-        sub="Every Drava product, from facility control to generative design. Pick one to dive in."
+        sub="Every Drava product, from facility control to generative design. Four cohesive operating systems engineered to unify physical environments, spaces, and digital workflows."
         cue="Scroll to explore"
       />
 

@@ -15,6 +15,5 @@ export const NAV = [
 export const SOCIALS = [
   ['Instagram', 'https://instagram.com'],
   ['LinkedIn', 'https://linkedin.com'],
-  ['X', 'https://x.com'],
-  ['YouTube', 'https://youtube.com']
+  ['X', 'https://x.com']
 ] as const;

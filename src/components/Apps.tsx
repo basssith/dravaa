@@ -158,10 +158,10 @@ export function AppList({ apps }: { apps: Application[] }) {
   return (
     <ul className="border-t border-white/15 text-white">
       {apps.map((app) => (
-        <li key={app.id} data-reveal>
+        <li key={app.id} data-reveal className="relative">
           <TransitionLink
             href={`/applications/${slugOf(app)}`}
-            className="group grid grid-cols-[3rem_1fr_2.75rem] items-center gap-4 border-b border-white/15 py-6 no-underline transition-[padding,background-color] duration-500 ease-expo hover:bg-[#b6ff66] hover:text-[#000000] hover:px-4 lg:grid-cols-[4rem_1.2fr_2fr_5rem_2.75rem]"
+            className="group relative grid grid-cols-[3rem_1fr_2.75rem] items-center gap-4 border-b border-white/15 py-6 no-underline transition-[padding,background-color] duration-500 ease-expo hover:bg-[#b6ff66] hover:text-[#000000] hover:px-4 lg:grid-cols-[4rem_1.2fr_2fr_5rem_2.75rem]"
           >
             <span className="inline-flex w-fit items-center justify-center bg-[#b6ff66] text-[#000000] font-bold text-xs px-2 py-0.5 rounded-[4px] leading-tight tracking-normal group-hover:bg-black group-hover:text-[#b6ff66]">
               {app.id}
@@ -172,6 +172,20 @@ export function AppList({ apps }: { apps: Application[] }) {
             <span className="justify-self-end text-white group-hover:text-black">
               <Arrow className="size-[18px] -rotate-45" />
             </span>
+
+            {/* Floating Image Preview on Hover */}
+            <div className="pointer-events-none absolute left-[16%] lg:left-[18%] top-1/2 z-30 hidden -translate-y-1/2 opacity-0 transition-[opacity,transform] duration-300 ease-expo group-hover:scale-100 group-hover:opacity-100 scale-90 md:block">
+              <div className="relative aspect-video w-52 sm:w-64 lg:w-72 overflow-hidden rounded-xl border border-black/20 bg-black shadow-2xl ring-1 ring-white/10">
+                <Image
+                  src={app.image}
+                  alt={app.name}
+                  fill
+                  quality={90}
+                  sizes="288px"
+                  className="object-cover object-center w-full h-full"
+                />
+              </div>
+            </div>
           </TransitionLink>
         </li>
       ))}
