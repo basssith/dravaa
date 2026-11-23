@@ -4,7 +4,7 @@
    DRAVA — design system (Tailwind v4)
 
    1. Theme tokens   → generate utilities: bg-ink, text-h2, py-section,
-                       px-gutter, rounded-card, ease-expo, animate-marquee …
+                       px-gutter, ease-expo, animate-cue …
    2. Base           → element defaults, Lenis, scroll lock, focus
    3. Components     → layout primitives (wrap, section, section-head)
    4. Utilities      → type hierarchy (t-mega … t-lead), labels, masked lines
@@ -19,11 +19,7 @@
    ========================================================================== */
 @theme {
   /* colour */
-  --color-bg: #f2f2ee;
-  --color-bg-2: #e6e6df;
-  --color-surface: #ffffff;
   --color-ink: #0d0d0d;
-  --color-ink-2: #2a2a2a;
   --color-muted: #646464;
   --color-paper: #f2f2ee;
   --color-paper-2: rgb(242 242 238 / 0.78);
@@ -46,8 +42,6 @@
   --text-h4--line-height: 1.1;
   --text-h3: clamp(1.75rem, 1.3rem + 1.8vw, 3rem);             /* 28→48  card titles */
   --text-h3--line-height: 1;
-  --text-statement: clamp(1.875rem, 1.1rem + 3.4vw, 4.5rem);   /* 30→72  editorial statement */
-  --text-statement--line-height: 1.06;
   --text-h2: clamp(2.25rem, 0.7rem + 6.6vw, 7rem);             /* 36→112 section titles */
   --text-h2--line-height: 0.9;
   --text-h1: clamp(2.5rem, 0.8rem + 7.5vw, 9rem);
@@ -71,22 +65,10 @@
   --breakpoint-lg: 56.25rem; /* 900 */
   --breakpoint-xl: 80rem;    /* 1280 */
 
-  /* shape */
-  --radius-card: 1.5rem;     /* 24 */
-  --radius-panel: 2rem;      /* 32 */
-
   /* motion */
   --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --animate-marquee: marquee 40s linear infinite;
-  --animate-eq: eq 1s ease-in-out infinite;
   --animate-cue: cue 2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 
-  @keyframes marquee {
-    to { transform: translateX(-50%); }
-  }
-  @keyframes eq {
-    50% { height: 14px; }
-  }
   @keyframes cue {
     0%   { transform: scaleY(0); transform-origin: top; }
     50%  { transform: scaleY(1); transform-origin: top; }
@@ -187,13 +169,6 @@
   line-height: var(--text-h2--line-height);
   letter-spacing: var(--tracking-display);
 }
-@utility t-statement {
-  font-family: var(--font-display);
-  font-size: var(--text-statement);
-  font-weight: 600;
-  line-height: var(--text-statement--line-height);
-  letter-spacing: -0.025em;
-}
 @utility t-h3 {
   font-family: var(--font-display);
   font-size: var(--text-h3);
@@ -208,13 +183,6 @@
   line-height: var(--text-h4--line-height);
   letter-spacing: -0.01em;
 }
-@utility t-lead {
-  max-width: 48ch;
-  font-size: var(--text-lead);
-  line-height: var(--text-lead--line-height);
-  color: var(--color-ink-2);
-}
-
 /* small labels: .tag is muted, .label inherits colour */
 @utility tag {
   font-family: var(--font-body);
@@ -247,14 +215,6 @@
   border-radius: 0.1em;
   background: var(--color-accent);
   color: #000000 !important;
-}
-
-@keyframes shockTremor {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-3px, 2px); }
-  50% { transform: translate(3px, -2px); }
-  75% { transform: translate(-2px, -1px); }
-  100% { transform: translate(0, 0); }
 }
 
 @keyframes card-3d-float {
@@ -293,12 +253,6 @@
 
 .group:hover .hover-blur-shake {
   animation: card-3d-float 1.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-}
-
-/* outlined display text (stroke can't use currentColor — the fill is transparent) */
-@utility text-outline {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--outline-color, var(--color-ink));
 }
 
 

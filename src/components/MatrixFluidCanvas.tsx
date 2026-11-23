@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { RAIN_FLIP_EVERY, RAIN_FONT, rainCells, type RainCell } from '@/lib/rain';
+import { SMILE_EYES, SMILE_PATH } from '@/lib/smile';
 
 /**
  * MatrixFluidCanvas:
  * Interactive Matrix Binary (0 and 1) grid in black & grey tones with fluid physics.
  * - Digital stream of binary digits ('0' and '1') in shades of black, dark grey, and charcoal.
- * - Interactive mouse/touch fluid simulation:
- *   When the cursor moves across the canvas, digits get pushed away, swirl, and ripple smoothly
- *   like particles suspended in liquid, then gently spring back to their stream paths.
+ * - At the cursor, the rain digits nearby are sucked in and arrange themselves into the Drava smile.
+ *   The logo is always built from whatever rain is local: as the stream keeps falling (even with the
+ *   cursor idle) or the cursor moves, digits that drift out of reach go back to their place in the
+ *   rain and fresh nearby ones are pulled in.
  */
 export function MatrixFluidCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,69 +30,56 @@ export function MatrixFluidCanvas() {
     let dpr = 1;
     let animId = 0;
 
-    // Fluid pointer state
-    const mouse = {
-      x: -1000,
-      y: -1000,
-      prevX: -1000,
-      prevY: -1000,
-      vx: 0,
-      vy: 0,
-      radius: 140,
-      active: false,
-    };
+    // The digit-built Drava smile (px). A digit whose place in the rain is within CAPTURE of the cursor
+    // fills one slot of a GRID-spaced layout of the logo; once its place has fallen or the cursor has
+    // moved beyond RELEASE it goes back to its place (CAPTURE < RELEASE so edge digits don't flicker).
+    // Slots spring at HOLD; all movement is capped at MAX_V. Simulated: 54 slots, formed in ~0.75s,
+    // ~7 digits/s swapped while idle, rebuilt in place after a move with the old digits home in ~1s.
+    const LOGO_W = 150;
+    const GRID = 11;
+    const CAPTURE = 190;
+    const RELEASE = 230;
+    const HOLD = 0.06;
+    const MAX_V = 9;
+    const LIME = 'rgba(182, 255, 102, ';
+    const s = LOGO_W / 170; // the smile's viewBox is 170×165
 
-    interface BinaryParticle {
-      char: string;
-      originX: number;
+    // Slots: grid points inside the real logo shape, as offsets from the logo's centre.
+    const logo = new Path2D(SMILE_PATH);
+    for (const [x, y, size] of SMILE_EYES) logo.roundRect(x, y, size, size, 4);
+    const slots: { x: number; y: number; taken: boolean }[] = [];
+    for (let ly = GRID / s / 2; ly < 165; ly += GRID / s) {
+      for (let lx = GRID / s / 2; lx < 170; lx += GRID / s) {
+        if (ctx.isPointInPath(logo, lx, ly)) slots.push({ x: (lx - 85) * s, y: (ly - 82.5) * s, taken: false });
+      }
+    }
+    let free = slots.length;
+
+    const pointer = { clientX: 0, clientY: 0, active: false };
+    const head = { x: 0, y: 0, shown: false }; // logo centre, eased toward the pointer
+
+    interface BinaryParticle extends RainCell {
+      originX: number; // its place in the rain (keeps falling even while the digit is in the logo)
       originY: number;
-      x: number;
-      y: number;
       vx: number;
       vy: number;
-      speed: number;
-      opacity: number;
-      baseColor: string; // shades of black & grey
-      size: number;
-      changeTimer: number;
+      slot: number; // index into slots while it forms part of the logo, else -1
     }
 
     let particles: BinaryParticle[] = [];
 
+    // Same grid, colours and speeds as the wireframe section's rain (lib/rain.ts).
     const initParticles = () => {
-      particles = [];
-      const colSpacing = 36; // prominent spacing for large digits
-      const rowSpacing = 42;
-      const cols = Math.ceil(width / colSpacing);
-      const rows = Math.ceil(height / rowSpacing);
-
-      for (let c = 0; c < cols; c++) {
-        const x = c * colSpacing + (Math.random() - 0.5) * 8;
-        for (let r = 0; r < rows; r++) {
-          const y = r * rowSpacing + (Math.random() - 0.5) * 8;
-          const char = Math.random() > 0.5 ? '1' : '0';
-          
-          // Green accent (~25% of digits) & Refined Neutral Grey (~140, 145, 155)
-          const isGreen = Math.random() < 0.25;
-          const baseColor = isGreen ? 'rgba(182, 255, 102, ' : 'rgba(150, 155, 165, ';
-          const baseOpacity = isGreen ? 0.75 + Math.random() * 0.25 : 0.45 + Math.random() * 0.45;
-
-          particles.push({
-            char,
-            originX: x,
-            originY: y,
-            x,
-            y,
-            vx: 0,
-            vy: 0,
-            speed: 0.35 + Math.random() * 0.7,
-            opacity: baseOpacity,
-            baseColor,
-            size: 20 + Math.random() * 4,
-            changeTimer: Math.floor(Math.random() * 200),
-          });
-        }
-      }
+      particles = rainCells(width, height).map((c) => ({
+        ...c,
+        originX: c.x,
+        originY: c.y,
+        vx: 0,
+        vy: 0,
+        slot: -1
+      }));
+      slots.forEach((sl) => (sl.taken = false));
+      free = slots.length;
     };
 
     const handleResize = () => {
@@ -109,100 +99,119 @@ export function MatrixFluidCanvas() {
     handleResize();
     window.addEventListener('resize', handleResize);
 
+    // Viewport coords; converted every frame so the logo stays put while the page scrolls.
+    // Only active over the section this canvas sits in (not the header or menu floating above it).
     const onPointerMove = (e: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      const currentX = e.clientX - rect.left;
-      const currentY = e.clientY - rect.top;
-
-      if (mouse.prevX !== -1000) {
-        mouse.vx = (currentX - mouse.prevX) * 0.4;
-        mouse.vy = (currentY - mouse.prevY) * 0.4;
-      }
-      mouse.prevX = mouse.x = currentX;
-      mouse.prevY = mouse.y = currentY;
-      mouse.active = true;
+      pointer.clientX = e.clientX;
+      pointer.clientY = e.clientY;
+      pointer.active = !!container.parentElement?.contains(e.target as Node);
     };
 
+    // Fires when the mouse leaves the window or a finger lifts.
     const onPointerLeave = () => {
-      mouse.active = false;
-      mouse.x = -1000;
-      mouse.y = -1000;
-      mouse.vx = 0;
-      mouse.vy = 0;
+      pointer.active = false;
     };
 
+    const root = document.documentElement;
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('pointerleave', onPointerLeave);
+    root.addEventListener('pointerleave', onPointerLeave);
 
-    // Render loop with fluid physics
     const render = () => {
-      // Natural dampening of mouse velocity
-      mouse.vx *= 0.9;
-      mouse.vy *= 0.9;
+      const rect = container.getBoundingClientRect();
+      const px = pointer.clientX - rect.left;
+      const py = pointer.clientY - rect.top;
+      if (pointer.active && !head.shown) {
+        head.x = px; // form right under the pointer instead of sliding in from the old spot
+        head.y = py;
+      }
+      head.shown = pointer.active;
+      head.x += (px - head.x) * 0.3;
+      head.y += (py - head.y) * 0.3;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      ctx.font = '400 15px var(--font-inter), system-ui, -apple-system, sans-serif';
+      ctx.font = RAIN_FONT;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-
-      const radiusSq = mouse.radius * mouse.radius;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Random matrix digit flip
-        p.changeTimer++;
-        if (p.changeTimer > 180) {
+        // Random matrix digit flip (logo digits keep flickering too, so it reads as live binary)
+        p.flipTimer++;
+        if (p.flipTimer > RAIN_FLIP_EVERY) {
           p.char = p.char === '1' ? '0' : '1';
-          p.changeTimer = 0;
+          p.flipTimer = 0;
         }
 
-        // Fluid downward matrix drift
+        // Its place in the rain keeps falling, whether or not the digit is part of the logo.
         p.originY += p.speed;
+
+        // Part of the logo: spring to its slot until its place in the rain is out of reach (it fell
+        // on, or the cursor moved, left, or sits at the bottom edge), then go back to that place.
+        if (p.slot >= 0) {
+          const out = Math.hypot(p.originX - head.x, p.originY - head.y) > RELEASE;
+          if (head.shown && !out && p.originY <= height + 20) {
+            const sl = slots[p.slot];
+            p.vx = (p.vx + (head.x + sl.x - p.x) * HOLD) * 0.82;
+            p.vy = (p.vy + (head.y + sl.y - p.y) * HOLD) * 0.82;
+            const v = Math.hypot(p.vx, p.vy);
+            if (v > MAX_V) {
+              p.vx *= MAX_V / v;
+              p.vy *= MAX_V / v;
+            }
+            p.x += p.vx;
+            p.y += p.vy;
+            ctx.fillStyle = `${LIME}0.95)`;
+            ctx.fillText(p.char, p.x, p.y);
+            continue;
+          }
+          slots[p.slot].taken = false;
+          free++;
+          p.slot = -1;
+        }
+
+        // Rain falling off the bottom starts again at the top of its column.
         if (p.originY > height + 20) {
           p.originY = -20;
           p.y = -20;
+          p.x = p.originX;
         }
 
-        // Interaction with mouse (fluid push & swirl)
-        if (mouse.active) {
-          const dx = p.x - mouse.x;
-          const dy = p.y - mouse.y;
-          const distSq = dx * dx + dy * dy;
-
-          if (distSq < radiusSq && distSq > 0) {
-            const dist = Math.sqrt(distSq);
-            const force = (1 - dist / mouse.radius);
-            
-            // Push away (fluid displacement)
-            const pushX = (dx / dist) * force * 12;
-            const pushY = (dy / dist) * force * 12;
-
-            // Swirl / vorticity (fluid curl effect)
-            const swirlX = -(dy / dist) * force * (mouse.vx * 0.5 + 2);
-            const swirlY = (dx / dist) * force * (mouse.vy * 0.5 + 2);
-
-            p.vx += pushX + swirlX * 0.3;
-            p.vy += pushY + swirlY * 0.3;
+        // Suck digits whose place is near the cursor into the nearest empty slot of the logo; fade the
+        // rest of the rain close to it so the digit-built logo stays readable.
+        let fade = 1;
+        if (head.shown) {
+          const d = Math.hypot(p.x - head.x, p.y - head.y);
+          if (free > 0 && Math.hypot(p.originX - head.x, p.originY - head.y) < CAPTURE) {
+            let best = -1;
+            let bestD = Infinity;
+            for (let j = 0; j < slots.length; j++) {
+              if (slots[j].taken) continue;
+              const sd = Math.hypot(head.x + slots[j].x - p.x, head.y + slots[j].y - p.y);
+              if (sd < bestD) {
+                bestD = sd;
+                best = j;
+              }
+            }
+            slots[best].taken = true;
+            free--;
+            p.slot = best;
+            continue; // starts moving next frame
           }
+          fade = Math.min(1, Math.max(0, (d - 60) / 60));
         }
 
-        // Spring force returning particle smoothly to its downward stream position
-        const targetX = p.originX;
-        const targetY = p.originY;
-
-        const homeDx = targetX - p.x;
-        const homeDy = targetY - p.y;
-
-        p.vx += homeDx * 0.045; // spring tension
-        p.vy += homeDy * 0.045;
-
-        // Fluid drag / viscosity
-        p.vx *= 0.88;
-        p.vy *= 0.88;
+        // Spring toward its place in the rain (gliding home after leaving the logo), with drag.
+        p.vx = (p.vx + (p.originX - p.x) * 0.045) * 0.88;
+        p.vy = (p.vy + (p.originY - p.y) * 0.045) * 0.88;
+        const v = Math.hypot(p.vx, p.vy);
+        if (v > MAX_V) {
+          p.vx *= MAX_V / v;
+          p.vy *= MAX_V / v;
+        }
 
         // Update position
         p.x += p.vx;
@@ -212,7 +221,7 @@ export function MatrixFluidCanvas() {
         const vel = Math.hypot(p.vx, p.vy);
         const dynamicAlpha = Math.min(p.opacity + vel * 0.08, 0.85);
 
-        ctx.fillStyle = `${p.baseColor}${dynamicAlpha})`;
+        ctx.fillStyle = `${p.color}${dynamicAlpha * fade})`;
         ctx.fillText(p.char, p.x, p.y);
       }
 
@@ -226,7 +235,7 @@ export function MatrixFluidCanvas() {
       cancelAnimationFrame(animId);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('pointerleave', onPointerLeave);
+      root.removeEventListener('pointerleave', onPointerLeave);
     };
   }, []);
 
@@ -236,10 +245,8 @@ export function MatrixFluidCanvas() {
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 z-0 select-none"
     >
+      {/* No fade at the bottom: the wireframe section continues the same rain (lib/rain.ts). */}
       <canvas ref={canvasRef} className="block h-full w-full" />
-      {/* Seamless blend gradient towards Section 2 */}
-      <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-[#000000] pointer-events-none" />
     </div>
   );
 }
-

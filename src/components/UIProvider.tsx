@@ -4,14 +4,11 @@ import Lenis from 'lenis';
 import { usePathname, useRouter } from 'next/navigation';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { gsap, prefersReduced, ScrollTrigger } from '@/lib/gsap';
-import { sound } from '@/lib/sound';
 import { Smile } from './icons';
 
 type UI = {
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
-  reelOpen: boolean;
-  setReelOpen: (open: boolean) => void;
   /** false until the preloader (first visit) has finished */
   introDone: boolean;
   setIntroDone: (done: boolean) => void;
@@ -32,7 +29,6 @@ export function UIProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [reelOpen, setReelOpen] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const lenis = useRef<Lenis | null>(null);
   const wipe = useRef<HTMLDivElement>(null);
@@ -54,8 +50,8 @@ export function UIProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Lock page scroll while an overlay (or the preloader) is up.
-  const locked = menuOpen || reelOpen || !introDone;
+  // Lock page scroll while the menu (or the preloader) is up.
+  const locked = menuOpen || !introDone;
   useEffect(() => {
     document.documentElement.classList.toggle('is-locked', locked);
     if (locked) lenis.current?.stop();
@@ -81,7 +77,6 @@ export function UIProvider({ children }: { children: ReactNode }) {
         scrollTo(el ?? 0);
         return;
       }
-      sound.playTransition();
       const dest = url.pathname + url.hash;
       if (prefersReduced() || !wipe.current) {
         router.push(dest);
@@ -113,27 +108,18 @@ export function UIProvider({ children }: { children: ReactNode }) {
     return () => timers.forEach(clearTimeout);
   }, [pathname, scrollTo]);
 
-  // Escape closes overlays; buttons and links click.
+  // Escape closes the menu.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      setMenuOpen(false);
-      setReelOpen(false);
-    };
-    const onClick = (e: MouseEvent) => {
-      if ((e.target as Element).closest('a, button')) sound.playClick();
+      if (e.key === 'Escape') setMenuOpen(false);
     };
     window.addEventListener('keydown', onKey);
-    document.addEventListener('click', onClick);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.removeEventListener('click', onClick);
-    };
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   const value = useMemo(
-    () => ({ menuOpen, setMenuOpen, reelOpen, setReelOpen, introDone, setIntroDone, navigate, scrollTo }),
-    [menuOpen, reelOpen, introDone, navigate, scrollTo]
+    () => ({ menuOpen, setMenuOpen, introDone, setIntroDone, navigate, scrollTo }),
+    [menuOpen, introDone, navigate, scrollTo]
   );
 
   return (

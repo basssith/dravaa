@@ -9,7 +9,7 @@ export default function NotFound() {
       <p className="tag mb-auto">[ 404 ]</p>
       <Lines as="h1" hero className="t-h1 mb-8" lines={['This page', 'went', 'missing.']} highlight={2} />
       <div className="border-t border-line pt-6">
-        <TransitionLink href="/" className={pill('dark')}>
+        <TransitionLink href="/" className={pill}>
           Back home
           <ArrowDot />
         </TransitionLink>

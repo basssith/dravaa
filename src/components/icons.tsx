@@ -1,12 +1,14 @@
+import { SMILE_EYES, SMILE_PATH } from '@/lib/smile';
 import { cn } from '@/lib/ui';
 
 /** Drava smile mark. Fills with currentColor unless a fill-* class is given. */
 export function Smile({ className }: { className?: string }) {
   return (
     <svg className={cn('fill-current', className)} viewBox="0 0 170 165" aria-hidden="true">
-      <rect x="14" y="10" width="40" height="40" rx="4" />
-      <rect x="77" y="10" width="40" height="40" rx="4" />
-      <path d="M118 50h40A104 104 0 0 1 54 154v-40a64 64 0 0 0 64-64z" />
+      {SMILE_EYES.map(([x, y, s]) => (
+        <rect key={x} x={x} y={y} width={s} height={s} rx="4" />
+      ))}
+      <path d={SMILE_PATH} />
     </svg>
   );
 }

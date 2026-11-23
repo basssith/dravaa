@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { sound } from '@/lib/sound';
-import { cn, iconBtn, pill } from '@/lib/ui';
+import { cn } from '@/lib/ui';
 import { Smile } from './icons';
 import { TransitionLink } from './TransitionLink';
 import { useUI } from './UIProvider';
