@@ -1,7 +1,9 @@
-/** Public origin for absolute URLs (OG images, sitemap). Netlify sets URL; SITE_URL overrides it. */
-export const SITE_URL = process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:3060';
+/** Public origin for absolute URLs (OG images, sitemap). Set SITE_URL in the Cloudflare build variables. */
+export const SITE_URL = process.env.SITE_URL ?? process.env.URL ?? 'http://localhost:3000';
 
-export const EMAIL = 'hello@drava.technology';
+// TODO: replace placeholder contact details with real ones.
+export const EMAIL = 'experience@thewhitetusker.com';
+export const PRESS = 'press@example.com';
 
 export const NAV = [
   { label: 'Home', href: '/' },
@@ -11,7 +13,7 @@ export const NAV = [
 ] as const;
 
 export const SOCIALS = [
-  ['Instagram', 'https://www.instagram.com/thewhitetusker_official'],
-  ['LinkedIn', 'https://www.linkedin.com/company/whitetusker/'],
-  ['X', 'https://x.com/White__Tusker']
+  ['Instagram', 'https://instagram.com'],
+  ['LinkedIn', 'https://linkedin.com'],
+  ['X', 'https://x.com']
 ] as const;

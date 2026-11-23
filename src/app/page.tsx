@@ -1,4 +1,3 @@
-import { CompanionSection } from '@/components/CompanionSection';
 import { WireframeProductsSection } from '@/components/WireframeProductsSection';
 import { MatrixFluidCanvas } from '@/components/MatrixFluidCanvas';
 
@@ -36,8 +35,6 @@ export default function Home() {
       </section>
 
       <WireframeProductsSection />
-
-      <CompanionSection />
     </>
   );
 }

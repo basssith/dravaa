@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { AppGrid, AppList } from '@/components/Apps';
 import { PageHero } from '@/components/PageHero';
 import { SectionHead, WordScrub } from '@/components/type';
-import { applications } from '@/lib/applications';
+import { applications, pad } from '@/lib/applications';
 
 export const metadata: Metadata = {
   title: 'Products',

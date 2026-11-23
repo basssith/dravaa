@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import { gsap, prefersReduced, ScrollTrigger, useGSAP } from '@/lib/gsap';
+import { pad } from '@/lib/applications';
 import { useUI } from './UIProvider';
 
 /**
@@ -9,7 +10,9 @@ import { useUI } from './UIProvider';
  *   [data-hero] .line > span   rises in once the intro is done
  *   [data-lines] .line > span  rises in when scrolled into view
  *   [data-reveal]              fades up when scrolled into view
- *   [data-words] .w-scrub      words light up as you scroll through
+ *   [data-words] .w            words light up as you scroll through
+ *   [data-count]               counts up from 00 when scrolled into view
+ *   [data-companion-card]      card slide-up elevation as 3rd section goes down
  * Re-runs (and cleans up) on every route change.
  */
 export function ScrollEffects() {
@@ -21,9 +24,7 @@ export function ScrollEffects() {
       if (prefersReduced() || !introDone) return;
 
       // The CSS pre-hide (translateY(110%)) is parsed by GSAP as a px `y`, so zero it explicitly.
-      // The home hero has no masked lines; skip instead of tweening nothing (GSAP warns).
-      const heroLines = gsap.utils.toArray<HTMLElement>('[data-hero] .line > span');
-      if (heroLines.length) gsap.fromTo(heroLines, { y: 0, yPercent: 110 }, { y: 0, yPercent: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08, delay: 0.15 });
+      gsap.fromTo('[data-hero] .line > span', { y: 0, yPercent: 110 }, { y: 0, yPercent: 0, duration: 1.2, ease: 'expo.out', stagger: 0.08, delay: 0.15 });
 
       gsap.utils.toArray<HTMLElement>('[data-lines]').forEach((el) => {
         gsap.from(el.querySelectorAll('.line > span'), {
@@ -41,6 +42,10 @@ export function ScrollEffects() {
           scrollTrigger: { trigger: el, start: 'top 92%', once: true }
         });
       });
+
+      // Note: Product cards in AppGrid are animated via sticky stacking scroll or custom presentation
+
+
 
       // Scroll Text Scrubbing Effect: Words transition from dim green/grey through vibrant signature green into crisp white
       // Skip any elements inside #intro / WireframeProductsSection because that pinned section manages its own scrub timeline
@@ -80,6 +85,16 @@ export function ScrollEffects() {
             },
             '+=0.08'
           );
+        });
+      });
+
+      gsap.utils.toArray<HTMLElement>('[data-count]').forEach((el) => {
+        const end = Number(el.dataset.count);
+        const o = { v: 0 };
+        el.textContent = pad(0);
+        ScrollTrigger.create({
+          trigger: el, start: 'top 90%', once: true,
+          onEnter: () => gsap.to(o, { v: end, duration: 2, ease: 'power3.out', onUpdate: () => { el.textContent = pad(Math.round(o.v)); } })
         });
       });
 

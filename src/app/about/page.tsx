@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PageHero } from '@/components/PageHero';
 import { SectionHead, WordScrub } from '@/components/type';
+import { applications } from '@/lib/applications';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -13,6 +14,9 @@ const EXPERTISE = [
   { title: 'Workflow', items: ['Unified workspaces', 'Cross-app context', 'Automation'] },
   { title: 'Hardware', items: ['Tactile controls', 'Sensors & telemetry', 'Rapid prototyping'] }
 ];
+
+const NAMES = [...applications.map((a) => a.name), 'Companion', 'Drava OS'];
+const rotate = (arr: string[], k: number) => arr.slice(k).concat(arr.slice(0, k));
 
 export default function AboutPage() {
   return (

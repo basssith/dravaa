@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { EMAIL, SOCIALS } from '@/lib/site';
 import { Arrow, Smile } from './icons';
 import { BackToTop, Newsletter } from './FooterActions';
+import { TransitionLink } from './TransitionLink';
 
 const linkCls = 'no-underline transition-colors duration-300 hover:text-accent';
 
@@ -33,15 +34,13 @@ export function Footer() {
         <div className="grid gap-8 border-t border-line-inv py-12 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <h2 className="label mb-4 text-paper-muted">Studio</h2>
-            <address className="leading-[1.7] not-italic text-paper-2">
-              White Tusker Private Limited
+            <p className="leading-[1.7] text-paper-2">
+              The White Tusker Pvt Ltd.
               <br />
-              1331, 10th, 13th Cross Rd, Eshwara Layout
+              Indiranagar, Bengaluru,
               <br />
-              Indiranagar, Bengaluru
-              <br />
-              Karnataka 560038, India
-            </address>
+              Karnataka
+            </p>
           </div>
           <div>
             <h2 className="label mb-4 text-paper-muted">Say hello</h2>
@@ -66,23 +65,22 @@ export function Footer() {
         </div>
 
         <div className="flex flex-wrap justify-between gap-4 border-t border-line-inv py-6 text-small text-paper-muted">
-          <span>© 2026 Drava, powered by White Tusker Private Limited</span>
+          <span>TM 2026 Drava Technologies Inc.</span>
           <BackToTop className={linkCls} />
         </div>
 
-        {/* Sized to its container, so the whole wordmark always fits: smile + gap + Syne ExtraBold
-            "drava" measures 5.305em (the font's own advance widths); 5.4 leaves ~2% so it never clips. */}
-        <div aria-hidden="true" className="@container pt-10 pb-8">
-          <div className="flex items-baseline gap-[0.14em] font-display text-[length:calc(100cqw/5.4)] leading-[0.8] font-extrabold">
-            <Smile className="w-[0.56em] flex-none fill-accent self-center" />
-            <span className="flex-1 flex justify-between tracking-[-0.02em] select-none">
-              <span>d</span>
-              <span>r</span>
-              <span>a</span>
-              <span>v</span>
-              <span>a</span>
-            </span>
-          </div>
+        <div
+          aria-hidden="true"
+          className="pt-10 pb-8 flex items-baseline gap-[2.5vw] font-display text-[clamp(4.2rem,17.5vw,20rem)] leading-[0.8] font-extrabold tracking-[-0.04em] overflow-hidden w-full pr-4"
+        >
+          <Smile className="w-[0.56em] flex-none fill-accent self-center" />
+          <span className="flex-1 flex justify-between tracking-[-0.02em] select-none">
+            <span>d</span>
+            <span>r</span>
+            <span>a</span>
+            <span>v</span>
+            <span className="mr-2">a</span>
+          </span>
         </div>
       </div>
     </footer>

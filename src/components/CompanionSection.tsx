@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { WordScrub } from './type';
-import { gsap } from '@/lib/gsap';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 const COMPANION_ITEMS = [
   'Spatial telemetry & multi-modal perception',
